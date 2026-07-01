@@ -1,27 +1,21 @@
 const values = [
   {
-    icon: "🌱",
-    title: "Rooted in Faith",
+    icon: "🕊️",
+    title: "Spirit of Faith",
     description:
-      "Inspired by the Lasallian charism, we approach environmental stewardship as a spiritual and moral responsibility.",
+      "We discover God's presence in the nature we protect — every action is an expression of our relationship with the Creator who entrusted this Earth to our care.",
   },
   {
-    icon: "🤝",
-    title: "Community-Driven",
+    icon: "🔥",
+    title: "Zeal for Service",
     description:
-      "We build bridges across schools, communities, and organizations to multiply our collective impact.",
+      "We translate environmental concern into concrete action, approaching our work with generosity, creativity, and awareness of climate's impact on local communities.",
   },
   {
-    icon: "💡",
-    title: "Youth Empowerment",
+    icon: "🌏",
+    title: "Communion in Mission",
     description:
-      "We equip young people with the knowledge, skills, and confidence to lead real environmental change.",
-  },
-  {
-    icon: "🌍",
-    title: "Holistic Action",
-    description:
-      "From policy advocacy to on-the-ground projects, we take a comprehensive approach to healing our Earth.",
+      "Different campuses, different actions, one shared mission. We work as one global body of young Lasallians, supporting each other across continents.",
   },
 ];
 
@@ -38,9 +32,9 @@ export default function AboutUs() {
             Who We Are
           </h2>
           <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto text-lg">
-            LEADForEarth is a program under the Lasallian East Asia District, uniting
-            Lasallian institutions across the region in a shared commitment to ecological
-            responsibility and sustainable development.
+            LEAD for Earth is a youth-led initiative of the Lasallian East Asia District,
+            uniting Lasallian institutions across the Philippines and Hong Kong in a
+            shared, monthly commitment to ecological stewardship.
           </p>
         </div>
 
@@ -54,9 +48,9 @@ export default function AboutUs() {
               Our Mission
             </h3>
             <p className="text-gray-700 leading-relaxed">
-              To develop Lasallian environmental leaders who are deeply committed to
-              caring for creation — through education, community engagement, and
-              transformative action that addresses the root causes of our ecological crisis.
+              To transform shared Lasallian values into tangible, measurable advocacy —
+              empowering students across the district to take coordinated environmental
+              action under one unified banner: <strong>#LEADforEarth</strong>.
             </p>
           </div>
           <div
@@ -67,15 +61,16 @@ export default function AboutUs() {
               Our Vision
             </h3>
             <p className="text-gray-700 leading-relaxed">
-              A world where Lasallian youth lead the way toward ecological conversion —
-              communities living in harmony with the Earth, driven by justice,
-              compassion, and a deep respect for all of creation.
+              A district where environmental action is a permanent monthly habit, not
+              a one-time event — a replicable framework other Lasallian districts can
+              follow, proving that Communion in Mission needs only shared commitment,
+              not uniformity.
             </p>
           </div>
         </div>
 
         {/* Values */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {values.map((v) => (
             <div
               key={v.title}

@@ -1,44 +1,44 @@
-const programs = [
+const steps = [
   {
     number: "01",
-    title: "Environmental Education",
+    title: "Choose Your Action",
     description:
-      "We deliver workshops, seminars, and immersive learning experiences that deepen ecological literacy among students and educators across Lasallian schools.",
+      "Each participating school selects an environmental action that's meaningful and feasible for its own community — there's no required activity, only a shared commitment.",
     color: "#1a5c2a",
   },
   {
     number: "02",
-    title: "Community Advocacy",
+    title: "Act Within the Month",
     description:
-      "We amplify youth voices in environmental policy discussions, partnering with local governments, NGOs, and international bodies to push for systemic change.",
+      "Carry out your chosen action during the campaign month. The inaugural month is August 2026, with monthly mobilizations continuing across the district from then on.",
     color: "#2d8c3e",
   },
   {
     number: "03",
-    title: "Eco-Action Projects",
+    title: "Post with #LEADforEarth",
     description:
-      "From tree-planting drives and waste reduction campaigns to coastal clean-ups and urban gardening, we mobilize communities around tangible environmental projects.",
+      "Document your action on your school's official social media platforms using #LEADforEarth — no later than the last Friday of the campaign month.",
     color: "#1a5c2a",
   },
   {
     number: "04",
-    title: "Leadership Formation",
+    title: "Track Your Impact",
     description:
-      "Through our flagship EcoCamp and leadership programs, we form young Lasallians into passionate, skilled environmental leaders ready to serve their communities.",
+      "Establish a baseline before your action day and compare it afterward — energy saved, waste diverted, funds raised, or whatever metric fits your activity.",
     color: "#2d8c3e",
   },
   {
     number: "05",
-    title: "Research & Innovation",
+    title: "Form a Task Force",
     description:
-      "We support student-led environmental research and connect innovators with mentors and funding to develop solutions to local ecological challenges.",
+      "A student-led LEAD for Earth team at each campus coordinates the monthly action, manages digital documentation, and keeps the cross-district conversation going.",
     color: "#1a5c2a",
   },
   {
     number: "06",
-    title: "Network & Partnerships",
+    title: "Reflect & Report",
     description:
-      "We build a regional network of Lasallian environmental champions, fostering cross-school collaboration and partnerships with global sustainability organizations.",
+      "Hold a short climate literacy discussion during the action day, then submit a standardized monthly report to the district coordinating committee.",
     color: "#2d8c3e",
   },
 ];
@@ -50,35 +50,36 @@ export default function WhatWeDo() {
         {/* Header */}
         <div className="text-center mb-16">
           <p className="text-sm font-semibold uppercase tracking-widest mb-3" style={{ color: "#2d8c3e" }}>
-            What We Do
+            How It Works
           </p>
           <h2 className="text-4xl font-extrabold mb-6" style={{ color: "#1a5c2a" }}>
-            Our Programs & Initiatives
+            A District-Wide Monthly Campaign
           </h2>
           <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto text-lg">
-            We work across multiple dimensions of environmental action — from the classroom
-            to the community, from local projects to regional advocacy.
+            LEAD for Earth is a permanent, monthly commitment across all participating
+            Lasallian schools — united not by uniformity, but by a shared hashtag and
+            a shared mission.
           </p>
         </div>
 
-        {/* Program grid */}
+        {/* Steps grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {programs.map((p) => (
+          {steps.map((s) => (
             <div
-              key={p.number}
+              key={s.number}
               className="group rounded-2xl p-8 border border-gray-100 hover:border-green-200 hover:shadow-lg transition-all duration-200"
               style={{ backgroundColor: "#f7faf7" }}
             >
               <span
                 className="text-4xl font-extrabold block mb-4 opacity-30"
-                style={{ color: p.color }}
+                style={{ color: s.color }}
               >
-                {p.number}
+                {s.number}
               </span>
               <h3 className="text-lg font-bold mb-3" style={{ color: "#1a5c2a" }}>
-                {p.title}
+                {s.title}
               </h3>
-              <p className="text-gray-600 text-sm leading-relaxed">{p.description}</p>
+              <p className="text-gray-600 text-sm leading-relaxed">{s.description}</p>
             </div>
           ))}
         </div>
@@ -88,17 +89,17 @@ export default function WhatWeDo() {
           className="mt-16 rounded-3xl p-10 text-center text-white"
           style={{ background: "linear-gradient(135deg, #0d3d1a, #2d8c3e)" }}
         >
-          <h3 className="text-2xl font-bold mb-4">Ready to make a difference?</h3>
+          <h3 className="text-2xl font-bold mb-4">Ready to join the campaign?</h3>
           <p className="text-green-100 mb-6 max-w-lg mx-auto">
-            Join the growing community of Lasallian environmental leaders and start
-            your journey with LEADForEarth today.
+            See the full guidelines for participating schools, or reach out to coordinate
+            with the district committee.
           </p>
           <a
-            href="#contact"
+            href="#guidelines"
             className="inline-block px-8 py-3 rounded-full font-semibold bg-white hover:opacity-90 transition-opacity duration-200"
             style={{ color: "#1a5c2a" }}
           >
-            Get in Touch
+            Read the Guidelines
           </a>
         </div>
       </div>

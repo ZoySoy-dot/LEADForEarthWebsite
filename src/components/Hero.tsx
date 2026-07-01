@@ -23,16 +23,17 @@ export default function Hero() {
         {/* Text */}
         <div className="flex-1 text-center md:text-left">
           <p className="text-sm font-semibold uppercase tracking-widest mb-4" style={{ color: "#a8d5b0" }}>
-            A Lasallian Environmental Initiative
+            Launching August 2026 &nbsp;·&nbsp; #LEADforEarth
           </p>
           <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight mb-6">
-            Leading Change,
+            One District,
             <br />
-            <span style={{ color: "#a8d5b0" }}>Healing the Earth.</span>
+            <span style={{ color: "#a8d5b0" }}>One Mission for the Earth.</span>
           </h1>
           <p className="text-lg text-green-100 leading-relaxed mb-8 max-w-lg">
-            LEADForEarth empowers Lasallian youth to become environmental leaders —
-            taking concrete action for a more sustainable and just world.
+            LEAD for Earth is a monthly, district-wide environmental campaign uniting
+            Lasallian schools across East Asia — each campus choosing its own action,
+            all of us posting under one hashtag.
           </p>
           <div className="flex flex-wrap gap-4 justify-center md:justify-start">
             <a

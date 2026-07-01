@@ -14,9 +14,9 @@ export default function WhatIsLEAD() {
               <ul className="space-y-3 text-green-100">
                 {[
                   { letter: "L", word: "Lasallian" },
-                  { letter: "E", word: "Environmental" },
-                  { letter: "A", word: "Action" },
-                  { letter: "D", word: "Development" },
+                  { letter: "E", word: "East" },
+                  { letter: "A", word: "Asia" },
+                  { letter: "D", word: "District" },
                 ].map(({ letter, word }) => (
                   <li key={letter} className="flex items-center gap-4">
                     <span className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-extrabold text-white text-lg flex-shrink-0">
@@ -26,6 +26,11 @@ export default function WhatIsLEAD() {
                   </li>
                 ))}
               </ul>
+              <p className="text-sm text-green-100 mt-6 leading-relaxed">
+                LEAD for Earth is the environmental initiative of the Lasallian East
+                Asia District — a network of Lasallian schools across the Philippines
+                and Hong Kong.
+              </p>
             </div>
             {/* Decorative accent */}
             <div
@@ -44,18 +49,21 @@ export default function WhatIsLEAD() {
             </h2>
             <div className="space-y-4 text-gray-600 leading-relaxed">
               <p>
-                <strong style={{ color: "#2d2d2d" }}>LEADForEarth</strong> is a Lasallian youth-led
-                environmental initiative that brings together students, educators, and communities
-                to address the urgent challenges of our ecological crisis.
+                <strong style={{ color: "#2d2d2d" }}>LEAD for Earth</strong> emerged from
+                the first International LEAD EcoCamp as a joint effort to move our
+                schools from environmental awareness to concrete, repeatable action.
               </p>
               <p>
-                Grounded in the Lasallian tradition of faith, service, and community, LEADForEarth
-                cultivates a generation of young environmental leaders who are equipped,
-                inspired, and committed to caring for our common home.
+                Rather than a single annual event, it is a permanent monthly commitment.
+                Each participating campus carries out its chosen environmental action
+                within a shared campaign month, documenting it publicly under
+                <strong style={{ color: "#2d2d2d" }}> #LEADforEarth</strong>.
               </p>
               <p>
-                Through education, advocacy, and hands-on programs, we bridge the gap between
-                environmental awareness and meaningful action — because the Earth needs leaders now.
+                Grounded in the Lasallian core value of <em>Communion in Mission</em>,
+                the initiative trusts each institution to contribute in the way that
+                is most meaningful to its community — united not by uniformity, but by
+                a shared and enduring mission.
               </p>
             </div>
           </div>

@@ -1,17 +1,16 @@
 import Image from "next/image";
 
 const footerLinks = {
-  "Quick Links": [
+  Explore: [
     { label: "Home", href: "#home" },
-    { label: "About Us", href: "#about" },
-    { label: "What We Do", href: "#what-we-do" },
+    { label: "About", href: "#about" },
+    { label: "How It Works", href: "#what-we-do" },
     { label: "Contact", href: "#contact" },
   ],
-  Programs: [
-    { label: "Environmental Education", href: "#what-we-do" },
-    { label: "Eco-Action Projects", href: "#what-we-do" },
-    { label: "Leadership Formation", href: "#what-we-do" },
-    { label: "EcoCamp", href: "#what-we-do" },
+  "The Campaign": [
+    { label: "Guidelines", href: "#guidelines" },
+    { label: "Participating Schools", href: "#schools" },
+    { label: "#LEADforEarth", href: "#home" },
   ],
 };
 
@@ -35,14 +34,14 @@ export default function Footer() {
               <span className="text-lg font-bold">LEADForEarth</span>
             </div>
             <p className="text-green-300 text-sm leading-relaxed mb-6">
-              A Lasallian youth-led environmental initiative empowering communities
-              to lead for a more sustainable and just world.
+              A monthly, district-wide environmental campaign uniting Lasallian
+              schools across East Asia under one shared hashtag — #LEADforEarth.
             </p>
             <a
-              href="mailto:leadforearth@dlsu.edu.ph"
+              href="mailto:LeadForEarth@gmail.com"
               className="text-sm font-medium text-green-300 hover:text-white transition-colors duration-200"
             >
-              ✉ leadforearth@dlsu.edu.ph
+              ✉ LeadForEarth@gmail.com
             </a>
           </div>
 
@@ -74,7 +73,7 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} LEADForEarth. All rights reserved.
           </p>
           <p className="text-green-600 text-xs text-center md:text-right">
-            A program of the Lasallian East Asia District &nbsp;|&nbsp; De La Salle University, Manila
+            A program of the Lasallian East Asia District
           </p>
         </div>
       </div>
