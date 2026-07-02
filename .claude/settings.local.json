@@ -7,7 +7,9 @@
       "Bash(mv E-WEB-Goal-03.png sdg-17.png)",
       "Bash(mv E-WEB-Goal-04.png sdg-10.png)",
       "Bash(mv E-WEB-Goal-05.png sdg-04.png)",
-      "Bash(node scripts/optimize-images.mjs)"
+      "Bash(node scripts/optimize-images.mjs)",
+      "Bash(grep -E \"\\\\.\\(png|jpg|svg\\)$\")",
+      "Bash(xargs wc *)"
     ],
     "additionalDirectories": [
       "d:\\Github\\LEADForEarthWebsite"

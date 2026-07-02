@@ -102,6 +102,7 @@ export default function Foundations() {
                     alt={`SDG ${sdg.number}: ${sdg.title}`}
                     width={140}
                     height={140}
+                    sizes="(min-width: 1024px) 140px, (min-width: 640px) 30vw, 30vw"
                     className="w-full object-contain rounded-lg"
                   />
                 </div>
@@ -115,6 +116,7 @@ export default function Foundations() {
                     alt={`SDG ${sdg.number}: ${sdg.title}`}
                     width={140}
                     height={140}
+                    sizes="(min-width: 1024px) 140px, (min-width: 640px) 30vw, 30vw"
                     className="w-full object-contain rounded-lg"
                   />
                 </div>

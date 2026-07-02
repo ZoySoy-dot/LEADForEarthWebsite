@@ -4,9 +4,9 @@ import Link from "next/link";
 import ReportForm from "@/components/ReportForm";
 
 export const metadata: Metadata = {
-  title: "Impact Report | LEADForEarth",
+  title: "Report | LEADForEarth",
   description:
-    "Submit your institution's #LEADforEarth campaign impact report.",
+    "Submit your institution's #LEADforEarth campaign report.",
 };
 
 export default function ReportPage() {

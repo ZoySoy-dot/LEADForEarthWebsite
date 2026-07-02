@@ -173,6 +173,7 @@ export default function Hero() {
               alt="LEADForEarth"
               width={175}
               height={175}
+              sizes="(min-width: 768px) 175px, 145px"
               className="object-contain"
               priority
             />

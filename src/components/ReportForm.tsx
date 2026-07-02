@@ -19,14 +19,6 @@ const INITIATIVE_TYPES = [
   { key: "other", label: "Other" },
 ] as const;
 
-const OBJECTIVES = [
-  "To promote actions that reduce waste and energy consumption through presenting tangible evidence and statistics that highlight their economic impacts.",
-  "To encourage participants to take action towards addressing environmental issues such as pollution, high carbon emissions, and deforestation by emphasizing their effects on ecosystems and human health.",
-  "To instill in participants consistent habits, efforts, and practices that support a healthier environment, integrating simple actions (e.g., powering down lights and devices) into the program's activities.",
-  "To elevate Climate Literacy and Reflection: integrate dedicated educational discussions and reflection periods during each institution's chosen action day, providing students and educators with the opportunity to deepen their understanding of global environmental challenges and sustainable practices.",
-  "Establish a Framework for Continuous Action: use the success and data gathered from the inaugural August campaign month as a foundational blueprint for future, recurring sustainability initiatives across the district.",
-  "Foster Cross-Sector Lasallian Collaboration: dismantle the isolated nature of current student-led environmental efforts by establishing a robust, collaborative network among the participating institutions within the Lasallian East Asia District, embodying the core value of Communion in Mission.",
-];
 
 const EFFECTIVENESS_CRITERIA = [
   "Organization and planning",
@@ -73,15 +65,14 @@ const SECTIONS = [
   { id: "submitter", num: "0", title: "Submitter", subtitle: "Who is filing this report on behalf of the institution?" },
   { id: "overview", num: "I", title: "Project Overview" },
   { id: "participation", num: "II", title: "Participation Data" },
-  { id: "objectives", num: "III", title: "Objectives Assessment", subtitle: "Rate whether each district-level objective was achieved through this activity." },
-  { id: "impact", num: "IV", title: "Environmental Impact Evaluation", subtitle: "Sub-sections appear based on your selections in Section I. Fill only indicators relevant to your activity." },
-  { id: "effectiveness", num: "V", title: "Effectiveness of Implementation", subtitle: "Rate each criterion from 1 (Poor) to 5 (Excellent)." },
-  { id: "climate", num: "VI", title: "Climate Literacy and Reflection" },
-  { id: "feedback", num: "VII", title: "Participant Feedback" },
-  { id: "digital", num: "VIII", title: "Digital Advocacy Impact" },
-  { id: "lasallian", num: "IX", title: "Lasallian Reflection" },
-  { id: "lessons", num: "X", title: "Lessons Learned & Recommendations", subtitle: "Honest reflections are more valuable than polished ones." },
-  { id: "documentation", num: "XI", title: "Documentation", subtitle: "Optional. Paste links to photos, event pages, or supporting docs." },
+  { id: "impact", num: "III", title: "Environmental Impact Evaluation", subtitle: "Sub-sections appear based on your selections in Section I. Fill only indicators relevant to your activity." },
+  { id: "effectiveness", num: "IV", title: "Effectiveness of Implementation", subtitle: "Rate each criterion from 1 (Poor) to 5 (Excellent)." },
+  { id: "climate", num: "V", title: "Climate Literacy and Reflection" },
+  { id: "feedback", num: "VI", title: "Participant Feedback" },
+  { id: "digital", num: "VII", title: "Digital Advocacy Impact" },
+  { id: "lasallian", num: "VIII", title: "Lasallian Reflection" },
+  { id: "lessons", num: "IX", title: "Lessons Learned & Recommendations", subtitle: "Honest reflections are more valuable than polished ones." },
+  { id: "documentation", num: "X", title: "Documentation", subtitle: "Optional. Paste links to photos, event pages, or supporting docs." },
 ] as const;
 
 type SectionId = (typeof SECTIONS)[number]["id"];
@@ -108,7 +99,6 @@ const ENCOURAGEMENTS = [
 // STATE SHAPE — mirrors the email payload one-to-one
 // ============================================================================
 
-type Achieved = "" | "Yes" | "Partially" | "No";
 type YesNo = "" | "Yes" | "No";
 type Continuing = "" | "Yes" | "NotYet" | "No";
 
@@ -135,7 +125,6 @@ type Report = {
     schoolPopulation: string;
     rate: string;
   };
-  objectives: { text: string; achieved: Achieved; evidence: string }[];
   impact: {
     energy: { baselineKwh: string; postKwh: string; kwhReduced: string; costSavings: string; unitsParticipating: string };
     water: { baselineWater: string; postWater: string; litersSaved: string; costSavings: string; unitsParticipating: string };
@@ -204,7 +193,6 @@ const INITIAL: Report = {
     sdgGoals: boolMap(SDG_GOALS),
   },
   participation: { students: "", faculty: "", staffAdmin: "", community: "", total: "", schoolPopulation: "", rate: "" },
-  objectives: OBJECTIVES.map((text) => ({ text, achieved: "", evidence: "" })),
   impact: {
     energy: { baselineKwh: "", postKwh: "", kwhReduced: "", costSavings: "", unitsParticipating: "" },
     water: { baselineWater: "", postWater: "", litersSaved: "", costSavings: "", unitsParticipating: "" },
@@ -568,11 +556,6 @@ function ImpactPanel({ title, children }: { title: string; children: React.React
   );
 }
 
-const ACHIEVED_OPTIONS = [
-  { key: "Yes", label: "Yes" },
-  { key: "Partially", label: "Partially" },
-  { key: "No", label: "No" },
-];
 
 const YESNO_OPTIONS = [
   { key: "Yes", label: "Yes" },
@@ -648,10 +631,10 @@ export default function ReportForm() {
           <div className="bg-white rounded-2xl shadow-sm p-12 text-center">
             <div className="text-5xl mb-4">✅</div>
             <h3 className="text-2xl font-bold mb-3" style={{ color: "#1a5c2a" }}>
-              Impact Report Submitted!
+              Report Submitted!
             </h3>
             <p className="text-gray-500 mb-6 max-w-md mx-auto">
-              Thank you for sharing your institution&apos;s #LEADforEarth impact. The district
+              Thank you for sharing your institution&apos;s #LEADforEarth report. The district
               committee will be in touch.
             </p>
             <button
@@ -677,14 +660,14 @@ export default function ReportForm() {
         {/* Header */}
         <div className="text-center mb-10">
           <p className="text-sm font-semibold uppercase tracking-widest mb-3" style={{ color: "#2d8c3e" }}>
-            #LEADforEarth Impact Template
+            #LEADforEarth Report
           </p>
           <h2 className="text-3xl sm:text-4xl font-extrabold mb-3" style={{ color: "#1a5c2a" }}>
-            Submit Your Impact Report
+            Submit Your Report
           </h2>
           <p className="text-gray-600 leading-relaxed max-w-xl mx-auto text-sm sm:text-base">
             Share your institution&apos;s environmental initiative: activities, data,
-            reflections, and lessons. Complete only the impact indicators relevant to
+            reflections, and lessons. Complete only the indicators relevant to
             your activity.
           </p>
         </div>
@@ -799,35 +782,7 @@ export default function ReportForm() {
             <Field label="Participation Rate (%)" path="participation.rate" type="number" value={form.participation.rate} onChange={set} placeholder="e.g., 42" />
           </SectionCard>
 
-          {/* -------- III. Objectives Assessment -------- */}
-          <SectionCard id="objectives">
-            {form.objectives.map((obj, i) => (
-              <div key={i} className="border border-gray-100 rounded-xl p-4 bg-gray-50">
-                <p className="text-sm text-gray-700 leading-relaxed mb-3">
-                  <span className="font-semibold mr-1">{i + 1}.</span>
-                  {obj.text}
-                </p>
-                <RadioGroup
-                  label="Achieved?"
-                  options={ACHIEVED_OPTIONS}
-                  path={`objectives.${i}.achieved`}
-                  value={obj.achieved}
-                  onChange={set}
-                />
-                <div className="mt-3">
-                  <Textarea
-                    label="Evidence / Explanation"
-                    path={`objectives.${i}.evidence`}
-                    value={obj.evidence}
-                    onChange={set}
-                    rows={2}
-                  />
-                </div>
-              </div>
-            ))}
-          </SectionCard>
-
-          {/* -------- IV. Environmental Impact Evaluation -------- */}
+          {/* -------- III. Environmental Impact Evaluation -------- */}
           <SectionCard id="impact">
             {!Object.values(form.overview.initiativeTypes).some(Boolean) && (
               <div className="text-sm text-gray-500 bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3">
@@ -1182,7 +1137,7 @@ export default function ReportForm() {
                 className="px-6 py-3 rounded-xl font-semibold text-sm text-white transition-opacity hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
                 style={{ backgroundColor: "#1a5c2a" }}
               >
-                {status === "loading" ? "Submitting…" : "Submit Impact Report"}
+                {status === "loading" ? "Submitting…" : "Submit Report"}
               </button>
             )}
           </div>
