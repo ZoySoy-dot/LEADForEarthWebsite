@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 const navLinks = [
   { label: "Home", href: "#home" },
@@ -14,6 +14,52 @@ const navLinks = [
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
+  const navRef = useRef<HTMLElement>(null);
+  const linkRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const [positions, setPositions] = useState<{ left: number; width: number }[]>([]);
+
+  const measure = () => {
+    const navEl = navRef.current;
+    if (!navEl) return;
+    const navRect = navEl.getBoundingClientRect();
+    setPositions(
+      linkRefs.current.map((el) => {
+        if (!el) return { left: 0, width: 0 };
+        const r = el.getBoundingClientRect();
+        return { left: r.left - navRect.left, width: r.width };
+      })
+    );
+  };
+
+  useLayoutEffect(() => {
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const scrollY = window.scrollY;
+      let current = navLinks[0].href.slice(1);
+      for (const link of navLinks) {
+        const id = link.href.slice(1);
+        const el = document.getElementById(id);
+        if (el && el.offsetTop - 100 <= scrollY) {
+          current = id;
+        }
+      }
+      setActiveSection(current);
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const activeIndex = navLinks.findIndex((l) => l.href.slice(1) === activeSection);
+  const pos = positions[activeIndex];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
@@ -37,17 +83,36 @@ export default function Header() {
         </a>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium transition-colors duration-200 hover:text-green-700"
-              style={{ color: "#2d2d2d" }}
-            >
-              {link.label}
-            </a>
-          ))}
+        <nav ref={navRef} className="hidden md:flex items-center gap-8 relative pb-1">
+          {navLinks.map((link, i) => {
+            const isActive = activeSection === link.href.slice(1);
+            return (
+              <a
+                key={link.href}
+                ref={(el) => { linkRefs.current[i] = el; }}
+                href={link.href}
+                className="text-sm font-medium transition-colors duration-200 hover:text-green-700"
+                style={{ color: isActive ? "#1a5c2a" : "#2d2d2d" }}
+              >
+                {link.label}
+              </a>
+            );
+          })}
+
+          {/* Sliding underline indicator */}
+          {pos && (
+            <span
+              className="absolute bottom-0 left-0 h-0.5 rounded-full"
+              style={{
+                width: pos.width,
+                transform: `translateX(${pos.left}px)`,
+                backgroundColor: "#1a5c2a",
+                transition: "transform 350ms cubic-bezier(0.4, 0, 0.2, 1), width 350ms cubic-bezier(0.4, 0, 0.2, 1)",
+                willChange: "transform, width",
+              }}
+            />
+          )}
+
           <Link
             href="/report"
             className="px-5 py-2 rounded-full text-sm font-semibold border-2 transition-colors duration-200 hover:bg-green-50"
@@ -85,17 +150,20 @@ export default function Header() {
       {/* Mobile menu */}
       {menuOpen && (
         <div className="md:hidden bg-white border-t border-gray-100 px-6 pb-4">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="block py-3 text-sm font-medium border-b border-gray-100 last:border-0 hover:text-green-700"
-              style={{ color: "#2d2d2d" }}
-              onClick={() => setMenuOpen(false)}
-            >
-              {link.label}
-            </a>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = activeSection === link.href.slice(1);
+            return (
+              <a
+                key={link.href}
+                href={link.href}
+                className="block py-3 text-sm font-medium border-b border-gray-100 last:border-0 hover:text-green-700"
+                style={{ color: isActive ? "#1a5c2a" : "#2d2d2d", fontWeight: isActive ? 700 : undefined }}
+                onClick={() => setMenuOpen(false)}
+              >
+                {link.label}
+              </a>
+            );
+          })}
           <Link
             href="/report"
             className="mt-3 block text-center px-5 py-2 rounded-full text-sm font-semibold border-2 hover:bg-green-50"
