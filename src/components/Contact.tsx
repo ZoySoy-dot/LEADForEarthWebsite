@@ -56,7 +56,7 @@ export default function Contact() {
             Let&apos;s Connect
           </h2>
           <p className="text-gray-600 leading-relaxed max-w-xl mx-auto text-lg">
-            Whether you want to help us, join the initiative, or ask questions —
+            Whether you want to help us, join the initiative, or ask questions,
             send us a message.
           </p>
         </div>

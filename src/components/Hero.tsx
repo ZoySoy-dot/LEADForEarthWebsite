@@ -128,8 +128,8 @@ export default function Hero() {
 
           <p className="text-lg leading-relaxed mb-10 max-w-lg" style={{ color: "rgba(200,230,210,0.8)" }}>
             <strong className="text-white font-semibold">LEADForEarth</strong> is a monthly,
-            district-wide environmental campaign uniting Lasallian schools across East Asia —
-            each campus choosing its own action, all of us posting under one hashtag.
+            district-wide environmental campaign uniting Lasallian schools across East Asia.
+            Each campus chooses its own action, all of us posting under one hashtag.
           </p>
 
           <div className="flex flex-wrap gap-4 justify-center md:justify-start">
@@ -156,6 +156,7 @@ export default function Hero() {
             src="/sdg-wheel.png"
             alt="UN Sustainable Development Goals"
             fill
+            sizes="(min-width: 768px) 380px, 320px"
             className="object-contain"
             style={{ filter: "drop-shadow(0 0 24px rgba(40,130,80,0.35)) drop-shadow(0 0 12px rgba(20,80,160,0.2))" }}
           />

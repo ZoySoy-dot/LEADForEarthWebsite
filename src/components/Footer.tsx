@@ -10,6 +10,7 @@ const footerLinks = {
   "The Campaign": [
     { label: "Guidelines", href: "#guidelines" },
     { label: "Participating Schools", href: "#schools" },
+    { label: "Submit a Report", href: "/report" },
     { label: "#LEADforEarth", href: "#home" },
   ],
 };
@@ -35,7 +36,7 @@ export default function Footer() {
             </div>
             <p className="text-green-300 text-sm leading-relaxed mb-6">
               A monthly, district-wide environmental campaign uniting Lasallian
-              schools across East Asia under one shared hashtag — #LEADforEarth.
+              schools across East Asia under one shared hashtag: #LEADforEarth.
             </p>
             <a
               href="mailto:LeadForEarth@gmail.com"

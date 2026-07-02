@@ -37,7 +37,7 @@ export default function Guidelines() {
             </p>
             <p>
               Schools are free to adapt the suggested actions, combine them, or replace them
-              entirely with something that fits their community better. The mission is shared —
+              entirely with something that fits their community better. The mission is shared;
               the method is yours.
             </p>
           </div>

@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "LEADForEarth",
   description:
-    "LEADForEarth — Lasallian youth leading environmental action for the Earth.",
+    "LEADForEarth: Lasallian youth leading environmental action for the Earth.",
 };
 
 export default function RootLayout({

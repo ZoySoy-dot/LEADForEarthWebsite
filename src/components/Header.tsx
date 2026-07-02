@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
 const navLinks = [
@@ -47,6 +48,13 @@ export default function Header() {
               {link.label}
             </a>
           ))}
+          <Link
+            href="/report"
+            className="px-5 py-2 rounded-full text-sm font-semibold border-2 transition-colors duration-200 hover:bg-green-50"
+            style={{ borderColor: "#1a5c2a", color: "#1a5c2a" }}
+          >
+            Submit Report
+          </Link>
           <a
             href="#contact"
             className="px-5 py-2 rounded-full text-sm font-semibold text-white transition-opacity duration-200 hover:opacity-90"
@@ -88,6 +96,14 @@ export default function Header() {
               {link.label}
             </a>
           ))}
+          <Link
+            href="/report"
+            className="mt-3 block text-center px-5 py-2 rounded-full text-sm font-semibold border-2 hover:bg-green-50"
+            style={{ borderColor: "#1a5c2a", color: "#1a5c2a" }}
+            onClick={() => setMenuOpen(false)}
+          >
+            Submit Report
+          </Link>
           <a
             href="#contact"
             className="mt-3 block text-center px-5 py-2 rounded-full text-sm font-semibold text-white"
