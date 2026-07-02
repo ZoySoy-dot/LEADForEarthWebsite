@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C d:/Github/LEADForEarthWebsite status)",
+      "Bash(mv E-WEB-Goal-01.png sdg-15.png)",
+      "Bash(mv E-WEB-Goal-02.png sdg-14.png)",
+      "Bash(mv E-WEB-Goal-03.png sdg-17.png)",
+      "Bash(mv E-WEB-Goal-04.png sdg-10.png)",
+      "Bash(mv E-WEB-Goal-05.png sdg-04.png)"
+    ],
+    "additionalDirectories": [
+      "d:\\Github\\LEADForEarthWebsite"
+    ]
+  }
+}

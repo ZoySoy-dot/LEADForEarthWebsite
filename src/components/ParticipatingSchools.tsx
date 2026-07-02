@@ -22,7 +22,7 @@ export default function ParticipatingSchools() {
             Eight Schools, One District
           </h2>
           <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto text-lg">
-            LEAD for Earth brings together Lasallian institutions across the Philippines
+            <strong>LEADForEarth</strong> brings together Lasallian institutions across the Philippines
             and Hong Kong — each campus mobilizing its own community under one shared
             mission.
           </p>
