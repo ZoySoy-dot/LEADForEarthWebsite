@@ -13,7 +13,30 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "LEADForEarth",
   description:
-    "LEADForEarth: Lasallian youth leading environmental action for the Earth.",
+    "A district-wide environmental campaign uniting Lasallian schools across East Asia — each campus choosing its own action, all of us posting under one hashtag: #LEADforEarth.",
+  openGraph: {
+    title: "LEADForEarth — One District, One Mission for the Earth",
+    description:
+      "A district-wide environmental campaign uniting Lasallian schools across East Asia — each campus choosing its own action, all of us posting under one hashtag: #LEADforEarth.",
+    siteName: "LEADForEarth",
+    images: [
+      {
+        url: "/leadforearth-logo.png",
+        width: 400,
+        height: 400,
+        alt: "LEADForEarth Logo",
+      },
+    ],
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary",
+    title: "LEADForEarth — One District, One Mission for the Earth",
+    description:
+      "A district-wide environmental campaign uniting Lasallian schools across East Asia — each campus choosing its own action, all of us posting under one hashtag: #LEADforEarth.",
+    images: ["/leadforearth-logo.png"],
+  },
 };
 
 export default function RootLayout({

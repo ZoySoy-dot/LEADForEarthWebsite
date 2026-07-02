@@ -580,6 +580,7 @@ export default function ReportForm() {
   const [errorMsg, setErrorMsg] = useState("");
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
+  const [consented, setConsented] = useState(false);
 
   const set: SetFn = (path, value) => dispatch({ type: "SET", path, value });
   const totalSteps = SECTIONS.length;
@@ -672,34 +673,69 @@ export default function ReportForm() {
           </p>
         </div>
 
-        {/* Step indicator — numbered dots, click to jump to any step */}
-        <div className="flex gap-2 overflow-x-auto pb-3 mb-6 justify-start sm:justify-center scrollbar-thin">
+        {/* Step indicator — full titles, split connector lines, status icons */}
+        <div className="flex overflow-x-auto pb-4 mb-6">
           {SECTIONS.map((s, i) => {
             const state =
               currentStep === i ? "current" : currentStep > i ? "done" : "todo";
+            const isFirst = i === 0;
+            const isLast  = i === SECTIONS.length - 1;
+            const leftColor  = currentStep >= i ? "#1a5c2a" : "#e5e7eb";
+            const rightColor = currentStep >  i ? "#1a5c2a" : "#e5e7eb";
+
             return (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => goTo(i)}
-                title={s.title}
-                aria-label={`Go to step ${i + 1}: ${s.title}`}
-                aria-current={state === "current" ? "step" : undefined}
-                className={`shrink-0 w-10 h-10 rounded-full text-xs font-bold transition-colors ${
-                  state === "current"
-                    ? "text-white ring-2 ring-offset-2"
-                    : state === "done"
-                    ? "bg-green-100 text-green-800 hover:bg-green-200"
-                    : "bg-gray-100 text-gray-400 hover:bg-gray-200"
-                }`}
-                style={
-                  state === "current"
-                    ? { backgroundColor: "#1a5c2a", ["--tw-ring-color" as string]: "#c8e6c9" }
-                    : undefined
-                }
-              >
-                {s.num}
-              </button>
+              <div key={s.id} className="flex flex-col items-center flex-1 min-w-[68px]">
+                {/* Title */}
+                <div className="h-12 flex items-end justify-center w-full pb-2 px-0.5">
+                  <span
+                    className="text-[8.5px] text-center leading-tight line-clamp-3"
+                    style={{
+                      color: state === "todo" ? "#9ca3af" : "#1a5c2a",
+                      fontWeight: state === "current" ? 700 : 500,
+                    }}
+                  >
+                    {s.title}
+                  </span>
+                </div>
+
+                {/* Connector line + circle */}
+                <div className="flex items-center w-full">
+                  {/* Left half-line */}
+                  <div
+                    className="flex-1 h-0.5"
+                    style={{ backgroundColor: isFirst ? "transparent" : leftColor }}
+                  />
+
+                  {/* Circle */}
+                  <button
+                    type="button"
+                    onClick={() => goTo(i)}
+                    title={s.title}
+                    aria-label={`Go to step ${i + 1}: ${s.title}`}
+                    aria-current={state === "current" ? "step" : undefined}
+                    className={`shrink-0 w-9 h-9 rounded-full text-xs font-bold transition-colors ${
+                      state === "current"
+                        ? "text-white ring-2 ring-offset-2"
+                        : state === "done"
+                        ? "bg-green-100 text-green-700 hover:bg-green-200"
+                        : "bg-gray-100 text-gray-400 hover:bg-gray-200"
+                    }`}
+                    style={
+                      state === "current"
+                        ? { backgroundColor: "#1a5c2a", ["--tw-ring-color" as string]: "#c8e6c9" }
+                        : undefined
+                    }
+                  >
+                    {state === "done" ? "✓" : state === "todo" ? "*" : s.num}
+                  </button>
+
+                  {/* Right half-line */}
+                  <div
+                    className="flex-1 h-0.5"
+                    style={{ backgroundColor: isLast ? "transparent" : rightColor }}
+                  />
+                </div>
+              </div>
             );
           })}
         </div>
@@ -1131,14 +1167,41 @@ export default function ReportForm() {
                 Next →
               </button>
             ) : (
-              <button
-                type="submit"
-                disabled={status === "loading"}
-                className="px-6 py-3 rounded-xl font-semibold text-sm text-white transition-opacity hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
-                style={{ backgroundColor: "#1a5c2a" }}
-              >
-                {status === "loading" ? "Submitting…" : "Submit Report"}
-              </button>
+              <div className="flex flex-col gap-4 w-full">
+                <div className="rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-sm text-gray-700 leading-relaxed">
+                  <p className="font-semibold mb-2" style={{ color: "#1a5c2a" }}>Before you submit</p>
+                  <p>
+                    The information provided in this report will be used solely for the purposes of the{" "}
+                    <strong>#LEADforEarth</strong> initiative of the Lasallian East Asia District. It may
+                    be used to track progress, compile district-wide results, and support future
+                    environmental campaigns.
+                  </p>
+                </div>
+
+                <label className="flex items-start gap-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={consented}
+                    onChange={(e) => setConsented(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 rounded accent-green-700 shrink-0"
+                  />
+                  <span className="text-sm text-gray-600 leading-relaxed">
+                    I confirm that all information submitted in this report is accurate and true to the best
+                    of my knowledge. I consent on behalf of my institution to the LEADForEarth district
+                    committee contacting us for follow-up questions or to request additional information
+                    related to this report.
+                  </span>
+                </label>
+
+                <button
+                  type="submit"
+                  disabled={status === "loading" || !consented}
+                  className="px-6 py-3 rounded-xl font-semibold text-sm text-white transition-opacity hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+                  style={{ backgroundColor: "#1a5c2a" }}
+                >
+                  {status === "loading" ? "Submitting…" : "Submit Report"}
+                </button>
+              </div>
             )}
           </div>
         </form>

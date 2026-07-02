@@ -126,27 +126,39 @@ export default function Hero() {
             for the Earth.
           </h1>
 
-          <p className="text-lg leading-relaxed mb-10 max-w-lg" style={{ color: "rgba(200,230,210,0.8)" }}>
+          <p className="text-lg leading-relaxed mb-8 max-w-lg" style={{ color: "rgba(200,230,210,0.8)" }}>
             <strong className="text-white font-semibold">LEADForEarth</strong> is a
             district-wide environmental campaign uniting Lasallian schools across East Asia —
             each campus choosing its own action, all of us posting under one hashtag.
           </p>
 
-          <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-            <a
-              href="#about"
-              className="px-8 py-3.5 rounded-full font-semibold text-white border border-white/25 hover:bg-white/10 transition-colors duration-200 backdrop-blur-sm"
+          <a
+            href="#about"
+            className="inline-flex flex-col items-center gap-3 group"
+            style={{ color: "rgba(200,230,210,0.55)" }}
+          >
+            <span
+              className="text-xs uppercase tracking-[0.25em] font-light group-hover:text-white transition-colors duration-300"
+              style={{ fontFamily: "var(--font-inter), serif", letterSpacing: "0.25em" }}
             >
-              Learn More
-            </a>
-            <a
-              href="#contact"
-              className="px-8 py-3.5 rounded-full font-semibold transition-all duration-200 hover:opacity-90"
-              style={{ backgroundColor: "#a8d5b0", color: "#071a0a" }}
+              Scroll to explore
+            </span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="animate-bounce group-hover:text-white transition-colors duration-300"
+              style={{ animationDuration: "1.6s" }}
             >
-              Get Involved
-            </a>
-          </div>
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </a>
         </div>
 
         {/* Logo with SDG wheel ring */}

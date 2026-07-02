@@ -72,17 +72,17 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
       <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
-        <a href="#home" className="flex items-center gap-3">
+        <a href="#home" className="flex items-center">
           <Image
-            src="/leadforearth-logo.png"
+            src="/logo-icon.png"
             alt="LEADForEarth Logo"
-            width={52}
-            height={52}
+            width={48}
+            height={48}
             className="object-contain"
             priority
           />
           <span
-            className="text-xl font-bold leading-tight"
+            className="text-xl font-bold leading-tight -ml-2"
             style={{ color: "#1a5c2a" }}
           >
             LEAD
@@ -121,7 +121,7 @@ export default function Header() {
             />
           )}
 
-          <div className="flex items-center gap-3 ml-2 pl-6 border-l border-gray-200">
+          <div className="ml-2 pl-6 border-l border-gray-200">
             <Link
               href="/report"
               className="px-4 py-1.5 rounded-full text-sm font-medium border transition-all duration-200 hover:-translate-y-px"
@@ -135,15 +135,6 @@ export default function Header() {
             >
               Submit Report
             </Link>
-            <a
-              href="#contact"
-              className="px-5 py-1.5 rounded-full text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-px hover:shadow-md"
-              style={{
-                background: "linear-gradient(135deg, #1a5c2a 0%, #2d8c3e 100%)",
-              }}
-            >
-              Get Involved
-            </a>
           </div>
         </nav>
 
@@ -182,7 +173,7 @@ export default function Header() {
               </a>
             );
           })}
-          <div className="mt-4 flex flex-col gap-2">
+          <div className="mt-4">
             <Link
               href="/report"
               className="block text-center px-5 py-2 rounded-full text-sm font-medium border transition-colors duration-200"
@@ -191,14 +182,6 @@ export default function Header() {
             >
               Submit Report
             </Link>
-            <a
-              href="#contact"
-              className="block text-center px-5 py-2 rounded-full text-sm font-semibold text-white shadow-sm"
-              style={{ background: "linear-gradient(135deg, #1a5c2a 0%, #2d8c3e 100%)" }}
-              onClick={() => setMenuOpen(false)}
-            >
-              Get Involved
-            </a>
           </div>
         </div>
       )}
