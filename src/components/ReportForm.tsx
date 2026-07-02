@@ -666,11 +666,20 @@ export default function ReportForm() {
           <h2 className="text-3xl sm:text-4xl font-extrabold mb-3" style={{ color: "#1a5c2a" }}>
             Submit Your Report
           </h2>
-          <p className="text-gray-600 leading-relaxed max-w-xl mx-auto text-sm sm:text-base">
+          <p className="text-gray-600 leading-relaxed max-w-xl mx-auto text-sm sm:text-base mb-5">
             Share your institution&apos;s environmental initiative: activities, data,
             reflections, and lessons. Complete only the indicators relevant to
             your activity.
           </p>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border text-sm"
+            style={{ borderColor: "#c8e6c9", backgroundColor: "#f0faf1", color: "#2d7a3e" }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            <span>Estimated time: <strong>20 – 35 minutes</strong></span>
+          </div>
         </div>
 
         {/* Step indicator — full titles, split connector lines, status icons */}
