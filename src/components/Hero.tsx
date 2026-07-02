@@ -127,7 +127,7 @@ export default function Hero() {
           </h1>
 
           <p className="text-lg leading-relaxed mb-10 max-w-lg" style={{ color: "rgba(200,230,210,0.8)" }}>
-            <strong className="text-white font-semibold">LEADForEarth</strong> is a monthly,
+            <strong className="text-white font-semibold">LEADForEarth</strong> is a
             district-wide environmental campaign uniting Lasallian schools across East Asia —
             each campus choosing its own action, all of us posting under one hashtag.
           </p>
