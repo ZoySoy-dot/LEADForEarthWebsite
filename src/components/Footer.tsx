@@ -25,10 +25,10 @@ export default function Footer() {
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-white rounded-xl p-1.5">
                 <Image
-                  src="/leadforearth-logo.png"
+                  src="/logo-icon.png"
                   alt="LEADForEarth Logo"
-                  width={44}
-                  height={44}
+                  width={36}
+                  height={36}
                   className="object-contain"
                 />
               </div>
