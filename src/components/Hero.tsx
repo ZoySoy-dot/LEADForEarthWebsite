@@ -156,6 +156,7 @@ export default function Hero() {
             src="/sdg-wheel.png"
             alt="UN Sustainable Development Goals"
             fill
+            sizes="(min-width: 768px) 380px, 320px"
             className="object-contain"
             style={{ filter: "drop-shadow(0 0 24px rgba(40,130,80,0.35)) drop-shadow(0 0 12px rgba(20,80,160,0.2))" }}
           />

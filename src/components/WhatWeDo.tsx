@@ -42,7 +42,7 @@ export default function WhatWeDo() {
             </h2>
             <div className="mt-6 w-12 h-1 rounded-full" style={{ backgroundColor: "#2d8c3e" }} />
             <p className="mt-6 text-gray-500 leading-relaxed">
-              Every school, every campus — one shared mission. Each step moves us closer to collective, visible impact.
+              Every school, every campus, one shared mission. Each step moves us closer to collective, visible impact.
             </p>
           </div>
 

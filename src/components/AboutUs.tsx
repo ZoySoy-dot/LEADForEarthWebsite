@@ -47,7 +47,7 @@ const values = [
     icon: <SproutIcon />,
     title: "Zeal for Service",
     description:
-      "We translate concern into concrete action — approaching our work with generosity, creativity, and awareness of climate's impact on local communities.",
+      "We translate concern into concrete action, approaching our work with generosity, creativity, and awareness of climate's impact on local communities.",
   },
   {
     icon: <GlobeIcon />,
@@ -142,7 +142,7 @@ export default function AboutUs() {
             </p>
             <p className="text-2xl font-bold leading-snug" style={{ color: "#1a5c2a" }}>
               To empower Lasallian students across East Asia to take coordinated environmental
-              action — united under one banner:{" "}
+              action, united under one banner:{" "}
               <span style={{ color: "#2d8c3e" }}>#LEADforEarth</span>.
             </p>
           </div>
