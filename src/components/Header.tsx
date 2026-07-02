@@ -42,6 +42,14 @@ export default function Header() {
   useEffect(() => {
     const onScroll = () => {
       const scrollY = window.scrollY;
+      const atBottom =
+        window.innerHeight + scrollY >= document.documentElement.scrollHeight - 50;
+
+      if (atBottom) {
+        setActiveSection(navLinks[navLinks.length - 1].href.slice(1));
+        return;
+      }
+
       let current = navLinks[0].href.slice(1);
       for (const link of navLinks) {
         const id = link.href.slice(1);
@@ -113,20 +121,30 @@ export default function Header() {
             />
           )}
 
-          <Link
-            href="/report"
-            className="px-5 py-2 rounded-full text-sm font-semibold border-2 transition-colors duration-200 hover:bg-green-50"
-            style={{ borderColor: "#1a5c2a", color: "#1a5c2a" }}
-          >
-            Submit Report
-          </Link>
-          <a
-            href="#contact"
-            className="px-5 py-2 rounded-full text-sm font-semibold text-white transition-opacity duration-200 hover:opacity-90"
-            style={{ backgroundColor: "#1a5c2a" }}
-          >
-            Get Involved
-          </a>
+          <div className="flex items-center gap-3 ml-2 pl-6 border-l border-gray-200">
+            <Link
+              href="/report"
+              className="px-4 py-1.5 rounded-full text-sm font-medium border transition-all duration-200 hover:-translate-y-px"
+              style={{
+                borderColor: "#1a5c2a",
+                color: "#1a5c2a",
+                backgroundColor: "transparent",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(26,92,42,0.07)")}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+            >
+              Submit Report
+            </Link>
+            <a
+              href="#contact"
+              className="px-5 py-1.5 rounded-full text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-px hover:shadow-md"
+              style={{
+                background: "linear-gradient(135deg, #1a5c2a 0%, #2d8c3e 100%)",
+              }}
+            >
+              Get Involved
+            </a>
+          </div>
         </nav>
 
         {/* Mobile hamburger */}
@@ -164,22 +182,24 @@ export default function Header() {
               </a>
             );
           })}
-          <Link
-            href="/report"
-            className="mt-3 block text-center px-5 py-2 rounded-full text-sm font-semibold border-2 hover:bg-green-50"
-            style={{ borderColor: "#1a5c2a", color: "#1a5c2a" }}
-            onClick={() => setMenuOpen(false)}
-          >
-            Submit Report
-          </Link>
-          <a
-            href="#contact"
-            className="mt-3 block text-center px-5 py-2 rounded-full text-sm font-semibold text-white"
-            style={{ backgroundColor: "#1a5c2a" }}
-            onClick={() => setMenuOpen(false)}
-          >
-            Get Involved
-          </a>
+          <div className="mt-4 flex flex-col gap-2">
+            <Link
+              href="/report"
+              className="block text-center px-5 py-2 rounded-full text-sm font-medium border transition-colors duration-200"
+              style={{ borderColor: "#1a5c2a", color: "#1a5c2a" }}
+              onClick={() => setMenuOpen(false)}
+            >
+              Submit Report
+            </Link>
+            <a
+              href="#contact"
+              className="block text-center px-5 py-2 rounded-full text-sm font-semibold text-white shadow-sm"
+              style={{ background: "linear-gradient(135deg, #1a5c2a 0%, #2d8c3e 100%)" }}
+              onClick={() => setMenuOpen(false)}
+            >
+              Get Involved
+            </a>
+          </div>
         </div>
       )}
     </header>
