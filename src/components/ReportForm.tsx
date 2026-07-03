@@ -19,14 +19,6 @@ const INITIATIVE_TYPES = [
   { key: "other", label: "Other" },
 ] as const;
 
-const OBJECTIVES = [
-  "To promote actions that reduce waste and energy consumption through presenting tangible evidence and statistics that highlight their economic impacts.",
-  "To encourage participants to take action towards addressing environmental issues such as pollution, high carbon emissions, and deforestation by emphasizing their effects on ecosystems and human health.",
-  "To instill in participants consistent habits, efforts, and practices that support a healthier environment, integrating simple actions (e.g., powering down lights and devices) into the program's activities.",
-  "To elevate Climate Literacy and Reflection: integrate dedicated educational discussions and reflection periods during each institution's chosen action day, providing students and educators with the opportunity to deepen their understanding of global environmental challenges and sustainable practices.",
-  "Establish a Framework for Continuous Action: use the success and data gathered from the inaugural August campaign month as a foundational blueprint for future, recurring sustainability initiatives across the district.",
-  "Foster Cross-Sector Lasallian Collaboration: dismantle the isolated nature of current student-led environmental efforts by establishing a robust, collaborative network among the participating institutions within the Lasallian East Asia District, embodying the core value of Communion in Mission.",
-];
 
 const EFFECTIVENESS_CRITERIA = [
   "Organization and planning",
@@ -73,15 +65,14 @@ const SECTIONS = [
   { id: "submitter", num: "0", title: "Submitter", subtitle: "Who is filing this report on behalf of the institution?" },
   { id: "overview", num: "I", title: "Project Overview" },
   { id: "participation", num: "II", title: "Participation Data" },
-  { id: "objectives", num: "III", title: "Objectives Assessment", subtitle: "Rate whether each district-level objective was achieved through this activity." },
-  { id: "impact", num: "IV", title: "Environmental Impact Evaluation", subtitle: "Sub-sections appear based on your selections in Section I. Fill only indicators relevant to your activity." },
-  { id: "effectiveness", num: "V", title: "Effectiveness of Implementation", subtitle: "Rate each criterion from 1 (Poor) to 5 (Excellent)." },
-  { id: "climate", num: "VI", title: "Climate Literacy and Reflection" },
-  { id: "feedback", num: "VII", title: "Participant Feedback" },
-  { id: "digital", num: "VIII", title: "Digital Advocacy Impact" },
-  { id: "lasallian", num: "IX", title: "Lasallian Reflection" },
-  { id: "lessons", num: "X", title: "Lessons Learned & Recommendations", subtitle: "Honest reflections are more valuable than polished ones." },
-  { id: "documentation", num: "XI", title: "Documentation", subtitle: "Optional. Paste links to photos, event pages, or supporting docs." },
+  { id: "impact", num: "III", title: "Environmental Impact Evaluation", subtitle: "Sub-sections appear based on your selections in Section I. Fill only indicators relevant to your activity." },
+  { id: "effectiveness", num: "IV", title: "Effectiveness of Implementation", subtitle: "Rate each criterion from 1 (Poor) to 5 (Excellent)." },
+  { id: "climate", num: "V", title: "Climate Literacy and Reflection" },
+  { id: "feedback", num: "VI", title: "Participant Feedback" },
+  { id: "digital", num: "VII", title: "Digital Advocacy Impact" },
+  { id: "lasallian", num: "VIII", title: "Lasallian Reflection" },
+  { id: "lessons", num: "IX", title: "Lessons Learned & Recommendations", subtitle: "Honest reflections are more valuable than polished ones." },
+  { id: "documentation", num: "X", title: "Documentation", subtitle: "Optional. Paste links to photos, event pages, or supporting docs." },
 ] as const;
 
 type SectionId = (typeof SECTIONS)[number]["id"];
@@ -108,7 +99,6 @@ const ENCOURAGEMENTS = [
 // STATE SHAPE — mirrors the email payload one-to-one
 // ============================================================================
 
-type Achieved = "" | "Yes" | "Partially" | "No";
 type YesNo = "" | "Yes" | "No";
 type Continuing = "" | "Yes" | "NotYet" | "No";
 
@@ -135,7 +125,6 @@ type Report = {
     schoolPopulation: string;
     rate: string;
   };
-  objectives: { text: string; achieved: Achieved; evidence: string }[];
   impact: {
     energy: { baselineKwh: string; postKwh: string; kwhReduced: string; costSavings: string; unitsParticipating: string };
     water: { baselineWater: string; postWater: string; litersSaved: string; costSavings: string; unitsParticipating: string };
@@ -204,7 +193,6 @@ const INITIAL: Report = {
     sdgGoals: boolMap(SDG_GOALS),
   },
   participation: { students: "", faculty: "", staffAdmin: "", community: "", total: "", schoolPopulation: "", rate: "" },
-  objectives: OBJECTIVES.map((text) => ({ text, achieved: "", evidence: "" })),
   impact: {
     energy: { baselineKwh: "", postKwh: "", kwhReduced: "", costSavings: "", unitsParticipating: "" },
     water: { baselineWater: "", postWater: "", litersSaved: "", costSavings: "", unitsParticipating: "" },
@@ -568,11 +556,6 @@ function ImpactPanel({ title, children }: { title: string; children: React.React
   );
 }
 
-const ACHIEVED_OPTIONS = [
-  { key: "Yes", label: "Yes" },
-  { key: "Partially", label: "Partially" },
-  { key: "No", label: "No" },
-];
 
 const YESNO_OPTIONS = [
   { key: "Yes", label: "Yes" },
@@ -597,6 +580,7 @@ export default function ReportForm() {
   const [errorMsg, setErrorMsg] = useState("");
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
+  const [consented, setConsented] = useState(false);
 
   const set: SetFn = (path, value) => dispatch({ type: "SET", path, value });
   const totalSteps = SECTIONS.length;
@@ -648,10 +632,10 @@ export default function ReportForm() {
           <div className="bg-white rounded-2xl shadow-sm p-12 text-center">
             <div className="text-5xl mb-4">✅</div>
             <h3 className="text-2xl font-bold mb-3" style={{ color: "#1a5c2a" }}>
-              Impact Report Submitted!
+              Report Submitted!
             </h3>
             <p className="text-gray-500 mb-6 max-w-md mx-auto">
-              Thank you for sharing your institution&apos;s #LEADforEarth impact. The district
+              Thank you for sharing your institution&apos;s #LEADforEarth report. The district
               committee will be in touch.
             </p>
             <button
@@ -677,46 +661,90 @@ export default function ReportForm() {
         {/* Header */}
         <div className="text-center mb-10">
           <p className="text-sm font-semibold uppercase tracking-widest mb-3" style={{ color: "#2d8c3e" }}>
-            #LEADforEarth Impact Template
+            #LEADforEarth Report
           </p>
           <h2 className="text-3xl sm:text-4xl font-extrabold mb-3" style={{ color: "#1a5c2a" }}>
-            Submit Your Impact Report
+            Submit Your Report
           </h2>
-          <p className="text-gray-600 leading-relaxed max-w-xl mx-auto text-sm sm:text-base">
+          <p className="text-gray-600 leading-relaxed max-w-xl mx-auto text-sm sm:text-base mb-5">
             Share your institution&apos;s environmental initiative: activities, data,
-            reflections, and lessons. Complete only the impact indicators relevant to
+            reflections, and lessons. Complete only the indicators relevant to
             your activity.
           </p>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border text-sm"
+            style={{ borderColor: "#c8e6c9", backgroundColor: "#f0faf1", color: "#2d7a3e" }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            <span>Estimated time: <strong>20 – 35 minutes</strong></span>
+          </div>
         </div>
 
-        {/* Step indicator — numbered dots, click to jump to any step */}
-        <div className="flex gap-2 overflow-x-auto pb-3 mb-6 justify-start sm:justify-center scrollbar-thin">
+        {/* Step indicator — full titles, split connector lines, status icons */}
+        <div className="flex overflow-x-auto pb-4 mb-6">
           {SECTIONS.map((s, i) => {
             const state =
               currentStep === i ? "current" : currentStep > i ? "done" : "todo";
+            const isFirst = i === 0;
+            const isLast  = i === SECTIONS.length - 1;
+            const leftColor  = currentStep >= i ? "#1a5c2a" : "#e5e7eb";
+            const rightColor = currentStep >  i ? "#1a5c2a" : "#e5e7eb";
+
             return (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => goTo(i)}
-                title={s.title}
-                aria-label={`Go to step ${i + 1}: ${s.title}`}
-                aria-current={state === "current" ? "step" : undefined}
-                className={`shrink-0 w-10 h-10 rounded-full text-xs font-bold transition-colors ${
-                  state === "current"
-                    ? "text-white ring-2 ring-offset-2"
-                    : state === "done"
-                    ? "bg-green-100 text-green-800 hover:bg-green-200"
-                    : "bg-gray-100 text-gray-400 hover:bg-gray-200"
-                }`}
-                style={
-                  state === "current"
-                    ? { backgroundColor: "#1a5c2a", ["--tw-ring-color" as string]: "#c8e6c9" }
-                    : undefined
-                }
-              >
-                {s.num}
-              </button>
+              <div key={s.id} className="flex flex-col items-center flex-1 min-w-[68px]">
+                {/* Title */}
+                <div className="h-12 flex items-end justify-center w-full pb-2 px-0.5">
+                  <span
+                    className="text-[8.5px] text-center leading-tight line-clamp-3"
+                    style={{
+                      color: state === "todo" ? "#9ca3af" : "#1a5c2a",
+                      fontWeight: state === "current" ? 700 : 500,
+                    }}
+                  >
+                    {s.title}
+                  </span>
+                </div>
+
+                {/* Connector line + circle */}
+                <div className="flex items-center w-full">
+                  {/* Left half-line */}
+                  <div
+                    className="flex-1 h-0.5"
+                    style={{ backgroundColor: isFirst ? "transparent" : leftColor }}
+                  />
+
+                  {/* Circle */}
+                  <button
+                    type="button"
+                    onClick={() => goTo(i)}
+                    title={s.title}
+                    aria-label={`Go to step ${i + 1}: ${s.title}`}
+                    aria-current={state === "current" ? "step" : undefined}
+                    className={`shrink-0 w-9 h-9 rounded-full text-xs font-bold transition-colors ${
+                      state === "current"
+                        ? "text-white ring-2 ring-offset-2"
+                        : state === "done"
+                        ? "bg-green-100 text-green-700 hover:bg-green-200"
+                        : "bg-gray-100 text-gray-400 hover:bg-gray-200"
+                    }`}
+                    style={
+                      state === "current"
+                        ? { backgroundColor: "#1a5c2a", ["--tw-ring-color" as string]: "#c8e6c9" }
+                        : undefined
+                    }
+                  >
+                    {state === "done" ? "✓" : state === "todo" ? "*" : s.num}
+                  </button>
+
+                  {/* Right half-line */}
+                  <div
+                    className="flex-1 h-0.5"
+                    style={{ backgroundColor: isLast ? "transparent" : rightColor }}
+                  />
+                </div>
+              </div>
             );
           })}
         </div>
@@ -799,35 +827,7 @@ export default function ReportForm() {
             <Field label="Participation Rate (%)" path="participation.rate" type="number" value={form.participation.rate} onChange={set} placeholder="e.g., 42" />
           </SectionCard>
 
-          {/* -------- III. Objectives Assessment -------- */}
-          <SectionCard id="objectives">
-            {form.objectives.map((obj, i) => (
-              <div key={i} className="border border-gray-100 rounded-xl p-4 bg-gray-50">
-                <p className="text-sm text-gray-700 leading-relaxed mb-3">
-                  <span className="font-semibold mr-1">{i + 1}.</span>
-                  {obj.text}
-                </p>
-                <RadioGroup
-                  label="Achieved?"
-                  options={ACHIEVED_OPTIONS}
-                  path={`objectives.${i}.achieved`}
-                  value={obj.achieved}
-                  onChange={set}
-                />
-                <div className="mt-3">
-                  <Textarea
-                    label="Evidence / Explanation"
-                    path={`objectives.${i}.evidence`}
-                    value={obj.evidence}
-                    onChange={set}
-                    rows={2}
-                  />
-                </div>
-              </div>
-            ))}
-          </SectionCard>
-
-          {/* -------- IV. Environmental Impact Evaluation -------- */}
+          {/* -------- III. Environmental Impact Evaluation -------- */}
           <SectionCard id="impact">
             {!Object.values(form.overview.initiativeTypes).some(Boolean) && (
               <div className="text-sm text-gray-500 bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3">
@@ -1176,14 +1176,41 @@ export default function ReportForm() {
                 Next →
               </button>
             ) : (
-              <button
-                type="submit"
-                disabled={status === "loading"}
-                className="px-6 py-3 rounded-xl font-semibold text-sm text-white transition-opacity hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
-                style={{ backgroundColor: "#1a5c2a" }}
-              >
-                {status === "loading" ? "Submitting…" : "Submit Impact Report"}
-              </button>
+              <div className="flex flex-col gap-4 w-full">
+                <div className="rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-sm text-gray-700 leading-relaxed">
+                  <p className="font-semibold mb-2" style={{ color: "#1a5c2a" }}>Before you submit</p>
+                  <p>
+                    The information provided in this report will be used solely for the purposes of the{" "}
+                    <strong>#LEADforEarth</strong> initiative of the Lasallian East Asia District. It may
+                    be used to track progress, compile district-wide results, and support future
+                    environmental campaigns.
+                  </p>
+                </div>
+
+                <label className="flex items-start gap-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={consented}
+                    onChange={(e) => setConsented(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 rounded accent-green-700 shrink-0"
+                  />
+                  <span className="text-sm text-gray-600 leading-relaxed">
+                    I confirm that all information submitted in this report is accurate and true to the best
+                    of my knowledge. I consent on behalf of my institution to the LEADForEarth district
+                    committee contacting us for follow-up questions or to request additional information
+                    related to this report.
+                  </span>
+                </label>
+
+                <button
+                  type="submit"
+                  disabled={status === "loading" || !consented}
+                  className="px-6 py-3 rounded-xl font-semibold text-sm text-white transition-opacity hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+                  style={{ backgroundColor: "#1a5c2a" }}
+                >
+                  {status === "loading" ? "Submitting…" : "Submit Report"}
+                </button>
+              </div>
             )}
           </div>
         </form>

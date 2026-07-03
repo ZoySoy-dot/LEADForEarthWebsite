@@ -23,10 +23,15 @@ html {
   scroll-behavior: smooth;
 }
 
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
 body {
   background: var(--white);
   color: var(--charcoal);
-  font-family: 'Inter', Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
 }
 
 /* Wizard step slide-in — used by ReportForm. */

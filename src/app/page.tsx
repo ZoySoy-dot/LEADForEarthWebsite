@@ -1,11 +1,13 @@
+import dynamic from "next/dynamic";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import AboutUs from "@/components/AboutUs";
-import WhatWeDo from "@/components/WhatWeDo";
-import Foundations from "@/components/Foundations";
-import Contact from "@/components/Contact";
-import Footer from "@/components/Footer";
 import SectionDivider from "@/components/SectionDivider";
+
+const AboutUs     = dynamic(() => import("@/components/AboutUs"));
+const WhatWeDo    = dynamic(() => import("@/components/WhatWeDo"));
+const Foundations = dynamic(() => import("@/components/Foundations"));
+const Contact     = dynamic(() => import("@/components/Contact"));
+const Footer      = dynamic(() => import("@/components/Footer"));
 
 export default function Home() {
   return (
