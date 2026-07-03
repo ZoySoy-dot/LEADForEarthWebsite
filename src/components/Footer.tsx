@@ -71,7 +71,7 @@ export default function Footer() {
         {/* Divider */}
         <div className="border-t border-green-900 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-green-500 text-sm">
-            &copy; {new Date().getFullYear()} LEADForEarth. All rights reserved.
+            &copy; {new Date().getFullYear()} LEADForEarth.
           </p>
           <div className="flex items-center gap-4">
             <Image
