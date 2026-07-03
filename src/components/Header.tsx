@@ -74,7 +74,7 @@ export default function Header() {
       <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
         <a href="#home" className="flex items-center">
           <Image
-            src="/logos/leadforearth-logo.png"
+            src="/logos/logo-icon.png"
             alt="LEADForEarth Logo"
             width={48}
             height={48}

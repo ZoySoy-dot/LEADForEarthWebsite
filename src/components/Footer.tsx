@@ -25,7 +25,7 @@ export default function Footer() {
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-white rounded-xl p-1.5">
                 <Image
-                  src="/logos/leadforearth-logo.png"
+                  src="/logos/logo-icon.png"
                   alt="LEADForEarth Logo"
                   width={36}
                   height={36}
@@ -73,9 +73,22 @@ export default function Footer() {
           <p className="text-green-500 text-sm">
             &copy; {new Date().getFullYear()} LEADForEarth. All rights reserved.
           </p>
-          <p className="text-green-600 text-xs text-center md:text-right">
-            A program of the Lasallian East Asia District
-          </p>
+          <div className="flex items-center gap-4">
+            <Image
+              src="/logos/La-Star-Salle_White.png"
+              alt="Lasallian East Asia District"
+              width={110}
+              height={40}
+              className="object-contain opacity-90"
+            />
+            <Image
+              src="/logos/LEAD%20%40%2015.png"
+              alt="LEAD @ 15"
+              width={52}
+              height={52}
+              className="object-contain"
+            />
+          </div>
         </div>
       </div>
     </footer>

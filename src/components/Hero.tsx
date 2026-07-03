@@ -156,9 +156,9 @@ export default function Hero() {
               className="animate-bounce group-hover:text-white transition-colors duration-300"
               style={{ animationDuration: "1.6s" }}
             >
-              Get Involved
-            </a>
-          </div>
+              <path d="M12 5v14M5 12l7 7 7-7" />
+            </svg>
+          </a>
 
           {/* Presented-by mark — placeholder for official LEAD corporate logo */}
           <div className="mt-10 flex items-center gap-3 justify-center md:justify-start">
