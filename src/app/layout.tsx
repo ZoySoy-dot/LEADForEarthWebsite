@@ -21,21 +21,21 @@ export const metadata: Metadata = {
     siteName: "LEADForEarth",
     images: [
       {
-        url: "/leadforearth-logo.png",
-        width: 400,
-        height: 400,
-        alt: "LEADForEarth Logo",
+        url: "/LEADForEarthBanner.png",
+        width: 1200,
+        height: 630,
+        alt: "LEADForEarth — One District, One Mission for the Earth",
       },
     ],
     type: "website",
     locale: "en_US",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "LEADForEarth — One District, One Mission for the Earth",
     description:
       "A district-wide environmental campaign uniting Lasallian schools across East Asia — each campus choosing its own action, all of us posting under one hashtag: #LEADforEarth.",
-    images: ["/leadforearth-logo.png"],
+    images: ["/LEADForEarthBanner.png"],
   },
 };
 
