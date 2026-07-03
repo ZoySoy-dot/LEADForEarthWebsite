@@ -186,33 +186,34 @@ export default function Hero() {
         </div>
 
         {/* Logo with SDG wheel ring */}
-        <div className="flex-shrink-0 relative w-[320px] h-[320px] md:w-[380px] md:h-[380px] flex items-center justify-center">
+        <div className="flex-shrink-0 relative w-[72vw] h-[72vw] max-w-[260px] max-h-[260px] sm:max-w-[320px] sm:max-h-[320px] md:w-[380px] md:h-[380px] md:max-w-none md:max-h-none flex items-center justify-center">
           {/* SDG wheel fills the container as the ring */}
           <Image
             src="/sdg/sdg-wheel.png"
             alt="UN Sustainable Development Goals"
             fill
-            sizes="(min-width: 768px) 380px, 320px"
+            sizes="(min-width: 768px) 380px, (min-width: 640px) 320px, 72vw"
             className="object-contain"
             style={{ filter: "drop-shadow(0 0 24px rgba(40,130,80,0.35)) drop-shadow(0 0 12px rgba(20,80,160,0.2))" }}
           />
           {/* White logo circle centered inside the wheel */}
           <div
-            className="relative z-10 w-[190px] h-[190px] md:w-[228px] md:h-[228px] rounded-full flex items-center justify-center"
+            className="relative z-10 w-[43vw] h-[43vw] max-w-[155px] max-h-[155px] sm:max-w-[190px] sm:max-h-[190px] md:w-[228px] md:h-[228px] md:max-w-none md:max-h-none rounded-full flex items-center justify-center"
             style={{
               background: "white",
               boxShadow: "0 8px 40px rgba(0,0,0,0.5)",
             }}
           >
-            <Image
-              src="/logos/leadforearth-logo.png"
-              alt="LEADForEarth"
-              width={175}
-              height={175}
-              sizes="(min-width: 768px) 175px, 145px"
-              className="object-contain"
-              priority
-            />
+            <div className="relative w-[34vw] h-[34vw] max-w-[120px] max-h-[120px] sm:max-w-[148px] sm:max-h-[148px] md:w-[175px] md:h-[175px] md:max-w-none md:max-h-none">
+              <Image
+                src="/logos/leadforearth-logo.png"
+                alt="LEADForEarth"
+                fill
+                sizes="(min-width: 768px) 175px, (min-width: 640px) 148px, 34vw"
+                className="object-contain"
+                priority
+              />
+            </div>
           </div>
         </div>
       </div>

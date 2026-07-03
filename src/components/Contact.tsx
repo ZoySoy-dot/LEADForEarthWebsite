@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import SchoolAutocomplete from "@/components/SchoolAutocomplete";
+import { LEAD_SCHOOLS } from "@/data/schools";
 
 type FormState = "idle" | "loading" | "success" | "error";
 type JoinType = "" | "person" | "institution";
@@ -187,11 +189,22 @@ export default function Contact() {
                 {/* Institution fields */}
                 {isJoin && joinType === "institution" && (
                   <>
-                    <div>
-                      <label className={labelCls}>Institution Name</label>
-                      <input type="text" name="institutionName" value={form.institutionName} onChange={handleChange}
-                        placeholder="De La Salle University" required className={inputCls} />
-                    </div>
+                    <SchoolAutocomplete
+                      label="Institution Name"
+                      path="institutionName"
+                      value={form.institutionName}
+                      onChange={(_, name) => {
+                        const school = LEAD_SCHOOLS.find((s) => s.name === name);
+                        setForm((prev) => ({
+                          ...prev,
+                          institutionName: name,
+                          ...(school ? { country: school.country } : {}),
+                        }));
+                      }}
+                      required
+                      placeholder="De La Salle University"
+                      hint="Autocomplete from Lasallian East Asia District schools. Type freely if yours isn't listed."
+                    />
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className={labelCls}>Country / Region</label>
