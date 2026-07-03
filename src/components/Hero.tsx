@@ -161,7 +161,7 @@ export default function Hero() {
           </a>
 
           {/* Presented-by mark — placeholder for official LEAD corporate logo */}
-          <div className="mt-10 flex items-center gap-3 justify-center md:justify-start">
+          <div className="mt-10 flex items-center gap-4 justify-center md:justify-start">
             <span
               className="text-[10px] uppercase tracking-[0.2em]"
               style={{ color: "rgba(200,230,210,0.55)" }}
@@ -174,6 +174,13 @@ export default function Hero() {
               width={90}
               height={32}
               className="object-contain opacity-80"
+            />
+            <Image
+              src="/logos/LEAD%20%40%2015.png"
+              alt="LEAD @ 15"
+              width={42}
+              height={42}
+              className="object-contain opacity-90"
             />
           </div>
         </div>
