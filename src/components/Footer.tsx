@@ -25,7 +25,7 @@ export default function Footer() {
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-white rounded-xl p-1.5">
                 <Image
-                  src="/leadforearth-logo.png"
+                  src="/logos/leadforearth-logo.png"
                   alt="LEADForEarth Logo"
                   width={44}
                   height={44}
@@ -69,13 +69,36 @@ export default function Footer() {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-green-900 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-green-500 text-sm">
-            &copy; {new Date().getFullYear()} LEADForEarth. All rights reserved.
-          </p>
-          <p className="text-green-600 text-xs text-center md:text-right">
-            A program of the Lasallian East Asia District
-          </p>
+        <div className="border-t border-green-900 pt-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          {/* Placeholder for LEAD 15th Anniversary mark — swap for exported PNG/SVG when supplied */}
+          <span
+            className="flex flex-col items-center justify-center rounded-full text-white text-[10px] font-bold leading-none shrink-0"
+            style={{
+              width: 56,
+              height: 56,
+              background: "linear-gradient(135deg, #1a5c2a 0%, #2d8c3e 100%)",
+              letterSpacing: "0.05em",
+            }}
+            aria-label="LEAD 15th Anniversary"
+            title="LEAD 15th Anniversary"
+          >
+            <span className="text-[20px] leading-none">15</span>
+            <span className="mt-0.5 opacity-80">YEARS</span>
+          </span>
+
+          <div className="flex items-center gap-3 text-center md:text-right">
+            <span className="text-green-500 text-xs uppercase tracking-widest">
+              A program of
+            </span>
+            {/* Placeholder: swap for official LEAD corporate logo when supplied */}
+            <Image
+              src="/logos/La-Star-Salle_White.png"
+              alt="Lasallian East Asia District"
+              width={110}
+              height={40}
+              className="object-contain opacity-90"
+            />
+          </div>
         </div>
       </div>
     </footer>

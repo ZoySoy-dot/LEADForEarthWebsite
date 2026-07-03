@@ -72,7 +72,7 @@ export default function Foundations() {
             {/* SDG Wheel + UN Emblem */}
             <div className="flex items-center gap-6 mb-10 pb-10 border-b border-gray-100">
               <Image
-                src="/sdg-wheel.png"
+                src="/sdg/sdg-wheel.png"
                 alt="UN Sustainable Development Goals Wheel"
                 width={90}
                 height={90}
@@ -80,7 +80,7 @@ export default function Foundations() {
               />
               <div>
                 <Image
-                  src="/sdg-un-emblem.png"
+                  src="/sdg/sdg-un-emblem.png"
                   alt="UN SDG Emblem"
                   width={200}
                   height={65}
@@ -98,7 +98,7 @@ export default function Foundations() {
               {sdgs.slice(0, 3).map((sdg) => (
                 <div key={sdg.number} className="group">
                   <Image
-                    src={`/sdg-${String(sdg.number).padStart(2, "0")}.png`}
+                    src={`/sdg/sdg-${String(sdg.number).padStart(2, "0")}.png`}
                     alt={`SDG ${sdg.number}: ${sdg.title}`}
                     width={140}
                     height={140}
@@ -111,7 +111,7 @@ export default function Foundations() {
               {sdgs.slice(3).map((sdg) => (
                 <div key={sdg.number} className="group">
                   <Image
-                    src={`/sdg-${String(sdg.number).padStart(2, "0")}.png`}
+                    src={`/sdg/sdg-${String(sdg.number).padStart(2, "0")}.png`}
                     alt={`SDG ${sdg.number}: ${sdg.title}`}
                     width={140}
                     height={140}

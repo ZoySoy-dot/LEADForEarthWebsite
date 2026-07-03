@@ -147,13 +147,30 @@ export default function Hero() {
               Get Involved
             </a>
           </div>
+
+          {/* Presented-by mark — placeholder for official LEAD corporate logo */}
+          <div className="mt-10 flex items-center gap-3 justify-center md:justify-start">
+            <span
+              className="text-[10px] uppercase tracking-[0.2em]"
+              style={{ color: "rgba(200,230,210,0.55)" }}
+            >
+              Presented by
+            </span>
+            <Image
+              src="/logos/La-Star-Salle_White.png"
+              alt="Lasallian East Asia District"
+              width={90}
+              height={32}
+              className="object-contain opacity-80"
+            />
+          </div>
         </div>
 
         {/* Logo with SDG wheel ring */}
         <div className="flex-shrink-0 relative w-[320px] h-[320px] md:w-[380px] md:h-[380px] flex items-center justify-center">
           {/* SDG wheel fills the container as the ring */}
           <Image
-            src="/sdg-wheel.png"
+            src="/sdg/sdg-wheel.png"
             alt="UN Sustainable Development Goals"
             fill
             sizes="(min-width: 768px) 380px, 320px"
@@ -169,7 +186,7 @@ export default function Hero() {
             }}
           >
             <Image
-              src="/leadforearth-logo.png"
+              src="/logos/leadforearth-logo.png"
               alt="LEADForEarth"
               width={175}
               height={175}
