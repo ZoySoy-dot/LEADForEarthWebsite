@@ -11,6 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://leadforearth.org"),
   title: "LEADForEarth",
   description:
     "A district-wide environmental campaign uniting Lasallian schools across East Asia — each campus choosing its own action, all of us posting under one hashtag: #LEADforEarth.",
