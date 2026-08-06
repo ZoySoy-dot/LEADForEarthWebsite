@@ -1,19 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const sections = [
-  { label: "Home", href: "#home" },
-  { label: "About", href: "#about" },
-  { label: "How It Works", href: "#what-we-do" },
-  { label: "Our Foundations", href: "#foundations" },
-  { label: "Contact", href: "#contact" },
+  { label: "Home", short: "Home", href: "#home" },
+  { label: "About", short: "About", href: "#about" },
+  { label: "How It Works", short: "Steps", href: "#what-we-do" },
+  { label: "Our Foundations", short: "Values", href: "#foundations" },
+  { label: "Contact", short: "Contact", href: "#contact" },
 ];
 
 export default function SectionNav() {
   const [visible, setVisible] = useState(false);
   const [scrolledHeader, setScrolledHeader] = useState(false);
   const [active, setActive] = useState(sections[0].href.slice(1));
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const activeButtonRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
 
   useEffect(() => {
     const onScroll = () => {
@@ -21,7 +23,7 @@ export default function SectionNav() {
       // Sync with main Header's compressed state (matches Header.tsx threshold)
       setScrolledHeader(y > 12);
 
-      // SectionNav reveals once user has scrolled past ~2/3 of the viewport (past Hero).
+      // SectionNav reveals once user has scrolled past ~60% of the viewport (past Hero).
       const heroThreshold = window.innerHeight * 0.6;
       setVisible(y > heroThreshold);
 
@@ -49,6 +51,19 @@ export default function SectionNav() {
     };
   }, []);
 
+  // Keep the active pill in view when the pill row is horizontally scrollable (mobile).
+  useEffect(() => {
+    const btn = activeButtonRefs.current[active];
+    const scroller = scrollerRef.current;
+    if (!btn || !scroller) return;
+    const btnRect = btn.getBoundingClientRect();
+    const scrollerRect = scroller.getBoundingClientRect();
+    if (btnRect.left < scrollerRect.left || btnRect.right > scrollerRect.right) {
+      const offset = btn.offsetLeft - (scroller.clientWidth - btn.clientWidth) / 2;
+      scroller.scrollTo({ left: Math.max(0, offset), behavior: "smooth" });
+    }
+  }, [active]);
+
   return (
     <div
       className="fixed left-0 right-0 z-40 transition-all duration-300 pointer-events-none"
@@ -60,44 +75,53 @@ export default function SectionNav() {
       aria-hidden={!visible}
     >
       <div
-        className="mx-auto max-w-6xl px-5 lg:px-8"
+        className="mx-auto max-w-6xl px-3 sm:px-5 lg:px-8 mt-3"
         style={{ pointerEvents: visible ? "auto" : "none" }}
       >
-        <nav
-          className="mt-3 rounded-full flex items-center justify-center gap-1 px-2 py-1.5 mx-auto w-fit"
+        <div
+          ref={scrollerRef}
+          className="lfe-hide-scrollbar overflow-x-auto rounded-full mx-auto"
           style={{
             backgroundColor: "rgba(255,255,255,0.85)",
             backdropFilter: "saturate(150%) blur(20px)",
             WebkitBackdropFilter: "saturate(150%) blur(20px)",
             boxShadow:
               "0 1px 0 rgba(0,0,0,0.04), 0 8px 24px -8px rgba(0,0,0,0.12)",
+            width: "fit-content",
+            maxWidth: "100%",
           }}
-          aria-label="On this page"
         >
-          {sections.map((s) => {
-            const isActive = active === s.href.slice(1);
-            return (
-              <a
-                key={s.href}
-                href={s.href}
-                aria-current={isActive ? "location" : undefined}
-                className="px-3.5 py-1.5 rounded-full text-[12.5px] font-medium transition-colors duration-200 whitespace-nowrap"
-                style={{
-                  color: isActive ? "#ffffff" : "#3a3a3a",
-                  backgroundColor: isActive ? "#1a5c2a" : "transparent",
-                }}
-                onMouseEnter={(e) => {
-                  if (!isActive) e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.05)";
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive) e.currentTarget.style.backgroundColor = "transparent";
-                }}
-              >
-                {s.label}
-              </a>
-            );
-          })}
-        </nav>
+          <nav
+            className="flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-1.5"
+            aria-label="On this page"
+          >
+            {sections.map((s) => {
+              const isActive = active === s.href.slice(1);
+              return (
+                <a
+                  key={s.href}
+                  ref={(el) => { activeButtonRefs.current[s.href.slice(1)] = el; }}
+                  href={s.href}
+                  aria-current={isActive ? "location" : undefined}
+                  className="px-3 sm:px-3.5 py-1.5 rounded-full text-[12px] sm:text-[12.5px] font-medium transition-colors duration-200 whitespace-nowrap shrink-0"
+                  style={{
+                    color: isActive ? "#ffffff" : "#3a3a3a",
+                    backgroundColor: isActive ? "#1a5c2a" : "transparent",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.05)";
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) e.currentTarget.style.backgroundColor = "transparent";
+                  }}
+                >
+                  <span className="sm:hidden">{s.short}</span>
+                  <span className="hidden sm:inline">{s.label}</span>
+                </a>
+              );
+            })}
+          </nav>
+        </div>
       </div>
     </div>
   );

@@ -52,6 +52,16 @@ body {
 .lfe-slide-right { animation: lfe-slide-in-right 260ms ease-out; }
 .lfe-slide-left { animation: lfe-slide-in-left 260ms ease-out; }
 
+/* Hide horizontal scrollbar visually while keeping scroll functional.
+   Used by the mobile SectionNav pill row. */
+.lfe-hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+.lfe-hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, newer Edge */
+}
+
 /* Skip-to-content link: hidden until keyboard-focused, then floats top-left.
    Uses fixed positioning + high z-index so it sits above the frosted header. */
 .skip-link {
