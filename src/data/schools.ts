@@ -1,5 +1,5 @@
 // Lasallian East Asia District member schools.
-// Edit this grouped map to add/remove/rename schools — LEAD_SCHOOLS auto-derives.
+// Edit this grouped map to add/remove/rename schools. LEAD_SCHOOLS auto-derives.
 
 export const LEAD_SCHOOLS_BY_COUNTRY: Record<string, string[]> = {
   Philippines: [

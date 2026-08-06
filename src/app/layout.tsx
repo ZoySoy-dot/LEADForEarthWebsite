@@ -14,18 +14,18 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://leadforearth.org"),
   title: "LEADForEarth",
   description:
-    "A district-wide environmental campaign uniting Lasallian schools across East Asia — each campus choosing its own action, all of us posting under one hashtag: #LEADforEarth.",
+    "A district-wide environmental campaign uniting Lasallian schools across East Asia. Each campus chooses its own action, and all of us post under one hashtag: #LEADforEarth.",
   openGraph: {
-    title: "LEADForEarth — One District, One Mission for the Earth",
+    title: "LEADForEarth: One District, One Mission for the Earth",
     description:
-      "A district-wide environmental campaign uniting Lasallian schools across East Asia — each campus choosing its own action, all of us posting under one hashtag: #LEADforEarth.",
+      "A district-wide environmental campaign uniting Lasallian schools across East Asia. Each campus chooses its own action, and all of us post under one hashtag: #LEADforEarth.",
     siteName: "LEADForEarth",
     images: [
       {
         url: "/LEADForEarthBanner.png",
         width: 1200,
         height: 630,
-        alt: "LEADForEarth — One District, One Mission for the Earth",
+        alt: "LEADForEarth: One District, One Mission for the Earth",
       },
     ],
     type: "website",
@@ -33,9 +33,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "LEADForEarth — One District, One Mission for the Earth",
+    title: "LEADForEarth: One District, One Mission for the Earth",
     description:
-      "A district-wide environmental campaign uniting Lasallian schools across East Asia — each campus choosing its own action, all of us posting under one hashtag: #LEADforEarth.",
+      "A district-wide environmental campaign uniting Lasallian schools across East Asia. Each campus chooses its own action, and all of us post under one hashtag: #LEADforEarth.",
     images: ["/LEADForEarthBanner.png"],
   },
 };

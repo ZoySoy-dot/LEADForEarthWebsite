@@ -1,11 +1,11 @@
 "use client";
 
-import { createContext, useContext, useReducer, useState } from "react";
+import { createContext, useContext, useEffect, useReducer, useRef, useState } from "react";
 import SchoolAutocomplete from "@/components/SchoolAutocomplete";
 import { SDG_GOALS } from "@/data/sdgs";
 
 // ============================================================================
-// EDITABLE CONTENT — edit question wording, add/remove options here
+// EDITABLE CONTENT: edit question wording, add/remove options here
 // ============================================================================
 
 const INITIATIVE_TYPES = [
@@ -62,41 +62,26 @@ const SOCIAL_PLATFORMS = [
 // Sidebar TOC + section metadata. Reorder here to reorder the sidebar; the form
 // itself still follows JSX order below, so move the matching <SectionCard> too.
 const SECTIONS = [
-  { id: "submitter", num: "0", title: "Submitter", subtitle: "Who is filing this report on behalf of the institution?" },
+  { id: "submitter", num: "0", title: "About You", subtitle: "Who is filing this report on behalf of the institution?" },
   { id: "overview", num: "I", title: "Project Overview" },
   { id: "participation", num: "II", title: "Participation Data" },
-  { id: "impact", num: "III", title: "Environmental Impact Evaluation", subtitle: "Sub-sections appear based on your selections in Section I. Fill only indicators relevant to your activity." },
-  { id: "effectiveness", num: "IV", title: "Effectiveness of Implementation", subtitle: "Rate each criterion from 1 (Poor) to 5 (Excellent)." },
-  { id: "climate", num: "V", title: "Climate Literacy and Reflection" },
+  { id: "impact", num: "III", title: "Environmental Impact", subtitle: "Sub-sections appear based on your selections in Section I. Fill only indicators relevant to your activity." },
+  { id: "effectiveness", num: "IV", title: "Effectiveness", subtitle: "Rate each criterion from 1 (Poor) to 5 (Excellent)." },
+  { id: "climate", num: "V", title: "Climate Literacy" },
   { id: "feedback", num: "VI", title: "Participant Feedback" },
-  { id: "digital", num: "VII", title: "Digital Advocacy Impact" },
+  { id: "digital", num: "VII", title: "Digital Advocacy" },
   { id: "lasallian", num: "VIII", title: "Lasallian Reflection" },
-  { id: "lessons", num: "IX", title: "Lessons Learned & Recommendations", subtitle: "Honest reflections are more valuable than polished ones." },
+  { id: "lessons", num: "IX", title: "Lessons Learned", subtitle: "Honest reflections are more valuable than polished ones." },
   { id: "documentation", num: "X", title: "Documentation", subtitle: "Optional. Paste links to photos, event pages, or supporting docs." },
 ] as const;
 
 type SectionId = (typeof SECTIONS)[number]["id"];
 const SECTIONS_MAP = Object.fromEntries(SECTIONS.map((s) => [s.id, s]));
 
-// Words of encouragement — index matches SECTIONS order. Kept short so the
-// floating progress pill stays compact on small screens.
-const ENCOURAGEMENTS = [
-  "Thanks for showing up. Let's begin.",
-  "Every detail makes the impact real.",
-  "Nice pace. Every data point counts.",
-  "You're doing meaningful work.",
-  "The heart of the report. Keep going.",
-  "Halfway signal! You're crushing it!",
-  "Your reflections matter here.",
-  "The voices you're capturing count.",
-  "Amplify the ripple. Almost there.",
-  "Beautiful reflections. Nearly done.",
-  "Honest lessons help everyone.",
-  "Final section. You made it!",
-] as const;
+const DRAFT_STORAGE_KEY = "lfe-report-draft-v1";
 
 // ============================================================================
-// STATE SHAPE — mirrors the email payload one-to-one
+// STATE SHAPE: mirrors the email payload one-to-one
 // ============================================================================
 
 type YesNo = "" | "Yes" | "No";
@@ -219,7 +204,7 @@ const INITIAL: Report = {
   documentationLinks: "",
 };
 
-// Path-based state reducer — `set("overview.schoolName", "Foo")` walks the object.
+// Path-based state reducer. `set("overview.schoolName", "Foo")` walks the object.
 // Adding/removing/renaming a field means editing INITIAL + the field's JSX line; no per-field handler needed.
 type Action = { type: "SET"; path: string; value: unknown } | { type: "RESET" };
 
@@ -235,7 +220,7 @@ function reducer(state: Report, action: Action): Report {
 }
 
 // ============================================================================
-// PRIMITIVE INPUTS — shared styling lives here. Change once, updates everywhere.
+// PRIMITIVE INPUTS: shared styling lives here. Change once, updates everywhere.
 // ============================================================================
 
 const INPUT_CLS =
@@ -321,7 +306,7 @@ function Textarea({
   );
 }
 
-// Tailwind's static scan can't parse dynamic class strings — hardcode the grid classes.
+// Tailwind's static scan can't parse dynamic class strings, so hardcode the grid classes.
 const CHECKBOX_COLS: Record<number, string> = {
   1: "grid-cols-1",
   2: "grid-cols-1 sm:grid-cols-2",
@@ -457,44 +442,49 @@ function RadioGroup({
   );
 }
 
-function ProgressRing({ percent }: { percent: number }) {
-  const size = 64;
-  const stroke = 6;
-  const radius = (size - stroke) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference * (1 - Math.min(Math.max(percent, 0), 100) / 100);
+function RatingScale({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const options = [
+    { v: "1", label: "Poor" },
+    { v: "2", label: "" },
+    { v: "3", label: "OK" },
+    { v: "4", label: "" },
+    { v: "5", label: "Excellent" },
+  ];
   return (
-    <div
-      className="relative shrink-0"
-      style={{ width: size, height: size }}
-      role="progressbar"
-      aria-valuenow={percent}
-      aria-valuemin={0}
-      aria-valuemax={100}
-    >
-      <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="#e8f5e9" strokeWidth={stroke} />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke="#1a5c2a"
-          strokeWidth={stroke}
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          style={{ transition: "stroke-dashoffset 400ms ease-out" }}
-        />
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-sm font-bold" style={{ color: "#1a5c2a" }}>{percent}%</span>
-      </div>
+    <div className="flex items-stretch gap-1.5" role="radiogroup" aria-label="Rating">
+      {options.map((o) => {
+        const active = value === o.v;
+        return (
+          <button
+            key={o.v}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            onClick={() => onChange(o.v)}
+            className="flex-1 min-w-0 rounded-xl py-2.5 text-sm font-semibold transition-all duration-150 hover:-translate-y-px"
+            style={{
+              backgroundColor: active ? "#1a5c2a" : "#f0faf1",
+              color: active ? "#ffffff" : "#1a5c2a",
+              boxShadow: active ? "0 6px 16px -6px rgba(26,92,42,0.4)" : "inset 0 0 0 1px rgba(26,92,42,0.15)",
+            }}
+          >
+            <div className="text-base leading-none">{o.v}</div>
+            {o.label && (
+              <div
+                className="text-[10px] font-medium mt-1 tracking-wider uppercase leading-none"
+                style={{ opacity: active ? 0.9 : 0.7 }}
+              >
+                {o.label}
+              </div>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }
 
-// Wizard context — SectionCard reads currentStep from here to decide if it renders.
+// Wizard context: SectionCard reads currentStep from here to decide if it renders.
 const StepContext = createContext<{
   currentStep: number;
   direction: 1 | -1;
@@ -520,25 +510,27 @@ function SectionCard({
     <section
       id={id}
       data-section-id={id}
-      className={`bg-white rounded-2xl shadow-sm p-6 sm:p-8 ${
+      className={`bg-white rounded-3xl p-6 sm:p-10 ${
         direction === 1 ? "lfe-slide-right" : "lfe-slide-left"
       }`}
+      style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 10px 32px -10px rgba(26,92,42,0.1)" }}
     >
-      <div className="flex items-start gap-4 mb-6 pb-4 border-b border-gray-100">
-        <div
-          className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm"
-          style={{ backgroundColor: "#e8f5e9", color: "#1a5c2a" }}
+      <div className="mb-8">
+        <p
+          className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-2"
+          style={{ color: "#2d8c3e" }}
         >
-          {meta.num}
-        </div>
-        <div className="pt-1">
-          <h3 className="text-xl font-bold" style={{ color: "#1a5c2a" }}>
-            {meta.title}
-          </h3>
-          {"subtitle" in meta && meta.subtitle && (
-            <p className="text-sm text-gray-500 mt-1">{meta.subtitle}</p>
-          )}
-        </div>
+          Section {meta.num} of X
+        </p>
+        <h3
+          className="text-2xl sm:text-3xl font-bold tracking-tight leading-[1.1]"
+          style={{ color: "#0d3d1a" }}
+        >
+          {meta.title}
+        </h3>
+        {"subtitle" in meta && meta.subtitle && (
+          <p className="text-[15px] text-gray-500 mt-3 leading-relaxed max-w-xl">{meta.subtitle}</p>
+        )}
       </div>
       <div className="space-y-5">{children}</div>
     </section>
@@ -581,10 +573,51 @@ export default function ReportForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [consented, setConsented] = useState(false);
+  const [draftState, setDraftState] = useState<"idle" | "saving" | "saved">("idle");
+  const draftLoadedRef = useRef(false);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const set: SetFn = (path, value) => dispatch({ type: "SET", path, value });
   const totalSteps = SECTIONS.length;
   const isLastStep = currentStep === totalSteps - 1;
+
+  // Restore any previously saved draft on first mount.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed?.form) {
+          Object.keys(parsed.form).forEach((k) => {
+            dispatch({ type: "SET", path: k, value: parsed.form[k] });
+          });
+        }
+        if (typeof parsed?.step === "number") setCurrentStep(parsed.step);
+        setDraftState("saved");
+      }
+    } catch {
+      // ignore malformed drafts
+    }
+    draftLoadedRef.current = true;
+  }, []);
+
+  // Debounced autosave to localStorage on any form/step change.
+  useEffect(() => {
+    if (!draftLoadedRef.current) return;
+    setDraftState("saving");
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      try {
+        localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify({ form, step: currentStep }));
+        setDraftState("saved");
+      } catch {
+        // storage may be full or disabled
+      }
+    }, 600);
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    };
+  }, [form, currentStep]);
 
   function goTo(n: number) {
     if (n < 0 || n >= totalSteps) return;
@@ -593,10 +626,10 @@ export default function ReportForm() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function handleNext(e: React.MouseEvent<HTMLButtonElement>) {
+  function handleNext() {
     // Only fields on the visible step are in the DOM, so native form validation
     // naturally scopes to the current step.
-    const nativeForm = e.currentTarget.form;
+    const nativeForm = document.getElementById("lfe-report-form") as HTMLFormElement | null;
     if (nativeForm && !nativeForm.reportValidity()) return;
     goTo(currentStep + 1);
   }
@@ -618,6 +651,10 @@ export default function ReportForm() {
       setStatus("success");
       dispatch({ type: "RESET" });
       setCurrentStep(0);
+      setConsented(false);
+      try {
+        localStorage.removeItem(DRAFT_STORAGE_KEY);
+      } catch { /* ignore */ }
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       setStatus("error");
@@ -627,24 +664,56 @@ export default function ReportForm() {
 
   if (status === "success") {
     return (
-      <section style={{ backgroundColor: "#f7faf7" }} className="py-24 min-h-[60vh]">
-        <div className="max-w-3xl mx-auto px-6">
-          <div className="bg-white rounded-2xl shadow-sm p-12 text-center">
-            <div className="text-5xl mb-4">✅</div>
-            <h3 className="text-2xl font-bold mb-3" style={{ color: "#1a5c2a" }}>
-              Report Submitted!
-            </h3>
-            <p className="text-gray-500 mb-6 max-w-md mx-auto">
-              Thank you for sharing your institution&apos;s #LEADforEarth report. The district
-              committee will be in touch.
-            </p>
-            <button
-              onClick={() => setStatus("idle")}
-              className="px-6 py-2 rounded-xl text-sm font-semibold text-white"
-              style={{ backgroundColor: "#1a5c2a" }}
+      <section style={{ backgroundColor: "#fafbfa" }} className="py-24 min-h-[70vh] flex items-center">
+        <div className="max-w-2xl mx-auto px-6 w-full">
+          <div
+            className="bg-white rounded-3xl p-10 sm:p-14 text-center"
+            style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 20px 60px -20px rgba(26,92,42,0.18)" }}
+          >
+            <div
+              className="w-20 h-20 mx-auto mb-8 rounded-full flex items-center justify-center"
+              style={{ backgroundColor: "#f0faf1", color: "#1a5c2a" }}
             >
-              Submit another report
-            </button>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] mb-3" style={{ color: "#2d8c3e" }}>
+              Report received
+            </p>
+            <h3 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4" style={{ color: "#0d3d1a" }}>
+              Thanks for showing up.
+            </h3>
+            <p className="text-[16px] text-gray-500 mb-10 max-w-md mx-auto leading-relaxed">
+              Your report is now part of the district-wide record. The LEADForEarth committee will reach out if we have follow-up questions.
+            </p>
+
+            <div className="text-left mb-10 grid gap-3 sm:grid-cols-3 max-w-lg mx-auto">
+              <NextStep n="1" label="Confirmation" text="A copy is on its way to your email." />
+              <NextStep n="2" label="Review" text="The committee will review your report." />
+              <NextStep n="3" label="Aggregation" text="It joins the district's annual impact summary." />
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <button
+                onClick={() => setStatus("idle")}
+                className="px-6 py-3 rounded-full text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-px"
+                style={{ backgroundColor: "#1a5c2a", boxShadow: "0 8px 20px -6px rgba(26,92,42,0.45)" }}
+              >
+                Submit another report
+              </button>
+              <a
+                href="/"
+                className="px-6 py-3 rounded-full text-sm font-semibold transition-all duration-200 hover:-translate-y-px"
+                style={{
+                  color: "#1a5c2a",
+                  backgroundColor: "transparent",
+                  boxShadow: "inset 0 0 0 1.5px rgba(26,92,42,0.25)",
+                }}
+              >
+                Back to home
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -656,97 +725,86 @@ export default function ReportForm() {
 
   return (
     <StepContext.Provider value={{ currentStep, direction, goTo }}>
-    <section style={{ backgroundColor: "#f7faf7" }} className="py-12 sm:py-16 pb-32 sm:pb-24">
+    <section style={{ backgroundColor: "#fafbfa" }} className="py-10 sm:py-14 pb-40 sm:pb-32">
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
-        {/* Header */}
-        <div className="text-center mb-10">
-          <p className="text-sm font-semibold uppercase tracking-widest mb-3" style={{ color: "#2d8c3e" }}>
+        {/* Compact header */}
+        <div className="text-center mb-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] mb-3" style={{ color: "#2d8c3e" }}>
             #LEADforEarth Report
           </p>
-          <h2 className="text-3xl sm:text-4xl font-extrabold mb-3" style={{ color: "#1a5c2a" }}>
-            Submit Your Report
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-3" style={{ color: "#0d3d1a" }}>
+            Submit your report
           </h2>
-          <p className="text-gray-600 leading-relaxed max-w-xl mx-auto text-sm sm:text-base mb-5">
-            Share your institution&apos;s environmental initiative: activities, data,
-            reflections, and lessons. Complete only the indicators relevant to
-            your activity.
+          <p className="text-gray-500 leading-relaxed max-w-lg mx-auto text-[15px] font-light">
+            Share your institution&apos;s environmental initiative. Fill only the indicators relevant to your activity, and take breaks — your progress is saved automatically.
           </p>
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border text-sm"
-            style={{ borderColor: "#c8e6c9", backgroundColor: "#f0faf1", color: "#2d7a3e" }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <polyline points="12 6 12 12 16 14" />
-            </svg>
-            <span>Estimated time: <strong>20 – 35 minutes</strong></span>
-          </div>
         </div>
 
-        {/* Step indicator — full titles, split connector lines, status icons */}
-        <div className="flex overflow-x-auto pb-4 mb-6">
-          {SECTIONS.map((s, i) => {
-            const state =
-              currentStep === i ? "current" : currentStep > i ? "done" : "todo";
-            const isFirst = i === 0;
-            const isLast  = i === SECTIONS.length - 1;
-            const leftColor  = currentStep >= i ? "#1a5c2a" : "#e5e7eb";
-            const rightColor = currentStep >  i ? "#1a5c2a" : "#e5e7eb";
+        {/* Compact progress: bar + step counter + draft status */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3 px-1">
+            <p className="text-[13px] font-semibold" style={{ color: "#0d3d1a" }}>
+              Step {currentStep + 1} of {totalSteps}
+              <span className="ml-2 font-normal text-gray-500">· {currentMeta.title}</span>
+            </p>
+            <p className="text-[11px] font-medium flex items-center gap-1.5" style={{ color: draftState === "saving" ? "#9ca3af" : "#2d8c3e" }} aria-live="polite">
+              {draftState === "saving" ? (
+                <>
+                  <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-gray-400" />
+                  Saving…
+                </>
+              ) : draftState === "saved" ? (
+                <>
+                  <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  Draft saved
+                </>
+              ) : null}
+            </p>
+          </div>
 
-            return (
-              <div key={s.id} className="flex flex-col items-center flex-1 min-w-[68px]">
-                {/* Title */}
-                <div className="h-12 flex items-end justify-center w-full pb-2 px-0.5">
-                  <span
-                    className="text-[8.5px] text-center leading-tight line-clamp-3"
-                    style={{
-                      color: state === "todo" ? "#9ca3af" : "#1a5c2a",
-                      fontWeight: state === "current" ? 700 : 500,
-                    }}
-                  >
-                    {s.title}
-                  </span>
-                </div>
+          {/* Progress bar */}
+          <div
+            className="h-1.5 rounded-full overflow-hidden"
+            style={{ backgroundColor: "rgba(26,92,42,0.1)" }}
+            role="progressbar"
+            aria-valuenow={percentComplete}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          >
+            <div
+              className="h-full transition-all duration-500 ease-out rounded-full"
+              style={{
+                width: `${percentComplete}%`,
+                background: "linear-gradient(90deg, #2d8c3e 0%, #1a5c2a 100%)",
+              }}
+            />
+          </div>
 
-                {/* Connector line + circle */}
-                <div className="flex items-center w-full">
-                  {/* Left half-line */}
-                  <div
-                    className="flex-1 h-0.5"
-                    style={{ backgroundColor: isFirst ? "transparent" : leftColor }}
-                  />
-
-                  {/* Circle */}
-                  <button
-                    type="button"
-                    onClick={() => goTo(i)}
-                    title={s.title}
-                    aria-label={`Go to step ${i + 1}: ${s.title}`}
-                    aria-current={state === "current" ? "step" : undefined}
-                    className={`shrink-0 w-9 h-9 rounded-full text-xs font-bold transition-colors ${
-                      state === "current"
-                        ? "text-white ring-2 ring-offset-2"
-                        : state === "done"
-                        ? "bg-green-100 text-green-700 hover:bg-green-200"
-                        : "bg-gray-100 text-gray-400 hover:bg-gray-200"
-                    }`}
-                    style={
-                      state === "current"
-                        ? { backgroundColor: "#1a5c2a", ["--tw-ring-color" as string]: "#c8e6c9" }
-                        : undefined
-                    }
-                  >
-                    {state === "done" ? "✓" : state === "todo" ? "*" : s.num}
-                  </button>
-
-                  {/* Right half-line */}
-                  <div
-                    className="flex-1 h-0.5"
-                    style={{ backgroundColor: isLast ? "transparent" : rightColor }}
-                  />
-                </div>
-              </div>
-            );
-          })}
+          {/* Step dots (jump nav, compact) */}
+          <div className="mt-4 flex items-center justify-center gap-1.5 flex-wrap">
+            {SECTIONS.map((s, i) => {
+              const state = currentStep === i ? "current" : currentStep > i ? "done" : "todo";
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => goTo(i)}
+                  title={`Step ${i + 1}: ${s.title}`}
+                  aria-label={`Go to step ${i + 1}: ${s.title}`}
+                  aria-current={state === "current" ? "step" : undefined}
+                  className="rounded-full transition-all duration-200 hover:scale-110"
+                  style={{
+                    width: state === "current" ? 24 : 8,
+                    height: 8,
+                    backgroundColor: state === "todo" ? "#e5e7eb" : "#1a5c2a",
+                    opacity: state === "done" ? 0.55 : 1,
+                  }}
+                />
+              );
+            })}
+          </div>
         </div>
 
         {status === "error" && (
@@ -755,7 +813,7 @@ export default function ReportForm() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form id="lfe-report-form" onSubmit={handleSubmit}>
           {/* -------- Submitter -------- */}
           <SectionCard id="submitter">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -961,26 +1019,18 @@ export default function ReportForm() {
           {/* -------- V. Effectiveness of Implementation -------- */}
           <SectionCard id="effectiveness">
             {form.effectiveness.map((c, i) => (
-              <div key={i} className="grid grid-cols-1 sm:grid-cols-[2fr_1fr_2fr] gap-3 items-start pb-4 border-b border-gray-100 last:border-0 last:pb-0">
-                <p className="text-sm text-gray-700 pt-3">{c.criteria}</p>
-                <select
+              <div key={i} className="pb-6 border-b border-gray-100 last:border-0 last:pb-0">
+                <p className="text-[15px] font-medium text-gray-800 mb-3">{c.criteria}</p>
+                <RatingScale
                   value={c.rating}
-                  onChange={(e) => set(`effectiveness.${i}.rating`, e.target.value)}
-                  className={INPUT_CLS}
-                >
-                  <option value="">Rating</option>
-                  <option value="1">1 (Poor)</option>
-                  <option value="2">2</option>
-                  <option value="3">3 (Satisfactory)</option>
-                  <option value="4">4</option>
-                  <option value="5">5 (Excellent)</option>
-                </select>
+                  onChange={(v) => set(`effectiveness.${i}.rating`, v)}
+                />
                 <input
                   type="text"
                   value={c.remarks}
                   onChange={(e) => set(`effectiveness.${i}.remarks`, e.target.value)}
-                  placeholder="Remarks"
-                  className={INPUT_CLS}
+                  placeholder="Add a short remark (optional)"
+                  className={`${INPUT_CLS} mt-3`}
                 />
               </div>
             ))}
@@ -1155,88 +1205,134 @@ export default function ReportForm() {
             />
           </SectionCard>
 
-          {/* -------- Wizard nav (Prev / Next / Submit) -------- */}
-          <div className="mt-6 flex items-center justify-between gap-3">
-            <button
-              type="button"
-              onClick={() => goTo(currentStep - 1)}
-              disabled={currentStep === 0}
-              className="px-6 py-3 rounded-xl font-semibold text-sm border border-gray-200 bg-white text-gray-700 transition-opacity hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              ← Previous
-            </button>
-
-            {!isLastStep ? (
-              <button
-                type="button"
-                onClick={handleNext}
-                className="px-6 py-3 rounded-xl font-semibold text-sm text-white transition-opacity hover:opacity-90"
-                style={{ backgroundColor: "#1a5c2a" }}
+          {/* -------- Consent block (only on last step, above sticky nav) -------- */}
+          {isLastStep && (
+            <div className="mt-6 space-y-4">
+              <div
+                className="rounded-2xl px-6 py-5 text-[14px] text-gray-600 leading-relaxed"
+                style={{ backgroundColor: "#f0faf1" }}
               >
-                Next →
-              </button>
-            ) : (
-              <div className="flex flex-col gap-4 w-full">
-                <div className="rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-sm text-gray-700 leading-relaxed">
-                  <p className="font-semibold mb-2" style={{ color: "#1a5c2a" }}>Before you submit</p>
-                  <p>
-                    The information provided in this report will be used solely for the purposes of the{" "}
-                    <strong>#LEADforEarth</strong> initiative of the Lasallian East Asia District. It may
-                    be used to track progress, compile district-wide results, and support future
-                    environmental campaigns.
-                  </p>
-                </div>
-
-                <label className="flex items-start gap-3 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={consented}
-                    onChange={(e) => setConsented(e.target.checked)}
-                    className="mt-0.5 w-4 h-4 rounded accent-green-700 shrink-0"
-                  />
-                  <span className="text-sm text-gray-600 leading-relaxed">
-                    I confirm that all information submitted in this report is accurate and true to the best
-                    of my knowledge. I consent on behalf of my institution to the LEADForEarth district
-                    committee contacting us for follow-up questions or to request additional information
-                    related to this report.
-                  </span>
-                </label>
-
-                <button
-                  type="submit"
-                  disabled={status === "loading" || !consented}
-                  className="px-6 py-3 rounded-xl font-semibold text-sm text-white transition-opacity hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
-                  style={{ backgroundColor: "#1a5c2a" }}
-                >
-                  {status === "loading" ? "Submitting…" : "Submit Report"}
-                </button>
+                <p className="font-semibold mb-1.5" style={{ color: "#1a5c2a" }}>Before you submit</p>
+                <p>
+                  Your report will be used solely for the{" "}
+                  <strong>#LEADforEarth</strong> initiative of the Lasallian East Asia District — to track progress, compile district-wide results, and support future environmental campaigns.
+                </p>
               </div>
-            )}
-          </div>
+
+              <label
+                htmlFor="consent-check"
+                className="flex items-start gap-3 cursor-pointer select-none rounded-2xl p-4 transition-colors"
+                style={{ backgroundColor: consented ? "rgba(26,92,42,0.06)" : "transparent" }}
+              >
+                <input
+                  id="consent-check"
+                  type="checkbox"
+                  checked={consented}
+                  onChange={(e) => setConsented(e.target.checked)}
+                  className="mt-0.5 w-4 h-4 rounded accent-green-700 shrink-0"
+                />
+                <span className="text-[14px] text-gray-600 leading-relaxed">
+                  I confirm that all information is accurate to the best of my knowledge, and I consent on behalf of my institution to being contacted for follow-up questions related to this report.
+                </span>
+              </label>
+            </div>
+          )}
         </form>
       </div>
 
-      {/* -------- Floating progress ring (bottom-right) -------- */}
+      {/* -------- Sticky wizard nav (Prev / Next / Submit) -------- */}
       <div
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 bg-white rounded-2xl shadow-xl border border-gray-100 px-4 py-3 sm:px-5 sm:py-4 w-[min(92vw,290px)]"
-        aria-live="polite"
+        className="fixed bottom-0 left-0 right-0 z-40 border-t"
+        style={{
+          borderColor: "rgba(0,0,0,0.06)",
+          backgroundColor: "rgba(255,255,255,0.9)",
+          backdropFilter: "saturate(150%) blur(16px)",
+          WebkitBackdropFilter: "saturate(150%) blur(16px)",
+        }}
       >
-        <div className="flex items-center gap-4">
-          <ProgressRing percent={percentComplete} />
-          <div className="min-w-0 flex-1">
-            <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">
-              Step {currentStep + 1} of {totalSteps}
-            </p>
-            <p className="text-sm font-semibold leading-tight truncate" style={{ color: "#1a5c2a" }}>
-              {currentMeta.title}
-            </p>
-            <p className="text-[11px] italic mt-1 leading-snug" style={{ color: "#2d8c3e" }}>
-              {ENCOURAGEMENTS[currentStep]}
-            </p>
-          </div>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => goTo(currentStep - 1)}
+            disabled={currentStep === 0}
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full font-medium text-[13.5px] text-gray-700 transition-all duration-200 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+          >
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            <span className="hidden sm:inline">Previous</span>
+          </button>
+
+          <p className="hidden sm:block text-[12px] text-gray-500 truncate max-w-[40%]">
+            {currentMeta.title}
+          </p>
+
+          {!isLastStep ? (
+            <button
+              type="button"
+              onClick={() => handleNext()}
+              className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full font-semibold text-[13.5px] text-white transition-all duration-200 hover:-translate-y-px"
+              style={{
+                backgroundColor: "#1a5c2a",
+                boxShadow: "0 6px 16px -4px rgba(26,92,42,0.4)",
+              }}
+            >
+              Next
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          ) : (
+            <button
+              type="submit"
+              form="lfe-report-form"
+              disabled={status === "loading" || !consented}
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold text-[13.5px] text-white transition-all duration-200 hover:-translate-y-px disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+              style={{
+                backgroundColor: "#1a5c2a",
+                boxShadow: consented ? "0 6px 16px -4px rgba(26,92,42,0.4)" : "none",
+              }}
+              title={!consented ? "Please confirm the consent above to submit." : undefined}
+            >
+              {status === "loading" ? (
+                <>
+                  <svg viewBox="0 0 24 24" className="w-4 h-4 animate-spin" fill="none" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" stroke="rgba(255,255,255,0.3)" strokeWidth={2.5} />
+                    <path d="M21 12a9 9 0 0 0-9-9" stroke="#ffffff" strokeWidth={2.5} strokeLinecap="round" />
+                  </svg>
+                  Submitting…
+                </>
+              ) : (
+                <>
+                  Submit Report
+                  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
+                  </svg>
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </section>
     </StepContext.Provider>
+  );
+}
+
+function NextStep({ n, label, text }: { n: string; label: string; text: string }) {
+  return (
+    <div className="rounded-2xl p-4" style={{ backgroundColor: "#f7faf7" }}>
+      <div
+        className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-semibold mb-2"
+        style={{ backgroundColor: "#1a5c2a", color: "#fff" }}
+      >
+        {n}
+      </div>
+      <p className="text-[11px] font-semibold uppercase tracking-widest mb-1" style={{ color: "#2d8c3e" }}>
+        {label}
+      </p>
+      <p className="text-[13px] text-gray-600 leading-snug">{text}</p>
+    </div>
   );
 }

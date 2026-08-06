@@ -51,7 +51,7 @@ export default function SchoolAutocomplete({
     return scored;
   }, [value]);
 
-  // Clamp during render — avoids the "setState in effect" cascade when matches shrink.
+  // Clamp during render, avoids the "setState in effect" cascade when matches shrink.
   const safeIdx = matches.length === 0 ? 0 : Math.min(activeIdx, matches.length - 1);
 
   useEffect(() => {

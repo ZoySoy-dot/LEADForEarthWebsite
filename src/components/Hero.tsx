@@ -128,8 +128,8 @@ export default function Hero() {
 
           <p className="text-lg leading-relaxed mb-8 max-w-lg" style={{ color: "rgba(200,230,210,0.8)" }}>
             <strong className="text-white font-semibold">LEADForEarth</strong> is a
-            district-wide environmental campaign uniting Lasallian schools across East Asia —
-            each campus choosing its own action, all of us posting under one hashtag.
+            district-wide environmental campaign uniting Lasallian schools across East Asia.
+            Each campus chooses its own action, and all of us post under one hashtag.
           </p>
 
           <a
@@ -160,7 +160,7 @@ export default function Hero() {
             </svg>
           </a>
 
-          {/* Presented-by mark — placeholder for official LEAD corporate logo */}
+          {/* Presented-by mark: placeholder for official LEAD corporate logo */}
           <div className="mt-10 flex items-center gap-4 justify-center md:justify-start">
             <span
               className="text-[10px] uppercase tracking-[0.2em]"

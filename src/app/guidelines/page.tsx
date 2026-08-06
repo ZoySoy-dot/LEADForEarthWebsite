@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ReportForm from "@/components/ReportForm";
+import GuidelinesContent from "@/components/GuidelinesContent";
 import SkipLink from "@/components/SkipLink";
 
 export const metadata: Metadata = {
-  title: "Report | LEADForEarth",
+  title: "Guidelines | LEADForEarth",
   description:
-    "Submit your institution's #LEADforEarth campaign report.",
+    "Official guidelines for the #LEADforEarth initiative, a district-wide digital movement uniting Lasallian schools across East Asia against climate change.",
 };
 
-export default function ReportPage() {
+export default function GuidelinesPage() {
   return (
     <>
       <SkipLink />
       <Header />
       <main id="main" tabIndex={-1} className="pt-[68px] focus:outline-none">
-        <ReportForm />
+        <GuidelinesContent />
       </main>
       <Footer />
     </>

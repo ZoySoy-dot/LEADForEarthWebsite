@@ -1,7 +1,8 @@
 import dynamic from "next/dynamic";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import SectionDivider from "@/components/SectionDivider";
+import SectionNav from "@/components/SectionNav";
+import SkipLink from "@/components/SkipLink";
 
 const AboutUs     = dynamic(() => import("@/components/AboutUs"));
 const WhatWeDo    = dynamic(() => import("@/components/WhatWeDo"));
@@ -12,15 +13,14 @@ const Footer      = dynamic(() => import("@/components/Footer"));
 export default function Home() {
   return (
     <>
+      <SkipLink />
       <Header />
-      <main className="pt-[72px]">
+      <SectionNav />
+      <main id="main" tabIndex={-1} className="pt-[68px] focus:outline-none">
         <Hero />
         <AboutUs />
-        <SectionDivider />
         <WhatWeDo />
-        <SectionDivider />
         <Foundations />
-        <SectionDivider />
         <Contact />
       </main>
       <Footer />

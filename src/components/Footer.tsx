@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 const footerLinks = {
   Explore: [
@@ -7,9 +8,9 @@ const footerLinks = {
     { label: "How It Works", href: "#what-we-do" },
     { label: "Contact", href: "#contact" },
   ],
-  "The Campaign": [
-    { label: "Guidelines", href: "#guidelines" },
-    { label: "Participating Schools", href: "#schools" },
+  Campaign: [
+    { label: "Guidelines", href: "/guidelines" },
+    { label: "Participating Schools", href: "#foundations" },
     { label: "Submit a Report", href: "/report" },
     { label: "#LEADforEarth", href: "#home" },
   ],
@@ -17,47 +18,55 @@ const footerLinks = {
 
 export default function Footer() {
   return (
-    <footer style={{ backgroundColor: "#0d3d1a" }} className="text-white">
-      <div className="max-w-6xl mx-auto px-6 py-16">
-        <div className="grid md:grid-cols-3 gap-12 mb-12">
+    <footer className="bg-white border-t border-gray-100">
+      <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 sm:py-20">
+        <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr] gap-10 md:gap-16 mb-12">
           {/* Brand */}
           <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="bg-white rounded-xl p-1.5">
-                <Image
-                  src="/logos/logo-icon.png"
-                  alt="LEADForEarth Logo"
-                  width={36}
-                  height={36}
-                  className="object-contain"
-                />
-              </div>
-              <span className="text-lg font-bold">LEADForEarth</span>
-            </div>
-            <p className="text-green-300 text-sm leading-relaxed mb-6">
-              A monthly, district-wide environmental campaign uniting Lasallian
-              schools across East Asia under one shared hashtag: #LEADforEarth.
+            <Link href="/" className="inline-flex items-center gap-2 mb-5">
+              <Image
+                src="/logos/logo-icon.png"
+                alt="LEADForEarth Logo"
+                width={36}
+                height={36}
+                className="object-contain"
+              />
+              <span
+                className="text-lg font-semibold tracking-tight"
+                style={{ color: "#1a5c2a" }}
+              >
+                LEAD
+                <span style={{ color: "#2d2d2d" }}>ForEarth</span>
+              </span>
+            </Link>
+            <p className="text-[15px] text-gray-500 leading-relaxed max-w-xs mb-6 font-light">
+              A district-wide environmental campaign uniting Lasallian schools across East Asia under one shared hashtag.
             </p>
             <a
               href="mailto:LeadForEarth@gmail.com"
-              className="text-sm font-medium text-green-300 hover:text-white transition-colors duration-200"
+              className="inline-flex items-center gap-2 text-sm font-medium transition-opacity hover:opacity-70"
+              style={{ color: "#1a5c2a" }}
             >
-              ✉ LeadForEarth@gmail.com
+              <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <polyline points="2 6 12 13 22 6" />
+              </svg>
+              LeadForEarth@gmail.com
             </a>
           </div>
 
-          {/* Links */}
+          {/* Link columns */}
           {Object.entries(footerLinks).map(([heading, links]) => (
             <div key={heading}>
-              <h4 className="font-bold text-sm uppercase tracking-widest text-green-400 mb-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-gray-400 mb-5">
                 {heading}
-              </h4>
-              <ul className="space-y-2.5">
+              </p>
+              <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.label}>
                     <a
                       href={link.href}
-                      className="text-green-300 text-sm hover:text-white transition-colors duration-200"
+                      className="text-sm text-gray-600 transition-colors hover:text-green-800"
                     >
                       {link.label}
                     </a>
@@ -68,25 +77,29 @@ export default function Footer() {
           ))}
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-green-900 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-green-500 text-sm">
-            &copy; {new Date().getFullYear()} LEADForEarth.
+        {/* Bottom bar */}
+        <div className="pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-gray-400">
+            © {new Date().getFullYear()} LEADForEarth. All rights reserved.
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-5">
             <Image
               src="/logos/La-Star-Salle_White.png"
               alt="Lasallian East Asia District"
-              width={110}
-              height={40}
-              className="object-contain opacity-90"
+              width={90}
+              height={32}
+              className="object-contain opacity-70"
+              style={{
+                filter:
+                  "brightness(0) saturate(100%) invert(23%) sepia(35%) saturate(1600%) hue-rotate(89deg) brightness(93%) contrast(85%)",
+              }}
             />
             <Image
               src="/logos/LEAD%20%40%2015.png"
               alt="LEAD @ 15"
-              width={52}
-              height={52}
-              className="object-contain"
+              width={40}
+              height={40}
+              className="object-contain opacity-80"
             />
           </div>
         </div>

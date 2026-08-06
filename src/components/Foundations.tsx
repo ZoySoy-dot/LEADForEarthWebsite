@@ -11,91 +11,88 @@ const sdgs = [
 
 export default function Foundations() {
   return (
-    <section id="foundations" className="py-28 bg-white">
-      <div className="max-w-6xl mx-auto px-6 lg:px-12">
+    <section id="foundations" className="py-28 sm:py-36" style={{ backgroundColor: "#fafbfa" }}>
+      <div className="max-w-6xl mx-auto px-6 lg:px-8">
 
-        {/* Header */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-12 lg:gap-20 items-start mb-20">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-widest mb-4" style={{ color: "#2d8c3e" }}>
-              Our Foundations
-            </p>
-            <h2 className="text-4xl font-extrabold leading-tight" style={{ color: "#1a5c2a" }}>
-              Grounded in Faith and Global Goals
-            </h2>
-            <div className="mt-6 w-12 h-1 rounded-full" style={{ backgroundColor: "#2d8c3e" }} />
-          </div>
-          <p className="text-gray-600 text-lg leading-relaxed pt-1">
-            LEADForEarth is rooted in two complementary frameworks: the Catholic Church's call
-            to care for creation through <strong className="text-gray-800">Laudato Si'</strong> and
-            the United Nations' <strong className="text-gray-800">Sustainable Development Goals</strong>.
-            Together, they guide both the spirit and the direction of our work.
+        {/* Left-aligned editorial header */}
+        <div className="max-w-3xl mb-16 sm:mb-20">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] mb-5" style={{ color: "#2d8c3e" }}>
+            Our Foundations
           </p>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]" style={{ color: "#0d3d1a" }}>
+            Faith. Science. Action.
+          </h2>
+          <div className="mt-8 flex items-start gap-6">
+            <div className="w-16 h-px mt-3 shrink-0" style={{ backgroundColor: "#2d8c3e" }} />
+            <p className="text-lg text-gray-500 leading-[1.65] font-light">
+              Rooted in the Catholic Church&apos;s call to care for creation through <span className="text-gray-700 font-medium">Laudato Si&apos;</span>, and aligned with the United Nations&apos; <span className="text-gray-700 font-medium">Sustainable Development Goals</span>.
+            </p>
+          </div>
         </div>
 
-        {/* Laudato Si' + SDGs */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 border-t border-gray-200 pt-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-          {/* Laudato Si' */}
-          <div className="lg:pr-16 lg:border-r border-gray-200 mb-16 lg:mb-0">
-            <p className="text-xs font-semibold uppercase tracking-widest mb-8" style={{ color: "#2d8c3e" }}>
-              Laudato Si' · Encyclical Letter, 2015
-            </p>
-
-            {/* Decorative quote mark */}
-            <div className="text-8xl font-serif leading-none mb-2 select-none" style={{ color: "#2d8c3e", opacity: 0.2 }}>
-              "
+          {/* Laudato Si' Card */}
+          <div
+            className="rounded-3xl bg-white p-10 sm:p-12 flex flex-col relative overflow-hidden"
+            style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -12px rgba(26,92,42,0.12)" }}
+          >
+            {/* Decorative watermark */}
+            <div
+              className="absolute -top-4 -right-2 text-[220px] font-serif leading-none select-none pointer-events-none"
+              style={{ color: "#2d8c3e", opacity: 0.06 }}
+              aria-hidden="true"
+            >
+              &ldquo;
             </div>
 
-            <blockquote className="-mt-4 mb-8">
-              <p className="text-xl font-semibold italic leading-relaxed mb-5" style={{ color: "#1a5c2a" }}>
-                All of us can cooperate as instruments of God for the care of creation, each
-                according to his or her own culture, experience, involvements and talents.
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-8 relative" style={{ color: "#2d8c3e" }}>
+              Laudato Si&apos; · 2015
+            </p>
+
+            <blockquote className="mb-8 relative">
+              <p className="text-2xl font-semibold italic leading-[1.35] tracking-tight mb-5" style={{ color: "#0d3d1a" }}>
+                All of us can cooperate as instruments of God for the care of creation, each according to his or her own culture, experience, involvements and talents.
               </p>
               <footer className="flex items-center gap-3">
                 <div className="w-8 h-px" style={{ backgroundColor: "#2d8c3e" }} />
-                <span className="text-sm text-gray-500">Pope Francis, §14</span>
+                <span className="text-sm text-gray-500 font-medium">Pope Francis, §14</span>
               </footer>
             </blockquote>
 
-            <p className="text-gray-600 leading-relaxed border-t border-gray-100 pt-8">
-              Laudato Si', meaning <em>"Praise be to you,"</em> is Pope Francis's encyclical
-              on caring for our common home. It calls every individual, community, and institution
-              to take responsibility for the environment. For Lasallian schools, it is a spiritual
-              mandate that directly informs our participation in LEADForEarth.
+            <p className="text-[15px] text-gray-600 leading-relaxed pt-6 border-t border-gray-100 mt-auto relative">
+              <em>&ldquo;Praise be to you,&rdquo;</em> Pope Francis&apos;s encyclical on caring for our common home, calls every individual, community, and institution to take responsibility for the environment. For Lasallian schools, it is a spiritual mandate that directly informs our participation in LEADForEarth.
             </p>
           </div>
 
-          {/* SDGs */}
-          <div className="lg:pl-16">
-
-            {/* SDG Wheel + UN Emblem */}
-            <div className="flex items-center gap-6 mb-10 pb-10 border-b border-gray-100">
+          {/* SDGs Card */}
+          <div
+            className="rounded-3xl bg-white p-10 sm:p-12 flex flex-col"
+            style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -12px rgba(26,92,42,0.12)" }}
+          >
+            <div className="flex items-center gap-5 mb-8">
               <Image
                 src="/sdg/sdg-wheel.png"
                 alt="UN Sustainable Development Goals Wheel"
-                width={90}
-                height={90}
+                width={72}
+                height={72}
                 className="object-contain shrink-0"
               />
-              <div>
-                <Image
-                  src="/sdg/sdg-un-emblem.png"
-                  alt="UN SDG Emblem"
-                  width={200}
-                  height={65}
-                  className="object-contain"
-                />
-              </div>
+              <Image
+                src="/sdg/sdg-un-emblem.png"
+                alt="UN SDG Emblem"
+                width={160}
+                height={52}
+                className="object-contain"
+              />
             </div>
 
-            <p className="text-xs font-semibold uppercase tracking-widest mb-6" style={{ color: "#2d8c3e" }}>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-6" style={{ color: "#2d8c3e" }}>
               Goals We Are Aligned With
             </p>
 
-            {/* SDG logo grid — 3 on top, 2 on bottom */}
-            <div className="grid grid-cols-3 gap-4 mb-4">
-              {sdgs.slice(0, 3).map((sdg) => (
+            <div className="grid grid-cols-3 gap-3">
+              {sdgs.map((sdg) => (
                 <div key={sdg.number} className="group">
                   <Image
                     src={`/sdg/sdg-${String(sdg.number).padStart(2, "0")}.png`}
@@ -103,27 +100,13 @@ export default function Foundations() {
                     width={140}
                     height={140}
                     sizes="(min-width: 1024px) 140px, (min-width: 640px) 30vw, 30vw"
-                    className="w-full object-contain rounded-lg"
+                    className="w-full object-contain rounded-xl transition-transform group-hover:-translate-y-0.5"
                   />
                 </div>
               ))}
             </div>
-            <div className="grid grid-cols-3 gap-4">
-              {sdgs.slice(3).map((sdg) => (
-                <div key={sdg.number} className="group">
-                  <Image
-                    src={`/sdg/sdg-${String(sdg.number).padStart(2, "0")}.png`}
-                    alt={`SDG ${sdg.number}: ${sdg.title}`}
-                    width={140}
-                    height={140}
-                    sizes="(min-width: 1024px) 140px, (min-width: 640px) 30vw, 30vw"
-                    className="w-full object-contain rounded-lg"
-                  />
-                </div>
-              ))}
-            </div>
-
           </div>
+
         </div>
       </div>
     </section>

@@ -1,4 +1,4 @@
-// UN Sustainable Development Goals — edit labels here if wording changes.
+// UN Sustainable Development Goals: edit labels here if wording changes.
 // `color` is the UN's official brand color for each goal (used by the picker tile).
 
 export const SDG_GOALS = [

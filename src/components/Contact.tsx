@@ -59,32 +59,45 @@ export default function Contact() {
   const isJoin = purpose === "join";
 
   return (
-    <section id="contact" style={{ backgroundColor: "#f7faf7" }} className="py-24">
-      <div className="max-w-3xl mx-auto px-6">
+    <section id="contact" style={{ backgroundColor: "#fafbfa" }} className="py-28 sm:py-36">
+      <div className="max-w-3xl mx-auto px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
-          <p className="text-sm font-semibold uppercase tracking-widest mb-3" style={{ color: "#2d8c3e" }}>
+        <div className="text-center mb-16 sm:mb-20">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] mb-4" style={{ color: "#2d8c3e" }}>
             Contact Us
           </p>
-          <h2 className="text-4xl font-extrabold mb-6" style={{ color: "#1a5c2a" }}>
-            Let&apos;s Connect
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05] mb-6" style={{ color: "#0d3d1a" }}>
+            Let&apos;s
+            <span style={{ color: "#2d8c3e" }}> connect.</span>
           </h2>
-          <p className="text-gray-600 leading-relaxed max-w-xl mx-auto text-lg">
-            Whether you want to help us, join the initiative, or ask questions,
-            send us a message.
+          <p className="text-lg text-gray-500 leading-relaxed max-w-xl mx-auto font-light">
+            Whether you want to help us, join the initiative, or ask questions, send us a message.
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm p-8">
+        <div
+          className="bg-white rounded-3xl p-8 sm:p-10"
+          style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 40px -12px rgba(26,92,42,0.12)" }}
+        >
           {status === "success" ? (
             <div className="text-center py-12">
-              <div className="text-5xl mb-4">✅</div>
-              <h3 className="text-xl font-bold mb-2" style={{ color: "#1a5c2a" }}>Message Sent!</h3>
-              <p className="text-gray-500 mb-6">Thank you for reaching out. We&apos;ll get back to you soon.</p>
+              <div
+                className="w-16 h-16 mx-auto mb-5 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: "#f0faf1", color: "#1a5c2a" }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-semibold tracking-tight mb-2" style={{ color: "#0d3d1a" }}>Message sent</h3>
+              <p className="text-gray-500 mb-8 max-w-sm mx-auto">Thank you for reaching out. We&apos;ll get back to you soon.</p>
               <button
                 onClick={() => setStatus("idle")}
-                className="px-6 py-2 rounded-xl text-sm font-semibold text-white"
-                style={{ backgroundColor: "#1a5c2a" }}
+                className="px-6 py-2.5 rounded-full text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-px"
+                style={{
+                  backgroundColor: "#1a5c2a",
+                  boxShadow: "0 8px 24px -8px rgba(26,92,42,0.35)",
+                }}
               >
                 Send another message
               </button>
@@ -99,14 +112,41 @@ export default function Contact() {
                 </div>
               )}
 
-              {/* Step 1 — Purpose */}
+              {/* Step 1: Purpose */}
               <div className="mb-6">
                 <p className={labelCls}>What brings you here?</p>
                 <div className="grid grid-cols-3 gap-3">
                   {[
-                    { key: "question", label: "Ask a Question",      icon: "💬" },
-                    { key: "inquiry",  label: "General Inquiry",      icon: "📋" },
-                    { key: "join",     label: "Join the Initiative",  icon: "🌱" },
+                    {
+                      key: "question",
+                      label: "Ask a Question",
+                      icon: (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
+                      ),
+                    },
+                    {
+                      key: "inquiry",
+                      label: "General Inquiry",
+                      icon: (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                          <rect x="4" y="3" width="16" height="18" rx="2" />
+                          <path d="M8 8h8M8 12h8M8 16h5" />
+                        </svg>
+                      ),
+                    },
+                    {
+                      key: "join",
+                      label: "Join the Initiative",
+                      icon: (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                          <path d="M12 22V12" />
+                          <path d="M4 8c0-3 2-5 5-5 0 5-2 8-5 8V8z" />
+                          <path d="M20 6c0-3-2-5-5-5 0 5 2 8 5 8V6z" />
+                        </svg>
+                      ),
+                    },
                   ].map(({ key, label, icon }) => (
                     <button
                       key={key}
@@ -119,35 +159,59 @@ export default function Contact() {
                         color:           purpose === key ? "#1a5c2a" : "#6b7280",
                       }}
                     >
-                      <span className="text-xl">{icon}</span>
+                      {icon}
                       <span className="text-center leading-tight">{label}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Step 2 — Join type (only for "join") */}
+              {/* Step 2: Join type (only for "join") */}
               {isJoin && (
                 <div className="mb-6 p-4 rounded-xl border border-green-100 bg-green-50/50">
                   <p className={labelCls}>Are you joining as…</p>
                   <div className="grid grid-cols-2 gap-3">
                     {[
-                      { key: "person",      label: "An Individual",  icon: "👤", desc: "Student, educator, or advocate" },
-                      { key: "institution", label: "An Institution", icon: "🏫", desc: "School, university, or organization" },
+                      {
+                        key: "person",
+                        label: "An Individual",
+                        desc: "Student, educator, or advocate",
+                        icon: (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                          </svg>
+                        ),
+                      },
+                      {
+                        key: "institution",
+                        label: "An Institution",
+                        desc: "School, university, or organization",
+                        icon: (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                            <path d="M3 21h18" />
+                            <path d="M5 21V10l7-5 7 5v11" />
+                            <path d="M9 21v-6h6v6" />
+                          </svg>
+                        ),
+                      },
                     ].map(({ key, label, icon, desc }) => (
                       <button
                         key={key}
                         type="button"
                         onClick={() => setJoinType(key as JoinType)}
-                        className="flex flex-col items-start gap-1 px-4 py-3 rounded-xl border text-sm font-medium transition-all duration-200 text-left"
+                        className="flex items-start gap-3 px-4 py-3 rounded-xl border text-sm font-medium transition-all duration-200 text-left"
                         style={{
                           borderColor:     joinType === key ? "#1a5c2a" : "#e5e7eb",
                           backgroundColor: joinType === key ? "#f0faf1" : "#fff",
                           color:           joinType === key ? "#1a5c2a" : "#6b7280",
                         }}
                       >
-                        <span className="text-lg">{icon} {label}</span>
-                        <span className="text-xs font-normal" style={{ color: joinType === key ? "#2d8c3e" : "#9ca3af" }}>{desc}</span>
+                        <span className="mt-0.5 shrink-0">{icon}</span>
+                        <span className="min-w-0">
+                          <span className="block text-[15px] leading-tight">{label}</span>
+                          <span className="block text-xs font-normal mt-0.5" style={{ color: joinType === key ? "#2d8c3e" : "#9ca3af" }}>{desc}</span>
+                        </span>
                       </button>
                     ))}
                   </div>
@@ -244,7 +308,7 @@ export default function Contact() {
                   </>
                 )}
 
-                {/* Subject + Message — always shown except when join type not yet chosen */}
+                {/* Subject + Message: always shown except when join type not yet chosen */}
                 {(!isJoin || joinType !== "") && (
                   <>
                     {!isJoin && (
@@ -270,8 +334,11 @@ export default function Contact() {
                     <button
                       type="submit"
                       disabled={status === "loading"}
-                      className="w-full py-3 rounded-xl font-semibold text-white transition-opacity duration-200 hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
-                      style={{ backgroundColor: "#1a5c2a" }}
+                      className="w-full py-3.5 rounded-full font-semibold text-white transition-all duration-200 hover:-translate-y-px disabled:opacity-60 disabled:cursor-not-allowed"
+                      style={{
+                        backgroundColor: "#1a5c2a",
+                        boxShadow: "0 8px 24px -8px rgba(26,92,42,0.35)",
+                      }}
                     >
                       {status === "loading" ? "Sending…" : "Send Message"}
                     </button>

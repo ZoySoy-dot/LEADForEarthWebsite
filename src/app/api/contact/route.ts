@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
-// Created once at module level — connection is reused across requests
+// Created once at module level; connection is reused across requests
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 465,
