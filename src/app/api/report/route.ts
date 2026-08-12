@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
       data: {
         editToken,
 
-        submitterName: String(data.submitter?.name ?? session.user?.name ?? ""),
+        submitterName: String(data.submitter?.name ?? session?.user?.name ?? ""),
         submitterRole: String(data.submitter?.role ?? ""),
         // Source of truth: the verified Google session email, never the client payload.
         submitterEmail: sessionEmail,
