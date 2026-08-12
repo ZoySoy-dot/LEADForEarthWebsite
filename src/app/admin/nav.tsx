@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const LINKS = [
+type NavLink = { href: string; label: string; exact?: boolean };
+
+const LINKS: readonly NavLink[] = [
   { href: "/admin", label: "Reports", exact: true },
   { href: "/admin/inquiries", label: "Inquiries" },
   { href: "/admin/admins", label: "Admins" },
-] as const;
+];
 
 export function AdminNav() {
   const pathname = usePathname();
