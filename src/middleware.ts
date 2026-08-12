@@ -1,7 +1,12 @@
-import { auth } from "@/lib/auth";
+import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
+import authConfig from "@/auth.config";
 
-// Protect all /admin routes except /admin/login and the auth callback itself.
+// Edge-safe instance: no Prisma, no adapter. Just checks whether a session
+// cookie exists so we can redirect anonymous visitors to the login page.
+// The real admin allowlist check happens in /admin/layout.tsx (Node runtime).
+const { auth } = NextAuth(authConfig);
+
 export default auth((req) => {
   const { pathname } = req.nextUrl;
   const isLoginPage = pathname === "/admin/login";

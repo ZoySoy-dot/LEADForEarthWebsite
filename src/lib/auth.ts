@@ -1,19 +1,17 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
+import authConfig from "@/auth.config";
 import { prisma } from "@/lib/prisma";
 
+// Full Auth.js instance for Node runtime (server components, API routes).
+// Middleware uses a lighter instance built from authConfig alone (see middleware.ts)
+// because Prisma can't run on the Edge runtime.
+//
 // Two-tier Google sign-in:
 //   - Any Google user can sign in (used by report submitters).
 //   - Admin access to /admin is gated by the admin_users allowlist,
 //     enforced server-side in the /admin layout — NOT here.
-// No adapter — sessions are JWTs (no DB tables for accounts/sessions).
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  providers: [Google],
-  session: { strategy: "jwt" },
-  pages: {
-    signIn: "/admin/login",
-    error: "/admin/login",
-  },
+  ...authConfig,
   callbacks: {
     async signIn({ user }) {
       // Google guarantees the email is verified — accept any Google account.
