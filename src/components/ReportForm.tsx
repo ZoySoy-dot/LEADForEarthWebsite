@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useReducer, useRef, useState } from "react";
+import Image from "next/image";
 import SchoolAutocomplete from "@/components/SchoolAutocomplete";
 import { SDG_GOALS } from "@/data/sdgs";
 
@@ -230,10 +231,11 @@ const LABEL_CLS = "block text-sm font-medium text-gray-700 mb-1.5";
 type SetFn = (path: string, value: unknown) => void;
 
 function Field({
-  label, path, value, onChange, type = "text", placeholder, required, hint,
+  label, path, value, onChange, type = "text", placeholder, required, hint, readOnly,
 }: {
   label: string; path: string; value: string; onChange: SetFn;
   type?: string; placeholder?: string; required?: boolean; hint?: string;
+  readOnly?: boolean;
 }) {
   return (
     <div>
@@ -247,7 +249,8 @@ function Field({
         onChange={(e) => onChange(path, e.target.value)}
         placeholder={placeholder}
         required={required}
-        className={INPUT_CLS}
+        readOnly={readOnly}
+        className={`${INPUT_CLS}${readOnly ? " bg-gray-50 text-gray-600 cursor-not-allowed" : ""}`}
       />
       {hint && <p className="text-xs text-gray-500 mt-1">{hint}</p>}
     </div>
@@ -344,9 +347,8 @@ function CheckboxGroup({
   );
 }
 
-// Colored-tile picker for the 17 SDGs. Each tile is a full-width button; the
-// left square shows the goal number in the UN's official color, and selection
-// state is signaled by that color washing across the tile border + background.
+// Card-tile picker for the 17 SDGs. Each tile stacks a large square SDG image
+// over the goal title. Selection state is signaled by a colored ring + tint.
 function SdgPicker({
   label, basePath, values, onChange,
 }: {
@@ -364,7 +366,7 @@ function SdgPicker({
           {selectedCount} selected
         </span>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
         {SDG_GOALS.map((g) => {
           const checked = !!values[g.key];
           return (
@@ -373,7 +375,7 @@ function SdgPicker({
               type="button"
               onClick={() => onChange(`${basePath}.${g.key}`, !checked)}
               aria-pressed={checked}
-              className={`group relative flex items-stretch text-left rounded-xl overflow-hidden border transition-all ${
+              className={`group relative flex flex-col text-left rounded-xl overflow-hidden border transition-all ${
                 checked
                   ? "border-transparent shadow-sm"
                   : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50"
@@ -385,25 +387,30 @@ function SdgPicker({
               }
             >
               <span
-                className="shrink-0 w-11 flex flex-col items-center justify-center text-white font-bold"
+                className="relative block w-full aspect-square"
                 style={{ backgroundColor: g.color }}
               >
-                <span className="text-[9px] leading-none uppercase tracking-wide opacity-80">SDG</span>
-                <span className="text-base leading-none mt-0.5">{g.num}</span>
+                <Image
+                  src={`/sdg/sdg-${String(g.num).padStart(2, "0")}.png`}
+                  alt={`SDG ${g.num}: ${g.title}`}
+                  fill
+                  sizes="(min-width: 1024px) 160px, (min-width: 640px) 25vw, 45vw"
+                  className="object-cover"
+                />
+                <span
+                  className={`absolute top-1.5 right-1.5 w-5 h-5 rounded-full flex items-center justify-center text-white shadow-sm transition-opacity ${
+                    checked ? "opacity-100" : "opacity-0"
+                  }`}
+                  style={{ backgroundColor: g.color, boxShadow: "0 0 0 2px #fff" }}
+                  aria-hidden="true"
+                >
+                  <svg viewBox="0 0 12 12" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M2.5 6.5L5 9l4.5-5" />
+                  </svg>
+                </span>
               </span>
-              <span className="flex-1 px-3 py-2 pr-8 text-xs sm:text-[13px] font-medium text-gray-800 leading-snug flex items-center">
+              <span className="px-2.5 py-2 text-[12px] sm:text-[13px] font-medium text-gray-800 leading-snug">
                 {g.title}
-              </span>
-              <span
-                className={`absolute top-1.5 right-1.5 w-4 h-4 rounded-full flex items-center justify-center text-white text-[10px] font-bold transition-opacity ${
-                  checked ? "opacity-100" : "opacity-0"
-                }`}
-                style={{ backgroundColor: g.color }}
-                aria-hidden="true"
-              >
-                <svg viewBox="0 0 12 12" className="w-2.5 h-2.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M2.5 6.5L5 9l4.5-5" />
-                </svg>
               </span>
             </button>
           );
@@ -566,8 +573,23 @@ const CONTINUING_OPTIONS = [
 
 type Status = "idle" | "loading" | "success" | "error";
 
-export default function ReportForm() {
-  const [form, dispatch] = useReducer(reducer, INITIAL);
+type ReportFormProps = {
+  initialSubmitter?: { name?: string; email?: string };
+};
+
+export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
+  const seededInitial: Report = initialSubmitter
+    ? {
+        ...INITIAL,
+        submitter: {
+          ...INITIAL.submitter,
+          name: initialSubmitter.name ?? "",
+          email: initialSubmitter.email ?? "",
+        },
+      }
+    : INITIAL;
+  const [form, dispatch] = useReducer(reducer, seededInitial);
+  const emailLocked = Boolean(initialSubmitter?.email);
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [currentStep, setCurrentStep] = useState(0);
@@ -595,11 +617,19 @@ export default function ReportForm() {
         if (typeof parsed?.step === "number") setCurrentStep(parsed.step);
         setDraftState("saved");
       }
+      // Re-apply the current signed-in identity after any draft restore so a stale
+      // draft can't spoof the submitter (email is source-of-truth from the session).
+      if (initialSubmitter?.email) {
+        dispatch({ type: "SET", path: "submitter.email", value: initialSubmitter.email });
+      }
+      if (initialSubmitter?.name) {
+        dispatch({ type: "SET", path: "submitter.name", value: initialSubmitter.name });
+      }
     } catch {
       // ignore malformed drafts
     }
     draftLoadedRef.current = true;
-  }, []);
+  }, [initialSubmitter?.email, initialSubmitter?.name]);
 
   // Debounced autosave to localStorage on any form/step change.
   useEffect(() => {
@@ -821,7 +851,17 @@ export default function ReportForm() {
               <Field label="Role / Position" path="submitter.role" value={form.submitter.role} onChange={set} required placeholder="Sustainability Officer" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Email Address" path="submitter.email" type="email" value={form.submitter.email} onChange={set} required placeholder="you@school.edu.ph" />
+              <Field
+                label="Email Address"
+                path="submitter.email"
+                type="email"
+                value={form.submitter.email}
+                onChange={set}
+                required
+                placeholder="you@school.edu.ph"
+                readOnly={emailLocked}
+                hint={emailLocked ? "From your Google sign-in — used to verify the submission." : undefined}
+              />
               <Field label="Phone (optional)" path="submitter.phone" value={form.submitter.phone} onChange={set} placeholder="+63 917 000 0000" />
             </div>
           </SectionCard>

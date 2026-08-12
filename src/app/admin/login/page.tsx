@@ -1,49 +1,30 @@
-import type { Metadata } from "next";
 import Image from "next/image";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import ReportForm from "@/components/ReportForm";
-import SkipLink from "@/components/SkipLink";
-import { auth, signIn } from "@/lib/auth";
+import { signIn, auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Report | LEADForEarth",
-  description:
-    "Submit your institution's #LEADforEarth campaign report.",
+export const metadata = {
+  title: "Admin Sign In · LEADForEarth",
 };
 
-export default async function ReportPage() {
+export default async function AdminLoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ callbackUrl?: string; error?: string }>;
+}) {
+  const params = await searchParams;
   const session = await auth();
-  const user = session?.user;
+  if (session) redirect(params.callbackUrl ?? "/admin");
+
+  const error = params.error;
+  const callbackUrl = params.callbackUrl ?? "/admin";
 
   return (
-    <>
-      <SkipLink />
-      <Header />
-      <main id="main" tabIndex={-1} className="pt-[68px] focus:outline-none">
-        {user?.email ? (
-          <ReportForm
-            initialSubmitter={{
-              name: user.name ?? "",
-              email: user.email,
-            }}
-          />
-        ) : (
-          <SignInPrompt />
-        )}
-      </main>
-      <Footer />
-    </>
-  );
-}
-
-function SignInPrompt() {
-  return (
-    <section
-      className="min-h-[70vh] flex items-center justify-center px-6 py-16"
+    <main
+      className="min-h-screen flex items-center justify-center px-6 py-16"
       style={{ backgroundColor: "#fafbfa" }}
     >
       <div className="w-full max-w-md">
+        {/* Logo above the card */}
         <div className="flex items-center justify-center mb-8">
           <Image
             src="/logos/leadforearth-logo.png"
@@ -54,6 +35,7 @@ function SignInPrompt() {
             priority
           />
         </div>
+
         <div
           className="bg-white rounded-3xl p-8 sm:p-10"
           style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 20px 60px -20px rgba(26,92,42,0.18)" }}
@@ -62,22 +44,30 @@ function SignInPrompt() {
             className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-3 text-center"
             style={{ color: "#2d8c3e" }}
           >
-            #LEADforEarth Report
+            Committee Access
           </p>
           <h1
             className="text-3xl font-bold tracking-tight mb-3 text-center"
             style={{ color: "#0d3d1a" }}
           >
-            Sign in to submit
+            Sign in to Admin
           </h1>
           <p className="text-[15px] text-gray-500 text-center leading-relaxed mb-8">
-            We ask you to sign in with Google so your submitter info auto-fills and the report portal stays spam-free.
+            Use your authorized Google account to view submitted #LEADforEarth reports.
           </p>
+
+          {error && (
+            <div className="mb-5 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm text-center">
+              {error === "AccessDenied"
+                ? "This Google account isn't on the admin allowlist. Contact the committee to be added."
+                : "Sign in failed. Please try again."}
+            </div>
+          )}
 
           <form
             action={async () => {
               "use server";
-              await signIn("google", { redirectTo: "/report" });
+              await signIn("google", { redirectTo: callbackUrl });
             }}
           >
             <button
@@ -96,10 +86,20 @@ function SignInPrompt() {
           </form>
 
           <p className="mt-6 text-xs text-gray-400 text-center leading-relaxed">
-            Only your name and email are stored as the submitter of this report. Your Google profile isn&apos;t used for anything else.
+            Access is limited to committee members. All sign-ins are logged.
           </p>
         </div>
+
+        <div className="mt-8 text-center">
+          <a
+            href="/"
+            className="text-[13px] font-medium transition-colors"
+            style={{ color: "#2d8c3e" }}
+          >
+            ← Back to LEADForEarth
+          </a>
+        </div>
       </div>
-    </section>
+    </main>
   );
 }

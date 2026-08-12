@@ -10,9 +10,9 @@ const steps = [
       "Document your action on your school's official social media platforms using #LEADforEarth, and share your story with the district committee.",
   },
   {
-    title: "Reflect & Report",
+    title: "Report",
     description:
-      "Hold a short climate literacy discussion during the action day, then submit a standardized report to the district coordinating committee.",
+      "Submit a standardized report to the LEADForEarth committee through this website.",
   },
   {
     title: "Share Your Story",

@@ -56,7 +56,7 @@ export default function Header() {
           {/* Brand */}
           <Link
             href={isHome ? "#home" : "/"}
-            className="flex items-center gap-2 -ml-1"
+            className="flex items-center gap-0 -ml-1"
             aria-label="LEADForEarth home"
           >
             <Image
@@ -69,7 +69,7 @@ export default function Header() {
               priority
             />
             <span
-              className="text-[17px] font-semibold tracking-tight leading-none"
+              className="text-[17px] font-semibold tracking-tight leading-none -ml-3"
               style={{ color: "#1a5c2a" }}
             >
               LEAD<span style={{ color: "#111" }}>ForEarth</span>

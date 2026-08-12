@@ -1,0 +1,184 @@
+// LEADForEarth database schema. Managed by Prisma.
+// After editing: `npx prisma migrate dev --name <change_name>` to sync Neon + regenerate client.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Connection URL lives in prisma.config.ts (Prisma 7 moved it out of schema).
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Report: one row per submitted #LEADforEarth report (quantitative + core data)
+// ---------------------------------------------------------------------------
+model Report {
+  id                   String    @id @default(uuid()) @db.Uuid
+  createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Secret token given to the submitter so they can add reflections later
+  // without needing an account. URL: /report/{id}/reflect?token={editToken}
+  editToken            String    @unique @map("edit_token")
+
+  // Submitter (Section 0)
+  submitterName        String    @map("submitter_name")
+  submitterRole        String    @map("submitter_role")
+  submitterEmail       String    @map("submitter_email")
+  submitterPhone       String?   @map("submitter_phone")
+
+  // Project overview (Section I)
+  schoolName           String    @map("school_name")
+  projectTitle         String    @map("project_title")
+  description          String?
+  dateImplemented      DateTime? @map("date_implemented") @db.Date
+  projectDuration      String?   @map("project_duration")
+  targetParticipants   String?   @map("target_participants")
+  projectLead          String?   @map("project_lead")
+
+  // Multi-select fields as arrays (GIN-indexed below for tag-style queries)
+  initiativeTypes      String[]  @map("initiative_types")
+  initiativeOther      String?   @map("initiative_other")
+  sdgGoals             String[]  @map("sdg_goals")
+
+  // Participation (Section II) — numeric so we can SUM/AVG across the district
+  students             Int?
+  faculty              Int?
+  staffAdmin           Int?      @map("staff_admin")
+  community            Int?
+  totalParticipants    Int?      @map("total_participants")
+  schoolPopulation     Int?      @map("school_population")
+  participationRate    Decimal?  @map("participation_rate") @db.Decimal(6, 2)
+
+  // Impact (Section III) — shape varies by initiative type, so JSON.
+  // Example: { "energy": { "baselineKwh": "1200", "postKwh": "900" }, "water": {...} }
+  impact               Json      @default("{}")
+
+  // Effectiveness (Section IV) — array of { criteria, rating, remarks }
+  effectiveness        Json      @default("[]")
+
+  // Digital advocacy (Section VII) — numeric reach fields promoted for aggregation
+  digitalPlatforms     String[]  @map("digital_platforms")
+  digitalPlatformOther String?   @map("digital_platform_other")
+  hashtagUsed          String?   @map("hashtag_used")
+  hashtagEffectiveness String?   @map("hashtag_effectiveness")
+  reachReactions       Int?      @map("reach_reactions")
+  reachComments        Int?      @map("reach_comments")
+  reachShares          Int?      @map("reach_shares")
+  reachViews           Int?      @map("reach_views")
+  postLinks            String?   @map("post_links")
+
+  // Documentation (Section X)
+  documentationLinks   String?   @map("documentation_links")
+
+  // Rollup flag so the admin list can badge "reflection pending" without a join
+  hasReflections       Boolean   @default(false) @map("has_reflections")
+
+  // Committee workflow state: 'new' (just submitted) | 'pending' (under review) | 'approved'
+  status               String    @default("new")
+
+  reflection           Reflection?
+
+  @@index([createdAt(sort: Desc)])
+  @@index([schoolName])
+  @@index([dateImplemented])
+  @@index([submitterEmail])
+  @@index([status])
+  @@index([initiativeTypes], type: Gin)
+  @@index([sdgGoals], type: Gin)
+  @@map("reports")
+}
+
+// ---------------------------------------------------------------------------
+// Reflection: optional add-on, filed after the main submission (1:1 with Report)
+// ---------------------------------------------------------------------------
+model Reflection {
+  id                  String   @id @default(uuid()) @db.Uuid
+  reportId            String   @unique @map("report_id") @db.Uuid
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt           DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Climate literacy (Section V)
+  climateIncluded     String?  @map("climate_included")
+  climateDescription  String?  @map("climate_description")
+
+  // Participant feedback (Section VI)
+  participantFeedback String?  @map("participant_feedback")
+
+  // Lasallian reflection (Section VIII)
+  spiritOfFaith       String?  @map("spirit_of_faith")
+  zealForService      String?  @map("zeal_for_service")
+  communionInMission  String?  @map("communion_in_mission")
+
+  // Lessons learned (Section IX)
+  whatWentWell        String?  @map("what_went_well")
+  challenges          String?
+  recommendations     String?
+  districtSuggestions String?  @map("district_suggestions")
+  continuing          String?
+  plannedActivity     String?  @map("planned_activity")
+  notContinuingReason String?  @map("not_continuing_reason")
+
+  report              Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@map("reflections")
+}
+
+// ---------------------------------------------------------------------------
+// Inquiry: a contact-form message from a website visitor.
+// Committee replies via /admin/inquiries; replies are logged in InquiryReply
+// and sent as email to `email` (one-way: incoming replies go to Gmail, not here).
+// ---------------------------------------------------------------------------
+model Inquiry {
+  id         String         @id @default(uuid()) @db.Uuid
+  createdAt  DateTime       @default(now()) @map("created_at") @db.Timestamptz
+
+  firstName  String         @map("first_name")
+  lastName   String         @map("last_name")
+  email      String
+  subject    String
+  message    String
+
+  status     String         @default("new")     // 'new' | 'replied' | 'archived'
+  replies    InquiryReply[]
+
+  @@index([createdAt(sort: Desc)])
+  @@index([status])
+  @@map("inquiries")
+}
+
+// One row per outbound reply the committee sent from /admin.
+// messageId is captured from the SMTP response so subsequent replies can
+// set In-Reply-To/References and Gmail threads them on the inquirer's side.
+model InquiryReply {
+  id          String   @id @default(uuid()) @db.Uuid
+  inquiryId   String   @map("inquiry_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  authorEmail String   @map("author_email")
+  authorName  String?  @map("author_name")
+  body        String
+  messageId   String?  @map("message_id")
+
+  inquiry     Inquiry  @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+
+  @@index([inquiryId])
+  @@map("inquiry_replies")
+}
+
+// ---------------------------------------------------------------------------
+// AdminUser: allowlist of committee members who can sign into /admin with Google.
+// Presence in this table = permission to view the admin site.
+// Grant access with: INSERT INTO admin_users (email, name) VALUES ('a@x.com', 'A');
+// ---------------------------------------------------------------------------
+model AdminUser {
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique
+  name         String?
+  image        String?
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  lastLoginAt  DateTime? @map("last_login_at") @db.Timestamptz
+
+  @@map("admin_users")
+}
