@@ -10,7 +10,7 @@ const footerLinks = {
   ],
   Campaign: [
     { label: "Guidelines", href: "/guidelines" },
-    { label: "Participating Schools", href: "#foundations" },
+    { label: "Our Community", href: "/community" },
     { label: "Submit a Report", href: "/report" },
     { label: "#LEADforEarth", href: "#home" },
   ],

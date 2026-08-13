@@ -9,6 +9,7 @@ export default function Header() {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const onGuidelines = pathname === "/guidelines";
+  const onCommunity = pathname === "/community";
   const onReport = pathname === "/report";
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -115,6 +116,24 @@ export default function Header() {
             </Link>
 
             <Link
+              href="/community"
+              aria-current={onCommunity ? "page" : undefined}
+              className="px-4 py-2 rounded-full text-[13.5px] font-medium transition-colors duration-200"
+              style={{
+                color: onCommunity ? "#1a5c2a" : "#3a3a3a",
+                backgroundColor: onCommunity ? "rgba(26,92,42,0.08)" : "transparent",
+              }}
+              onMouseEnter={(e) => {
+                if (!onCommunity) e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.04)";
+              }}
+              onMouseLeave={(e) => {
+                if (!onCommunity) e.currentTarget.style.backgroundColor = "transparent";
+              }}
+            >
+              Community
+            </Link>
+
+            <Link
               href="/report"
               aria-current={onReport ? "page" : undefined}
               className="ml-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[13.5px] font-semibold text-white transition-all duration-200 hover:-translate-y-px"
@@ -217,6 +236,18 @@ export default function Header() {
             }}
           >
             Guidelines
+          </Link>
+          <Link
+            href="/community"
+            aria-current={onCommunity ? "page" : undefined}
+            onClick={() => setMenuOpen(false)}
+            className="block px-3 py-3 rounded-xl text-[15px] font-medium transition-colors"
+            style={{
+              color: onCommunity ? "#1a5c2a" : "#3a3a3a",
+              backgroundColor: onCommunity ? "rgba(26,92,42,0.08)" : "transparent",
+            }}
+          >
+            Community
           </Link>
 
           <div className="px-3 pt-4">

@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ReportForm from "@/components/ReportForm";
 import SkipLink from "@/components/SkipLink";
-import { auth, signIn } from "@/lib/auth";
+import { auth, signIn, signOut } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Report | LEADForEarth",
@@ -26,6 +26,10 @@ export default async function ReportPage() {
             initialSubmitter={{
               name: user.name ?? "",
               email: user.email,
+            }}
+            signOutAction={async () => {
+              "use server";
+              await signOut({ redirectTo: "/report" });
             }}
           />
         ) : (

@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useReducer, useRef, useState } from "react";
 import Image from "next/image";
 import SchoolAutocomplete from "@/components/SchoolAutocomplete";
+import PhoneField from "@/components/PhoneField";
 import { SDG_GOALS } from "@/data/sdgs";
 
 // ============================================================================
@@ -63,21 +64,22 @@ const SOCIAL_PLATFORMS = [
 // Sidebar TOC + section metadata. Reorder here to reorder the sidebar; the form
 // itself still follows JSX order below, so move the matching <SectionCard> too.
 const SECTIONS = [
-  { id: "submitter", num: "0", title: "About You", subtitle: "Who is filing this report on behalf of the institution?" },
-  { id: "overview", num: "I", title: "Project Overview" },
-  { id: "participation", num: "II", title: "Participation Data" },
-  { id: "impact", num: "III", title: "Environmental Impact", subtitle: "Sub-sections appear based on your selections in Section I. Fill only indicators relevant to your activity." },
-  { id: "effectiveness", num: "IV", title: "Effectiveness", subtitle: "Rate each criterion from 1 (Poor) to 5 (Excellent)." },
-  { id: "climate", num: "V", title: "Climate Literacy" },
-  { id: "feedback", num: "VI", title: "Participant Feedback" },
-  { id: "digital", num: "VII", title: "Digital Advocacy" },
-  { id: "lasallian", num: "VIII", title: "Lasallian Reflection" },
-  { id: "lessons", num: "IX", title: "Lessons Learned", subtitle: "Honest reflections are more valuable than polished ones." },
-  { id: "documentation", num: "X", title: "Documentation", subtitle: "Optional. Paste links to photos, event pages, or supporting docs." },
+  { id: "submitter", num: "1", title: "About You", subtitle: "Who is filing this report on behalf of the institution?" },
+  { id: "overview", num: "2", title: "Project Overview" },
+  { id: "participation", num: "3", title: "Participation Data" },
+  { id: "impact", num: "4", title: "Environmental Impact", subtitle: "Optional. Sub-sections appear based on your selections in Project Overview. Fill only indicators relevant to your activity, or skip if none apply." },
+  { id: "effectiveness", num: "5", title: "Effectiveness", subtitle: "Rate each criterion from 1 (Poor) to 5 (Excellent)." },
+  { id: "climate", num: "6", title: "Climate Literacy" },
+  { id: "feedback", num: "7", title: "Participant Feedback" },
+  { id: "digital", num: "8", title: "Digital Advocacy & Documentation", subtitle: "Share your campaign's online reach along with photos and supporting links." },
+  { id: "reflect-gate", num: "9", title: "Add Your Reflection?", subtitle: "You've covered all the required data. The next two sections are optional. They let you share how the activity went in your own words." },
+  { id: "lasallian", num: "10", title: "Lasallian Reflection" },
+  { id: "lessons", num: "11", title: "Lessons Learned", subtitle: "Honest reflections are more valuable than polished ones." },
 ] as const;
 
 type SectionId = (typeof SECTIONS)[number]["id"];
 const SECTIONS_MAP = Object.fromEntries(SECTIONS.map((s) => [s.id, s]));
+const REFLECT_GATE_INDEX = SECTIONS.findIndex((s) => s.id === "reflect-gate");
 
 const DRAFT_STORAGE_KEY = "lfe-report-draft-v1";
 
@@ -106,9 +108,7 @@ type Report = {
     students: string;
     faculty: string;
     staffAdmin: string;
-    community: string;
     total: string;
-    schoolPopulation: string;
     rate: string;
   };
   impact: {
@@ -178,7 +178,7 @@ const INITIAL: Report = {
     initiativeOther: "",
     sdgGoals: boolMap(SDG_GOALS),
   },
-  participation: { students: "", faculty: "", staffAdmin: "", community: "", total: "", schoolPopulation: "", rate: "" },
+  participation: { students: "", faculty: "", staffAdmin: "", total: "", rate: "" },
   impact: {
     energy: { baselineKwh: "", postKwh: "", kwhReduced: "", costSavings: "", unitsParticipating: "" },
     water: { baselineWater: "", postWater: "", litersSaved: "", costSavings: "", unitsParticipating: "" },
@@ -231,11 +231,11 @@ const LABEL_CLS = "block text-sm font-medium text-gray-700 mb-1.5";
 type SetFn = (path: string, value: unknown) => void;
 
 function Field({
-  label, path, value, onChange, type = "text", placeholder, required, hint, readOnly,
+  label, path, value, onChange, type = "text", placeholder, required, hint, readOnly, min,
 }: {
   label: string; path: string; value: string; onChange: SetFn;
   type?: string; placeholder?: string; required?: boolean; hint?: string;
-  readOnly?: boolean;
+  readOnly?: boolean; min?: number | string;
 }) {
   return (
     <div>
@@ -250,6 +250,7 @@ function Field({
         placeholder={placeholder}
         required={required}
         readOnly={readOnly}
+        min={min}
         className={`${INPUT_CLS}${readOnly ? " bg-gray-50 text-gray-600 cursor-not-allowed" : ""}`}
       />
       {hint && <p className="text-xs text-gray-500 mt-1">{hint}</p>}
@@ -527,7 +528,7 @@ function SectionCard({
           className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-2"
           style={{ color: "#2d8c3e" }}
         >
-          Section {meta.num} of X
+          Section {meta.num} of {SECTIONS.length}
         </p>
         <h3
           className="text-2xl sm:text-3xl font-bold tracking-tight leading-[1.1]"
@@ -575,9 +576,10 @@ type Status = "idle" | "loading" | "success" | "error";
 
 type ReportFormProps = {
   initialSubmitter?: { name?: string; email?: string };
+  signOutAction?: () => Promise<void>;
 };
 
-export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
+export default function ReportForm({ initialSubmitter, signOutAction }: ReportFormProps = {}) {
   const seededInitial: Report = initialSubmitter
     ? {
         ...INITIAL,
@@ -595,13 +597,19 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [consented, setConsented] = useState(false);
+  const [skipReflection, setSkipReflection] = useState(false);
   const [draftState, setDraftState] = useState<"idle" | "saving" | "saved">("idle");
   const draftLoadedRef = useRef(false);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const set: SetFn = (path, value) => dispatch({ type: "SET", path, value });
   const totalSteps = SECTIONS.length;
-  const isLastStep = currentStep === totalSteps - 1;
+  // When the user opts out of reflection, the gate step becomes the final step.
+  const isLastStep =
+    (skipReflection && currentStep === REFLECT_GATE_INDEX) ||
+    currentStep === totalSteps - 1;
+  // Only steps up to (and including) the gate count when the user is skipping.
+  const effectiveTotalSteps = skipReflection ? REFLECT_GATE_INDEX + 1 : totalSteps;
 
   // Restore any previously saved draft on first mount.
   useEffect(() => {
@@ -614,7 +622,14 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
             dispatch({ type: "SET", path: k, value: parsed.form[k] });
           });
         }
-        if (typeof parsed?.step === "number") setCurrentStep(parsed.step);
+        if (typeof parsed?.step === "number") {
+          // Clamp to a valid index in case SECTIONS shrank since the draft was saved.
+          const maxStep = SECTIONS.length - 1;
+          setCurrentStep(Math.max(0, Math.min(parsed.step, maxStep)));
+        }
+        if (typeof parsed?.skipReflection === "boolean") {
+          setSkipReflection(parsed.skipReflection);
+        }
         setDraftState("saved");
       }
       // Re-apply the current signed-in identity after any draft restore so a stale
@@ -638,7 +653,10 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
       try {
-        localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify({ form, step: currentStep }));
+        localStorage.setItem(
+          DRAFT_STORAGE_KEY,
+          JSON.stringify({ form, step: currentStep, skipReflection })
+        );
         setDraftState("saved");
       } catch {
         // storage may be full or disabled
@@ -647,7 +665,7 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     };
-  }, [form, currentStep]);
+  }, [form, currentStep, skipReflection]);
 
   function goTo(n: number) {
     if (n < 0 || n >= totalSteps) return;
@@ -682,6 +700,7 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
       dispatch({ type: "RESET" });
       setCurrentStep(0);
       setConsented(false);
+      setSkipReflection(false);
       try {
         localStorage.removeItem(DRAFT_STORAGE_KEY);
       } catch { /* ignore */ }
@@ -751,7 +770,7 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
   }
 
   const currentMeta = SECTIONS[currentStep];
-  const percentComplete = Math.round(((currentStep + 1) / totalSteps) * 100);
+  const percentComplete = Math.round(((currentStep + 1) / effectiveTotalSteps) * 100);
 
   return (
     <StepContext.Provider value={{ currentStep, direction, goTo }}>
@@ -766,7 +785,7 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
             Submit your report
           </h2>
           <p className="text-gray-500 leading-relaxed max-w-lg mx-auto text-[15px] font-light">
-            Share your institution&apos;s environmental initiative. Fill only the indicators relevant to your activity, and take breaks — your progress is saved automatically.
+            Share your institution&apos;s environmental initiative. Fill only the indicators relevant to your activity, and take breaks. Your progress is saved automatically.
           </p>
         </div>
 
@@ -774,7 +793,7 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3 px-1">
             <p className="text-[13px] font-semibold" style={{ color: "#0d3d1a" }}>
-              Step {currentStep + 1} of {totalSteps}
+              Step {currentStep + 1} of {effectiveTotalSteps}
               <span className="ml-2 font-normal text-gray-500">· {currentMeta.title}</span>
             </p>
             <p className="text-[11px] font-medium flex items-center gap-1.5" style={{ color: draftState === "saving" ? "#9ca3af" : "#2d8c3e" }} aria-live="polite">
@@ -816,20 +835,26 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
           <div className="mt-4 flex items-center justify-center gap-1.5 flex-wrap">
             {SECTIONS.map((s, i) => {
               const state = currentStep === i ? "current" : currentStep > i ? "done" : "todo";
+              const willBeSkipped = skipReflection && i > REFLECT_GATE_INDEX;
               return (
                 <button
                   key={s.id}
                   type="button"
                   onClick={() => goTo(i)}
-                  title={`Step ${i + 1}: ${s.title}`}
+                  disabled={willBeSkipped}
+                  title={
+                    willBeSkipped
+                      ? `${s.title} (skipped)`
+                      : `Step ${i + 1}: ${s.title}`
+                  }
                   aria-label={`Go to step ${i + 1}: ${s.title}`}
                   aria-current={state === "current" ? "step" : undefined}
-                  className="rounded-full transition-all duration-200 hover:scale-110"
+                  className="rounded-full transition-all duration-200 hover:scale-110 disabled:hover:scale-100 disabled:cursor-not-allowed"
                   style={{
                     width: state === "current" ? 24 : 8,
                     height: 8,
                     backgroundColor: state === "todo" ? "#e5e7eb" : "#1a5c2a",
-                    opacity: state === "done" ? 0.55 : 1,
+                    opacity: willBeSkipped ? 0.25 : state === "done" ? 0.55 : 1,
                   }}
                 />
               );
@@ -850,20 +875,31 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
               <Field label="Full Name" path="submitter.name" value={form.submitter.name} onChange={set} required placeholder="Juan Dela Cruz" />
               <Field label="Role / Position" path="submitter.role" value={form.submitter.role} onChange={set} required placeholder="Sustainability Officer" />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field
-                label="Email Address"
-                path="submitter.email"
-                type="email"
-                value={form.submitter.email}
-                onChange={set}
-                required
-                placeholder="you@school.edu.ph"
-                readOnly={emailLocked}
-                hint={emailLocked ? "From your Google sign-in — used to verify the submission." : undefined}
-              />
-              <Field label="Phone (optional)" path="submitter.phone" value={form.submitter.phone} onChange={set} placeholder="+63 917 000 0000" />
-            </div>
+            <Field
+              label="Email Address"
+              path="submitter.email"
+              type="email"
+              value={form.submitter.email}
+              onChange={set}
+              required
+              placeholder="you@school.edu.ph"
+              readOnly={emailLocked}
+              hint={emailLocked ? "From your Google sign-in. Used to verify the submission." : undefined}
+            />
+            <PhoneField label="Phone (optional)" path="submitter.phone" value={form.submitter.phone} onChange={set} />
+            {emailLocked && signOutAction && (
+              <p className="text-xs text-gray-500 pt-1">
+                Not your Google account?{" "}
+                <button
+                  type="button"
+                  onClick={() => signOutAction()}
+                  className="font-semibold underline underline-offset-2 hover:no-underline transition-colors"
+                  style={{ color: "#1a5c2a" }}
+                >
+                  Log out and switch here
+                </button>
+              </p>
+            )}
           </SectionCard>
 
           {/* -------- I. Project Overview -------- */}
@@ -915,32 +951,30 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
           {/* -------- II. Participation Data -------- */}
           <SectionCard id="participation">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Number of Students" path="participation.students" type="number" value={form.participation.students} onChange={set} />
-              <Field label="Number of Faculty" path="participation.faculty" type="number" value={form.participation.faculty} onChange={set} />
-              <Field label="Staff, Associates, and Administration" path="participation.staffAdmin" type="number" value={form.participation.staffAdmin} onChange={set} />
-              <Field label="Community Members" path="participation.community" type="number" value={form.participation.community} onChange={set} />
-              <Field label="Total Number of Participants" path="participation.total" type="number" value={form.participation.total} onChange={set} />
-              <Field label="Total School Population" path="participation.schoolPopulation" type="number" value={form.participation.schoolPopulation} onChange={set} />
+              <Field label="Number of Students" path="participation.students" type="number" min={0} value={form.participation.students} onChange={set} />
+              <Field label="Number of Faculty" path="participation.faculty" type="number" min={0} value={form.participation.faculty} onChange={set} />
+              <Field label="Staff, Associates, and Administration" path="participation.staffAdmin" type="number" min={0} value={form.participation.staffAdmin} onChange={set} />
+              <Field label="Total Number of Participants" path="participation.total" type="number" min={0} value={form.participation.total} onChange={set} />
             </div>
-            <Field label="Participation Rate (%)" path="participation.rate" type="number" value={form.participation.rate} onChange={set} placeholder="e.g., 42" />
+            <Field label="Participation Rate (%)" path="participation.rate" type="number" min={0} value={form.participation.rate} onChange={set} placeholder="e.g., 42" />
           </SectionCard>
 
           {/* -------- III. Environmental Impact Evaluation -------- */}
           <SectionCard id="impact">
             {!Object.values(form.overview.initiativeTypes).some(Boolean) && (
-              <div className="text-sm text-gray-500 bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3">
-                Select at least one Type of Initiative in Section I to reveal impact indicators.
+              <div className="text-sm text-gray-500 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
+                Nothing to fill in here yet. If your activity fits one of the initiative types in Project Overview, pick it there to see the matching indicators. Otherwise, feel free to continue.
               </div>
             )}
 
             {form.overview.initiativeTypes.energy && (
               <ImpactPanel title="Energy Conservation">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Field label="Baseline: 1 month before (kWh)" path="impact.energy.baselineKwh" type="number" value={form.impact.energy.baselineKwh} onChange={set} />
-                  <Field label="Post-activity: 1 month after (kWh)" path="impact.energy.postKwh" type="number" value={form.impact.energy.postKwh} onChange={set} />
-                  <Field label="kWh Reduced" path="impact.energy.kwhReduced" type="number" value={form.impact.energy.kwhReduced} onChange={set} />
+                  <Field label="Baseline: 1 month before (kWh)" path="impact.energy.baselineKwh" type="number" min={0} value={form.impact.energy.baselineKwh} onChange={set} />
+                  <Field label="Post-activity: 1 month after (kWh)" path="impact.energy.postKwh" type="number" min={0} value={form.impact.energy.postKwh} onChange={set} />
+                  <Field label="kWh Reduced" path="impact.energy.kwhReduced" type="number" min={0} value={form.impact.energy.kwhReduced} onChange={set} />
                   <Field label="Estimated Cost Savings" path="impact.energy.costSavings" value={form.impact.energy.costSavings} onChange={set} placeholder="₱" />
-                  <Field label="Classrooms/Offices/Departments Participating" path="impact.energy.unitsParticipating" type="number" value={form.impact.energy.unitsParticipating} onChange={set} />
+                  <Field label="Classrooms/Offices/Departments Participating" path="impact.energy.unitsParticipating" type="number" min={0} value={form.impact.energy.unitsParticipating} onChange={set} />
                 </div>
               </ImpactPanel>
             )}
@@ -950,9 +984,9 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Field label="Baseline: 1 month before (liter / m³)" path="impact.water.baselineWater" value={form.impact.water.baselineWater} onChange={set} />
                   <Field label="Post-activity: 1 month after (liter / m³)" path="impact.water.postWater" value={form.impact.water.postWater} onChange={set} />
-                  <Field label="Estimated Liters Saved" path="impact.water.litersSaved" type="number" value={form.impact.water.litersSaved} onChange={set} />
+                  <Field label="Estimated Liters Saved" path="impact.water.litersSaved" type="number" min={0} value={form.impact.water.litersSaved} onChange={set} />
                   <Field label="Estimated Cost Savings" path="impact.water.costSavings" value={form.impact.water.costSavings} onChange={set} placeholder="₱" />
-                  <Field label="Classrooms/Offices/Departments Participating" path="impact.water.unitsParticipating" type="number" value={form.impact.water.unitsParticipating} onChange={set} />
+                  <Field label="Classrooms/Offices/Departments Participating" path="impact.water.unitsParticipating" type="number" min={0} value={form.impact.water.unitsParticipating} onChange={set} />
                 </div>
               </ImpactPanel>
             )}
@@ -967,11 +1001,11 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
                   onChange={set}
                 />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Field label="Native Species Planted/Protected" path="impact.biodiversity.speciesPlanted" type="number" value={form.impact.biodiversity.speciesPlanted} onChange={set} />
+                  <Field label="Native Species Planted/Protected" path="impact.biodiversity.speciesPlanted" type="number" min={0} value={form.impact.biodiversity.speciesPlanted} onChange={set} />
                   <Field label="Area Rehabilitated (sqm / hectares)" path="impact.biodiversity.areaRehabilitated" value={form.impact.biodiversity.areaRehabilitated} onChange={set} />
-                  <Field label="Awareness Activities Conducted" path="impact.biodiversity.awarenessActivities" type="number" value={form.impact.biodiversity.awarenessActivities} onChange={set} />
+                  <Field label="Awareness Activities Conducted" path="impact.biodiversity.awarenessActivities" type="number" min={0} value={form.impact.biodiversity.awarenessActivities} onChange={set} />
                   <Field label="Partner Organizations" path="impact.biodiversity.partnerOrgs" value={form.impact.biodiversity.partnerOrgs} onChange={set} />
-                  <Field label="Classrooms/Offices/Departments Participating" path="impact.biodiversity.unitsParticipating" type="number" value={form.impact.biodiversity.unitsParticipating} onChange={set} />
+                  <Field label="Classrooms/Offices/Departments Participating" path="impact.biodiversity.unitsParticipating" type="number" min={0} value={form.impact.biodiversity.unitsParticipating} onChange={set} />
                 </div>
               </ImpactPanel>
             )}
@@ -979,12 +1013,12 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
             {form.overview.initiativeTypes.waste && (
               <ImpactPanel title="Waste Reduction / Recycling">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Field label="Baseline: 1 month before (kg)" path="impact.waste.baselineKg" type="number" value={form.impact.waste.baselineKg} onChange={set} />
-                  <Field label="Post-activity: 1 month after (kg)" path="impact.waste.postKg" type="number" value={form.impact.waste.postKg} onChange={set} />
-                  <Field label="Total Waste Collected (kg)" path="impact.waste.totalCollected" type="number" value={form.impact.waste.totalCollected} onChange={set} />
-                  <Field label="Waste Recycled / Diverted (kg)" path="impact.waste.recycledDiverted" type="number" value={form.impact.waste.recycledDiverted} onChange={set} />
-                  <Field label="Reduction in Waste Generation (%)" path="impact.waste.reductionPct" type="number" value={form.impact.waste.reductionPct} onChange={set} />
-                  <Field label="Classrooms/Offices/Departments Participating" path="impact.waste.unitsParticipating" type="number" value={form.impact.waste.unitsParticipating} onChange={set} />
+                  <Field label="Baseline: 1 month before (kg)" path="impact.waste.baselineKg" type="number" min={0} value={form.impact.waste.baselineKg} onChange={set} />
+                  <Field label="Post-activity: 1 month after (kg)" path="impact.waste.postKg" type="number" min={0} value={form.impact.waste.postKg} onChange={set} />
+                  <Field label="Total Waste Collected (kg)" path="impact.waste.totalCollected" type="number" min={0} value={form.impact.waste.totalCollected} onChange={set} />
+                  <Field label="Waste Recycled / Diverted (kg)" path="impact.waste.recycledDiverted" type="number" min={0} value={form.impact.waste.recycledDiverted} onChange={set} />
+                  <Field label="Reduction in Waste Generation (%)" path="impact.waste.reductionPct" type="number" min={0} value={form.impact.waste.reductionPct} onChange={set} />
+                  <Field label="Classrooms/Offices/Departments Participating" path="impact.waste.unitsParticipating" type="number" min={0} value={form.impact.waste.unitsParticipating} onChange={set} />
                 </div>
               </ImpactPanel>
             )}
@@ -999,10 +1033,10 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
                   onChange={set}
                 />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Field label="Sessions Conducted" path="impact.education.sessions" type="number" value={form.impact.education.sessions} onChange={set} />
-                  <Field label="Speakers / Resource Persons" path="impact.education.speakers" type="number" value={form.impact.education.speakers} onChange={set} />
-                  <Field label="Educational Materials Distributed" path="impact.education.materials" type="number" value={form.impact.education.materials} onChange={set} />
-                  <Field label="Attendees" path="impact.education.attendees" type="number" value={form.impact.education.attendees} onChange={set} />
+                  <Field label="Sessions Conducted" path="impact.education.sessions" type="number" min={0} value={form.impact.education.sessions} onChange={set} />
+                  <Field label="Speakers / Resource Persons" path="impact.education.speakers" type="number" min={0} value={form.impact.education.speakers} onChange={set} />
+                  <Field label="Educational Materials Distributed" path="impact.education.materials" type="number" min={0} value={form.impact.education.materials} onChange={set} />
+                  <Field label="Attendees" path="impact.education.attendees" type="number" min={0} value={form.impact.education.attendees} onChange={set} />
                 </div>
               </ImpactPanel>
             )}
@@ -1021,11 +1055,11 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
                   <Field label="Please specify" path="impact.cleanup.areaOther" value={form.impact.cleanup.areaOther} onChange={set} />
                 )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Field label="Total Waste Collected (kg)" path="impact.cleanup.wasteCollected" type="number" value={form.impact.cleanup.wasteCollected} onChange={set} />
+                  <Field label="Total Waste Collected (kg)" path="impact.cleanup.wasteCollected" type="number" min={0} value={form.impact.cleanup.wasteCollected} onChange={set} />
                   <Field label="Area Cleaned (sqm / hectares)" path="impact.cleanup.areaCleaned" value={form.impact.cleanup.areaCleaned} onChange={set} />
-                  <Field label="Trash Bags Filled" path="impact.cleanup.bagsFilled" type="number" value={form.impact.cleanup.bagsFilled} onChange={set} />
+                  <Field label="Trash Bags Filled" path="impact.cleanup.bagsFilled" type="number" min={0} value={form.impact.cleanup.bagsFilled} onChange={set} />
                   <Field label="Partner Organizations" path="impact.cleanup.partnerOrgs" value={form.impact.cleanup.partnerOrgs} onChange={set} />
-                  <Field label="Volunteers Involved" path="impact.cleanup.volunteers" type="number" value={form.impact.cleanup.volunteers} onChange={set} />
+                  <Field label="Volunteers Involved" path="impact.cleanup.volunteers" type="number" min={0} value={form.impact.cleanup.volunteers} onChange={set} />
                 </div>
               </ImpactPanel>
             )}
@@ -1033,12 +1067,12 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
             {form.overview.initiativeTypes.circular && (
               <ImpactPanel title="Circular Economy Drive">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Field label="Donated Items Collected" path="impact.circular.itemsCollected" type="number" value={form.impact.circular.itemsCollected} onChange={set} />
-                  <Field label="Items Sold / Redistributed" path="impact.circular.itemsRedistributed" type="number" value={form.impact.circular.itemsRedistributed} onChange={set} />
+                  <Field label="Donated Items Collected" path="impact.circular.itemsCollected" type="number" min={0} value={form.impact.circular.itemsCollected} onChange={set} />
+                  <Field label="Items Sold / Redistributed" path="impact.circular.itemsRedistributed" type="number" min={0} value={form.impact.circular.itemsRedistributed} onChange={set} />
                   <Field label="Funds Raised" path="impact.circular.fundsRaised" value={form.impact.circular.fundsRaised} onChange={set} placeholder="₱" />
                   <Field label="Beneficiary Organization(s)" path="impact.circular.beneficiaryOrgs" value={form.impact.circular.beneficiaryOrgs} onChange={set} />
                   <Field label="Partner Organizations" path="impact.circular.partnerOrgs" value={form.impact.circular.partnerOrgs} onChange={set} />
-                  <Field label="Volunteers Involved" path="impact.circular.volunteers" type="number" value={form.impact.circular.volunteers} onChange={set} />
+                  <Field label="Volunteers Involved" path="impact.circular.volunteers" type="number" min={0} value={form.impact.circular.volunteers} onChange={set} />
                 </div>
               </ImpactPanel>
             )}
@@ -1144,6 +1178,7 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <input
                   type="number"
+                  min={0}
                   placeholder="Reactions / Likes"
                   className={INPUT_CLS}
                   value={form.digitalAdvocacy.reach.reactions}
@@ -1151,6 +1186,7 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
                 />
                 <input
                   type="number"
+                  min={0}
                   placeholder="Comments"
                   className={INPUT_CLS}
                   value={form.digitalAdvocacy.reach.comments}
@@ -1158,6 +1194,7 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
                 />
                 <input
                   type="number"
+                  min={0}
                   placeholder="Shares / Reposts"
                   className={INPUT_CLS}
                   value={form.digitalAdvocacy.reach.shares}
@@ -1165,6 +1202,7 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
                 />
                 <input
                   type="number"
+                  min={0}
                   placeholder="Reach / Views"
                   className={INPUT_CLS}
                   value={form.digitalAdvocacy.reach.views}
@@ -1181,6 +1219,127 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
               rows={4}
               placeholder="One URL per line"
             />
+
+            <Textarea
+              label="Photo / Documentation Links"
+              path="documentationLinks"
+              value={form.documentationLinks}
+              onChange={set}
+              rows={4}
+              placeholder="One URL per line"
+              hint="Optional. Paste links to photos, event pages, or supporting docs."
+            />
+          </SectionCard>
+
+          {/* -------- Reflection gate: opt in/out of the last two sections -------- */}
+          <SectionCard id="reflect-gate">
+            <div
+              className="rounded-2xl px-6 py-5 text-[14px] text-gray-700 leading-relaxed"
+              style={{ backgroundColor: "#f0faf1" }}
+            >
+              <p className="font-semibold mb-1.5" style={{ color: "#1a5c2a" }}>
+                We have the data we needed.
+              </p>
+              <p>
+                The next two sections, <strong>Lasallian Reflection</strong> and{" "}
+                <strong>Lessons Learned</strong>, let you share how the activity went in your own words. They&apos;re optional, but the district committee reads them closely.
+              </p>
+            </div>
+
+            <p className="text-[15px] font-medium text-gray-800 pt-2">
+              Do you want to provide your own reflection?
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setSkipReflection(false);
+                  goTo(currentStep + 1);
+                }}
+                className="text-left rounded-2xl p-5 border transition-all hover:-translate-y-px"
+                style={{
+                  backgroundColor: !skipReflection ? "#f0faf1" : "#ffffff",
+                  borderColor: !skipReflection ? "#1a5c2a" : "#e5e7eb",
+                  boxShadow: !skipReflection
+                    ? "0 6px 16px -6px rgba(26,92,42,0.25)"
+                    : "none",
+                }}
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <span
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-white shrink-0"
+                    style={{ backgroundColor: "#1a5c2a" }}
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </span>
+                  <p
+                    className="font-semibold text-[15px]"
+                    style={{ color: "#0d3d1a" }}
+                  >
+                    Yes, add my reflection
+                  </p>
+                </div>
+                <p className="text-[13px] text-gray-600 leading-relaxed">
+                  Continue to the two reflection sections.
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSkipReflection(true)}
+                className="text-left rounded-2xl p-5 border transition-all hover:-translate-y-px"
+                style={{
+                  backgroundColor: skipReflection ? "#f0faf1" : "#ffffff",
+                  borderColor: skipReflection ? "#1a5c2a" : "#e5e7eb",
+                  boxShadow: skipReflection
+                    ? "0 6px 16px -6px rgba(26,92,42,0.25)"
+                    : "none",
+                }}
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <span
+                    className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                    style={{
+                      backgroundColor: skipReflection ? "#1a5c2a" : "#f3f4f6",
+                      color: skipReflection ? "#ffffff" : "#6b7280",
+                    }}
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                      <polyline points="12 5 19 12 12 19" />
+                    </svg>
+                  </span>
+                  <p
+                    className="font-semibold text-[15px]"
+                    style={{ color: "#0d3d1a" }}
+                  >
+                    No, submit as-is
+                  </p>
+                </div>
+                <p className="text-[13px] text-gray-600 leading-relaxed">
+                  Send just the data. You can always follow up by email.
+                </p>
+              </button>
+            </div>
           </SectionCard>
 
           {/* -------- IX. Lasallian Reflection -------- */}
@@ -1233,18 +1392,6 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
             )}
           </SectionCard>
 
-          {/* -------- Documentation -------- */}
-          <SectionCard id="documentation">
-            <Textarea
-              label="Photo / Documentation Links"
-              path="documentationLinks"
-              value={form.documentationLinks}
-              onChange={set}
-              rows={4}
-              placeholder="One URL per line"
-            />
-          </SectionCard>
-
           {/* -------- Consent block (only on last step, above sticky nav) -------- */}
           {isLastStep && (
             <div className="mt-6 space-y-4">
@@ -1255,7 +1402,7 @@ export default function ReportForm({ initialSubmitter }: ReportFormProps = {}) {
                 <p className="font-semibold mb-1.5" style={{ color: "#1a5c2a" }}>Before you submit</p>
                 <p>
                   Your report will be used solely for the{" "}
-                  <strong>#LEADforEarth</strong> initiative of the Lasallian East Asia District — to track progress, compile district-wide results, and support future environmental campaigns.
+                  <strong>#LEADforEarth</strong> initiative of the Lasallian East Asia District, to track progress, compile district-wide results, and support future environmental campaigns.
                 </p>
               </div>
 
