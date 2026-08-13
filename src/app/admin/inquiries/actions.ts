@@ -65,7 +65,7 @@ export async function sendReply(
       subject,
       inReplyTo,
       references,
-      text: `${trimmed}\n\n— ${authorName ?? authorEmail}\nLEADForEarth Committee`,
+      text: `${trimmed}\n\n- ${authorName ?? authorEmail}\nLEADForEarth Committee`,
       html: `
         <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#2d2d2d">
           <div style="background:#1a5c2a;padding:20px 28px;border-radius:12px 12px 0 0">
@@ -73,7 +73,7 @@ export async function sendReply(
           </div>
           <div style="background:#f7faf7;padding:28px;border-radius:0 0 12px 12px;border:1px solid #e0e0e0">
             <p style="line-height:1.7;white-space:pre-wrap;margin:0 0 20px 0">${escapeHtml(trimmed)}</p>
-            <p style="color:#757575;font-size:13px;margin:0">— ${escapeHtml(authorName ?? authorEmail)}<br/>LEADForEarth Committee</p>
+            <p style="color:#757575;font-size:13px;margin:0">- ${escapeHtml(authorName ?? authorEmail)}<br/>LEADForEarth Committee</p>
           </div>
         </div>
       `,

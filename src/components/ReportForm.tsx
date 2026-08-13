@@ -109,7 +109,6 @@ type Report = {
     faculty: string;
     staffAdmin: string;
     total: string;
-    rate: string;
   };
   impact: {
     energy: { baselineKwh: string; postKwh: string; kwhReduced: string; costSavings: string; unitsParticipating: string };
@@ -178,7 +177,7 @@ const INITIAL: Report = {
     initiativeOther: "",
     sdgGoals: boolMap(SDG_GOALS),
   },
-  participation: { students: "", faculty: "", staffAdmin: "", total: "", rate: "" },
+  participation: { students: "", faculty: "", staffAdmin: "", total: "" },
   impact: {
     energy: { baselineKwh: "", postKwh: "", kwhReduced: "", costSavings: "", unitsParticipating: "" },
     water: { baselineWater: "", postWater: "", litersSaved: "", costSavings: "", unitsParticipating: "" },
@@ -956,7 +955,6 @@ export default function ReportForm({ initialSubmitter, signOutAction }: ReportFo
               <Field label="Staff, Associates, and Administration" path="participation.staffAdmin" type="number" min={0} value={form.participation.staffAdmin} onChange={set} />
               <Field label="Total Number of Participants" path="participation.total" type="number" min={0} value={form.participation.total} onChange={set} />
             </div>
-            <Field label="Participation Rate (%)" path="participation.rate" type="number" min={0} value={form.participation.rate} onChange={set} placeholder="e.g., 42" />
           </SectionCard>
 
           {/* -------- III. Environmental Impact Evaluation -------- */}

@@ -9,7 +9,7 @@ export default function SkipLink() {
         e.preventDefault();
         const main = document.getElementById("main");
         if (!main) return;
-        // Programmatic focus + scroll — browsers don't do this for a bare anchor.
+        // Programmatic focus + scroll; browsers don't do this for a bare anchor.
         main.focus({ preventScroll: true });
         main.scrollIntoView({ behavior: "smooth", block: "start" });
       }}

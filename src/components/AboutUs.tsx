@@ -109,7 +109,7 @@ export default function AboutUs() {
           </div>
         </div>
 
-        {/* Values — quieter sub-heading, no giant two-tone repeat */}
+        {/* Values; quieter sub-heading, no giant two-tone repeat */}
         <div>
           <div className="flex items-baseline justify-between mb-10 pb-4 border-b border-gray-200">
             <h3 className="text-xl sm:text-2xl font-semibold tracking-tight" style={{ color: "#0d3d1a" }}>

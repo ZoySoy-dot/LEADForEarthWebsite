@@ -77,7 +77,7 @@ export default function Header() {
             </span>
           </Link>
 
-          {/* Desktop nav — page-level only */}
+          {/* Desktop nav; page-level only */}
           <nav className="hidden md:flex items-center gap-1" aria-label="Primary">
             <Link
               href="/"

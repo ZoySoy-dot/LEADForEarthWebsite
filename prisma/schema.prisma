@@ -42,7 +42,7 @@ model Report {
   initiativeOther      String?   @map("initiative_other")
   sdgGoals             String[]  @map("sdg_goals")
 
-  // Participation (Section II) — numeric so we can SUM/AVG across the district
+  // Participation (Section II); numeric so we can SUM/AVG across the district
   students             Int?
   faculty              Int?
   staffAdmin           Int?      @map("staff_admin")
@@ -51,14 +51,14 @@ model Report {
   schoolPopulation     Int?      @map("school_population")
   participationRate    Decimal?  @map("participation_rate") @db.Decimal(6, 2)
 
-  // Impact (Section III) — shape varies by initiative type, so JSON.
+  // Impact (Section III); shape varies by initiative type, so JSON.
   // Example: { "energy": { "baselineKwh": "1200", "postKwh": "900" }, "water": {...} }
   impact               Json      @default("{}")
 
-  // Effectiveness (Section IV) — array of { criteria, rating, remarks }
+  // Effectiveness (Section IV); array of { criteria, rating, remarks }
   effectiveness        Json      @default("[]")
 
-  // Digital advocacy (Section VII) — numeric reach fields promoted for aggregation
+  // Digital advocacy (Section VII); numeric reach fields promoted for aggregation
   digitalPlatforms     String[]  @map("digital_platforms")
   digitalPlatformOther String?   @map("digital_platform_other")
   hashtagUsed          String?   @map("hashtag_used")

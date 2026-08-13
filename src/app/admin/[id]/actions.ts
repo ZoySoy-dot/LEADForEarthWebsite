@@ -44,7 +44,7 @@ export async function deleteReport(id: string): Promise<{ error?: string }> {
   redirect("/admin");
 }
 
-// Editable subset — the fields most likely to need typo fixes.
+// Editable subset; the fields most likely to need typo fixes.
 // Structured (impact/effectiveness/SDGs) stay read-only; those live in JSON blobs.
 export async function updateReport(
   id: string,

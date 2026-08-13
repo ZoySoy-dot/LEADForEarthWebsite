@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import DistrictMap from "@/components/DistrictMap";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SkipLink from "@/components/SkipLink";
+import { LEAD_SCHOOLS_BY_COUNTRY } from "@/data/schools";
+import { buildDistrictMapData, LEAD_COUNTRY_IDS } from "@/lib/districtMapData";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
@@ -59,42 +62,74 @@ async function loadInstitutions(): Promise<Institution[]> {
     .sort((a, b) => b.reports - a.reports || a.name.localeCompare(b.name));
 }
 
+// Maps each known Lasallian school name (lowercased) to its country. Used to
+// bucket free-text schoolName entries into countries so the map can show
+// per-country schools and counts.
+const SCHOOL_TO_COUNTRY = new Map<string, string>(
+  Object.entries(LEAD_SCHOOLS_BY_COUNTRY).flatMap(([country, names]) =>
+    names.map((n) => [n.toLowerCase(), country] as const)
+  )
+);
+
+function groupByCountry(institutions: Institution[]): Record<string, Institution[]> {
+  const out: Record<string, Institution[]> = {};
+  for (const country of Object.keys(LEAD_COUNTRY_IDS)) out[country] = [];
+  for (const inst of institutions) {
+    const country = SCHOOL_TO_COUNTRY.get(inst.name.toLowerCase());
+    if (country && country in out) out[country].push(inst);
+  }
+  // Highest-count schools first within each country
+  for (const list of Object.values(out)) {
+    list.sort((a, b) => b.reports - a.reports || a.name.localeCompare(b.name));
+  }
+  return out;
+}
+
 export default async function CommunityPage() {
   const institutions = await loadInstitutions();
   const totalReports = institutions.reduce((s, i) => s + i.reports, 0);
   const totalParticipants = institutions.reduce((s, i) => s + i.participants, 0);
+  const mapData = buildDistrictMapData();
+  const schoolsByCountry = groupByCountry(institutions);
 
   return (
     <>
       <SkipLink />
       <Header />
       <main id="main" tabIndex={-1} className="pt-[68px] focus:outline-none">
+        <section style={{ backgroundColor: "#fafbfa" }}>
+          <DistrictMap mapData={mapData} schoolsByCountry={schoolsByCountry} />
+        </section>
+
         <section
-          className="px-6 py-16 sm:py-20"
+          className="px-6 pt-14 pb-10 sm:pt-20 sm:pb-14"
+          style={{ backgroundColor: "#fafbfa" }}
+        >
+          <div className="max-w-3xl mx-auto text-center">
+            <p
+              className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-3"
+              style={{ color: "#2d8c3e" }}
+            >
+              #LEADforEarth
+            </p>
+            <h1
+              className="text-4xl sm:text-5xl font-bold tracking-tight mb-4"
+              style={{ color: "#0d3d1a" }}
+            >
+              Our Community
+            </h1>
+            <p className="text-[15px] sm:text-[16px] text-gray-500 leading-relaxed max-w-2xl mx-auto">
+              Seven sectors across East Asia, one Lasallian district
+              contributing to the #LEADforEarth campaign.
+            </p>
+          </div>
+        </section>
+
+        <section
+          className="px-6 pt-4 pb-16 sm:pt-6 sm:pb-20"
           style={{ backgroundColor: "#fafbfa" }}
         >
           <div className="max-w-5xl mx-auto">
-            {/* Heading */}
-            <div className="text-center mb-12 sm:mb-16">
-              <p
-                className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-3"
-                style={{ color: "#2d8c3e" }}
-              >
-                #LEADforEarth
-              </p>
-              <h1
-                className="text-4xl sm:text-5xl font-bold tracking-tight mb-4"
-                style={{ color: "#0d3d1a" }}
-              >
-                Our Community
-              </h1>
-              <p className="text-[15px] sm:text-[16px] text-gray-500 leading-relaxed max-w-2xl mx-auto">
-                Lasallian schools across East Asia contributing reports to the
-                district-wide campaign. Every submission helps us learn what
-                works and what to try next.
-              </p>
-            </div>
-
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
               <StatCard label="Institutions" value={institutions.length.toLocaleString()} />

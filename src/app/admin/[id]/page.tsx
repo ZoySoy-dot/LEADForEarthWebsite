@@ -106,7 +106,7 @@ const CLEANUP_AREA_LABELS: Record<string, string> = {
 };
 
 function fmtDate(d: Date | null): string {
-  if (!d) return "—";
+  if (!d) return "-";
   return new Intl.DateTimeFormat("en-US", { year: "numeric", month: "long", day: "numeric" }).format(d);
 }
 
@@ -116,7 +116,7 @@ function fmtDateTime(d: Date): string {
   }).format(d);
 }
 
-// Type guard for the impact JSON — treats anything non-object as empty.
+// Type guard for the impact JSON; treats anything non-object as empty.
 type ImpactBucket = Record<string, unknown>;
 function bucket(impact: unknown, key: string): ImpactBucket {
   if (!impact || typeof impact !== "object") return {};
@@ -149,7 +149,7 @@ export default async function ReportDetailPage({
   if (!report) notFound();
 
   const labelList = (keys: string[], labels: Record<string, string>) =>
-    keys.length ? keys.map((k) => labels[k] ?? k).join(", ") : "—";
+    keys.length ? keys.map((k) => labels[k] ?? k).join(", ") : "-";
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -166,7 +166,7 @@ export default async function ReportDetailPage({
         </Link>
         <div className="flex items-center gap-2">
           <StatusControl reportId={report.id} currentStatus={report.status} />
-          <ActionsMenu reportId={report.id} reportLabel={`${report.schoolName} — ${report.projectTitle}`} />
+          <ActionsMenu reportId={report.id} reportLabel={`${report.schoolName}; ${report.projectTitle}`} />
         </div>
       </div>
 
@@ -249,7 +249,7 @@ export default async function ReportDetailPage({
 
           <Section title="Participant Feedback">
             <p className="text-[14px] text-gray-700 whitespace-pre-wrap">
-              {report.reflection.participantFeedback || "—"}
+              {report.reflection.participantFeedback || "-"}
             </p>
           </Section>
 
@@ -320,7 +320,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
-  const display = value === null || value === undefined || value === "" ? "—" : value;
+  const display = value === null || value === undefined || value === "" ? "-" : value;
   return (
     <div className="grid grid-cols-1 sm:grid-cols-[220px_1fr] gap-1 sm:gap-4 py-2 border-b border-gray-50 last:border-0">
       <span className="text-[12px] text-gray-500 font-medium">{label}</span>
@@ -330,7 +330,7 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 }
 
 function SdgChips({ keys }: { keys: string[] }) {
-  if (!keys.length) return <>—</>;
+  if (!keys.length) return <>-</>;
   return (
     <div className="flex flex-wrap gap-1.5">
       {keys.map((k) => (
@@ -491,7 +491,7 @@ function RatingChip({ value }: { value: string }) {
         color: valid ? "#ffffff" : "#9ca3af",
       }}
     >
-      <span className="text-base font-bold leading-none">{valid ? n : "—"}</span>
+      <span className="text-base font-bold leading-none">{valid ? n : "-"}</span>
     </div>
   );
 }

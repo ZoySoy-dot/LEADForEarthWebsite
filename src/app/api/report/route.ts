@@ -30,7 +30,7 @@ function pickedKeys(obj: unknown): string[] {
 }
 
 export async function POST(req: NextRequest) {
-  // Require a signed-in Google user — anti-spam guarantee.
+  // Require a signed-in Google user; anti-spam guarantee.
   const session = await auth();
   const sessionEmail = session?.user?.email?.toLowerCase();
   if (!sessionEmail) {

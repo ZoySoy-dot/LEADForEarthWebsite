@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { AddAdminForm, RemoveAdminButton } from "./ui";
 
 function fmt(d: Date | null): string {
-  if (!d) return "—";
+  if (!d) return "-";
   return new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(d);
 }
 

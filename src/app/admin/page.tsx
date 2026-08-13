@@ -19,7 +19,7 @@ const SDG_COLOR: Record<string, string> = Object.fromEntries(
 );
 
 function formatDate(d: Date | null): string {
-  if (!d) return "—";
+  if (!d) return "-";
   return new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(d);
 }
 
@@ -126,7 +126,7 @@ export default async function AdminHome() {
                       {formatDate(r.dateImplemented)}
                     </td>
                     <td className="py-4 px-5 text-[13px] text-gray-800 font-medium">
-                      {r.totalParticipants?.toLocaleString() ?? "—"}
+                      {r.totalParticipants?.toLocaleString() ?? "-"}
                     </td>
                     <td className="py-4 px-5">
                       <div className="flex flex-wrap gap-1 max-w-[220px]">

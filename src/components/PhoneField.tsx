@@ -22,7 +22,7 @@ type Props = {
 const REGION_NAMES = new Intl.DisplayNames(["en"], { type: "region" });
 
 // Convert ISO 3166-1 alpha-2 (e.g. "PH") into its regional-indicator flag emoji (🇵🇭).
-// Windows chrome may render as the letter pair rather than a flag — that's a benign fallback.
+// Windows chrome may render as the letter pair rather than a flag; that's a benign fallback.
 function flagEmoji(cc: string): string {
   return cc
     .toUpperCase()

@@ -58,7 +58,7 @@ export default async function EditReportPage({
           {report.projectTitle}
         </h1>
         <p className="mt-3 text-[14px] text-gray-500 leading-relaxed max-w-xl">
-          Edit typos and correct basic info. Complex fields (SDGs, initiative impact data, effectiveness ratings) are read-only here — those come straight from the submitter&apos;s form.
+          Edit typos and correct basic info. Complex fields (SDGs, initiative impact data, effectiveness ratings) are read-only here; those come straight from the submitter&apos;s form.
         </p>
       </div>
 
