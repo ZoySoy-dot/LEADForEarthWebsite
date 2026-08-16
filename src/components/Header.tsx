@@ -70,7 +70,8 @@ export default function Header() {
               priority
             />
             <span
-              className="text-[17px] font-semibold tracking-tight leading-none -ml-3"
+              translate="no"
+              className="notranslate text-[17px] font-semibold tracking-tight leading-none -ml-3"
               style={{ color: "#1a5c2a" }}
             >
               LEAD<span style={{ color: "#111" }}>ForEarth</span>

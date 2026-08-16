@@ -1,42 +1,40 @@
-function LeafIcon() {
+// Signum Fidei: the Lasallian five-point star. Reused from the community
+// globe so the site's brand mark stays consistent.
+function StarIcon() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M11 20A7 7 0 0 1 4 13c0-6 6-11 15-11 0 8-4 15-8 15z" />
-      <path d="M4 13c2 0 6 1 8 8" />
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <path d="M12 2 L14.25 8.91 L21.51 8.91 L15.63 13.18 L17.88 20.09 L12 15.82 L6.12 20.09 L8.37 13.18 L2.49 8.91 L9.75 8.91 Z" />
     </svg>
   );
 }
 
-function SproutIcon() {
+function FlameIcon() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22V12" />
-      <path d="M4 8c0-3 2-5 5-5 0 5-2 8-5 8V8z" />
-      <path d="M20 6c0-3-2-5-5-5 0 5 2 8 5 8V6z" />
-      <path d="M6 22h12" />
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
     </svg>
   );
 }
 
 function GlobeIcon() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="9" />
-      <ellipse cx="12" cy="12" rx="4" ry="9" />
-      <path d="M3 12h18" />
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M2 12h20" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
     </svg>
   );
 }
 
 const values = [
   {
-    icon: <LeafIcon />,
+    icon: <StarIcon />,
     title: "Spirit of Faith",
     description:
       "Every action we take is grounded in our relationship with the Creator who entrusted this Earth to our care.",
   },
   {
-    icon: <SproutIcon />,
+    icon: <FlameIcon />,
     title: "Zeal for Service",
     description:
       "We translate concern into concrete action, approaching our work with generosity and creativity.",

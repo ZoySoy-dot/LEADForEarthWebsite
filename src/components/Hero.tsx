@@ -1,141 +1,153 @@
 import Image from "next/image";
-
-const stars = [
-  [80,28,1.2],[155,14,1],[240,42,0.8],[330,18,1.1],[420,35,0.9],[510,12,1.3],
-  [600,45,0.8],[695,22,1],[780,38,0.7],[870,16,1.2],[960,40,0.9],[1050,20,1.1],
-  [1140,48,0.8],[1230,15,1],[1320,36,0.9],[1400,24,1.2],[60,85,0.7],[180,72,1],
-  [290,95,0.8],[400,68,1.1],[520,88,0.7],[640,75,0.9],[760,92,0.8],[880,70,1],
-  [1000,86,0.7],[1110,74,0.9],[1220,90,0.8],[1350,78,1],[120,140,0.6],[250,128,0.8],
-  [380,148,0.6],[500,132,0.7],[630,145,0.6],[750,130,0.8],[880,150,0.6],[1010,136,0.7],
-  [1140,148,0.6],[1270,134,0.8],[1390,146,0.6],[45,195,0.5],[175,182,0.7],[310,200,0.5],
-  [450,188,0.6],[590,202,0.5],[730,186,0.7],[865,198,0.5],[1000,184,0.6],
-  [1130,200,0.5],[1260,188,0.7],[1400,196,0.5],
-];
+import Link from "next/link";
 
 export default function Hero() {
   return (
     <section
       id="home"
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      style={{ backgroundColor: "#0a1e18" }}
     >
-      {/* Sky → Forest → Ocean layered background */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: [
-            "radial-gradient(ellipse 110% 50% at 50% 0%, rgba(40,90,200,0.22) 0%, transparent 100%)",
-            "radial-gradient(ellipse 60% 35% at 18% 52%, rgba(20,110,45,0.35) 0%, transparent 100%)",
-            "radial-gradient(ellipse 80% 45% at 72% 95%, rgba(10,65,130,0.35) 0%, transparent 100%)",
-            "linear-gradient(180deg, #020810 0%, #060e22 12%, #091830 24%, #08181c 36%, #091e0e 46%, #0d3d1a 58%, #083040 72%, #051828 86%, #020810 100%)",
-          ].join(", "),
-        }}
-      />
-
-      {/* Stars */}
+      {/* Editorial botanical accent: top-right leaf-blob. Flat fill, no
+          gradient; sits behind everything at low opacity to add depth. */}
       <svg
-        className="absolute top-0 left-0 w-full pointer-events-none select-none"
-        style={{ height: "42%" }}
-        viewBox="0 0 1440 380"
-        preserveAspectRatio="xMidYMin slice"
+        aria-hidden="true"
+        className="absolute -top-24 -right-24 w-[520px] h-[520px] md:w-[680px] md:h-[680px] pointer-events-none select-none"
+        viewBox="0 0 600 600"
+        fill="none"
       >
-        {stars.map(([cx, cy, r], i) => (
-          <circle key={i} cx={cx} cy={cy} r={r} fill="white" opacity={0.35 + (i % 5) * 0.1} />
-        ))}
-        {/* Subtle Milky Way band */}
-        <ellipse cx="720" cy="120" rx="680" ry="30" fill="white" opacity="0.015"/>
+        <path
+          d="M480 60C560 120 590 240 550 350C520 435 430 500 320 505C210 510 130 460 100 370C70 285 105 190 190 130C275 70 400 20 480 60Z"
+          fill="#14332a"
+          opacity="0.55"
+        />
+        <path
+          d="M450 110C510 160 530 250 500 335C475 400 410 445 330 445C255 445 195 405 175 345C155 285 185 220 245 180C305 140 390 60 450 110Z"
+          fill="#1a5c2a"
+          opacity="0.28"
+        />
       </svg>
 
-      {/* Tree silhouette horizon */}
-      <div
-        className="absolute left-0 right-0 pointer-events-none select-none"
-        style={{ top: "40%", opacity: 0.35 }}
+      {/* Editorial botanical accent: bottom-left, mirrored organic form. */}
+      <svg
+        aria-hidden="true"
+        className="absolute -bottom-32 -left-32 w-[560px] h-[560px] md:w-[720px] md:h-[720px] pointer-events-none select-none"
+        viewBox="0 0 600 600"
+        fill="none"
       >
-        <svg width="100%" height="140" viewBox="0 0 1440 140" preserveAspectRatio="xMidYMax slice">
-          {/* Left forest */}
-          <path d="M0 140 L0 105 L18 68 L36 105 L36 140Z" fill="#071a0a"/>
-          <path d="M28 140 L28 88 L52 48 L76 88 L76 140Z" fill="#091e0c"/>
-          <path d="M62 140 L62 98 L82 62 L102 98 L102 140Z" fill="#071a0a"/>
-          <path d="M88 140 L88 80 L118 36 L148 80 L148 140Z" fill="#0a2410"/>
-          <path d="M130 140 L130 95 L152 58 L174 95 L174 140Z" fill="#071a0a"/>
-          <path d="M158 140 L158 100 L180 62 L202 100 L202 140Z" fill="#091e0c"/>
-          <path d="M188 140 L188 85 L215 42 L242 85 L242 140Z" fill="#071a0a"/>
-          <path d="M228 140 L228 102 L248 66 L268 102 L268 140Z" fill="#0a2410"/>
-          <path d="M255 140 L255 90 L282 50 L309 90 L309 140Z" fill="#071a0a"/>
-          <path d="M292 140 L292 108 L310 75 L328 108 L328 140Z" fill="#091e0c"/>
-          <path d="M315 140 L315 92 L340 52 L365 92 L365 140Z" fill="#071a0a"/>
-          <path d="M350 140 L350 110 L368 78 L386 110 L386 140Z" fill="#0a2410"/>
-          {/* Right forest */}
-          <path d="M1440 140 L1440 105 L1422 68 L1404 105 L1404 140Z" fill="#071a0a"/>
-          <path d="M1412 140 L1412 88 L1388 48 L1364 88 L1364 140Z" fill="#091e0c"/>
-          <path d="M1368 140 L1368 98 L1348 62 L1328 98 L1328 140Z" fill="#071a0a"/>
-          <path d="M1335 140 L1335 80 L1305 36 L1275 80 L1275 140Z" fill="#0a2410"/>
-          <path d="M1280 140 L1280 95 L1258 58 L1236 95 L1236 140Z" fill="#071a0a"/>
-          <path d="M1242 140 L1242 100 L1220 62 L1198 100 L1198 140Z" fill="#091e0c"/>
-          <path d="M1202 140 L1202 85 L1175 42 L1148 85 L1148 140Z" fill="#071a0a"/>
-          <path d="M1153 140 L1153 102 L1133 66 L1113 102 L1113 140Z" fill="#0a2410"/>
-          <path d="M1118 140 L1118 90 L1091 50 L1064 90 L1064 140Z" fill="#071a0a"/>
-          <path d="M1068 140 L1068 108 L1050 75 L1032 108 L1032 140Z" fill="#091e0c"/>
-          <path d="M1035 140 L1035 92 L1010 52 L985 92 L985 140Z" fill="#071a0a"/>
-          <path d="M988 140 L988 110 L970 78 L952 110 L952 140Z" fill="#0a2410"/>
-          {/* Ground fill */}
-          <rect x="0" y="120" width="1440" height="20" fill="#071a0a"/>
-        </svg>
-      </div>
+        <path
+          d="M120 540C40 480 10 360 50 250C80 165 170 100 280 95C390 90 470 140 500 230C530 315 495 410 410 470C325 530 200 600 120 540Z"
+          fill="#14332a"
+          opacity="0.5"
+        />
+        <path
+          d="M150 490C90 440 70 350 100 265C125 200 190 155 270 155C345 155 405 195 425 255C445 315 415 380 355 420C295 460 210 540 150 490Z"
+          fill="#1a5c2a"
+          opacity="0.25"
+        />
+      </svg>
 
-      {/* Water ripples */}
-      <div
-        className="absolute left-0 right-0 bottom-0 pointer-events-none select-none"
-        style={{ top: "68%" }}
+      {/* Hairline orbital arcs, echo the SDG wheel roundness and give a
+          global / hemisphere motif without shouting. */}
+      <svg
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full pointer-events-none select-none"
+        viewBox="0 0 1440 900"
+        preserveAspectRatio="xMidYMid slice"
+        fill="none"
       >
-        <svg width="100%" height="100%" viewBox="0 0 1440 320" preserveAspectRatio="xMidYMid slice">
-          {[
-            [0, 0.06], [50, 0.05], [100, 0.07], [150, 0.05], [200, 0.06],
-            [260, 0.04], [320, 0.05], [380, 0.04], [440, 0.05],
-          ].map(([y, op], i) => (
-            <path
-              key={i}
-              d={`M0 ${y} Q360 ${(y as number) + (i % 2 === 0 ? -10 : 10)} 720 ${y} Q1080 ${(y as number) + (i % 2 === 0 ? 10 : -10)} 1440 ${y}`}
-              stroke="white" strokeWidth="0.7" fill="none" opacity={op}
-            />
-          ))}
-        </svg>
-      </div>
+        <ellipse
+          cx="1000"
+          cy="450"
+          rx="640"
+          ry="640"
+          stroke="rgba(200,230,210,0.08)"
+          strokeWidth="1"
+        />
+        <ellipse
+          cx="1000"
+          cy="450"
+          rx="480"
+          ry="480"
+          stroke="rgba(200,230,210,0.05)"
+          strokeWidth="1"
+        />
+        <ellipse
+          cx="1000"
+          cy="450"
+          rx="820"
+          ry="820"
+          stroke="rgba(200,230,210,0.04)"
+          strokeWidth="1"
+        />
+      </svg>
 
-      {/* Dot-grid texture */}
-      <div className="absolute inset-0 pointer-events-none select-none" style={{ opacity: 0.025 }}>
-        <svg width="100%" height="100%">
-          <defs>
-            <pattern id="dots" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
-              <circle cx="2" cy="2" r="1.5" fill="white"/>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#dots)"/>
-        </svg>
-      </div>
+      {/* Film-grain texture: SVG turbulence gives a warm, tactile finish. */}
+      <svg
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full pointer-events-none select-none mix-blend-overlay"
+        style={{ opacity: 0.35 }}
+      >
+        <filter id="hero-grain">
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
+          <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.35 0" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#hero-grain)" />
+      </svg>
 
-      {/* Main content */}
-      <div className="relative z-10 max-w-6xl mx-auto px-6 py-24 flex flex-col md:flex-row items-center gap-16">
+      {/* Main content: flex-col-reverse puts the SDG wheel above the copy on
+          mobile so users get a visual anchor before the wall of text. */}
+      <div className="relative z-10 max-w-6xl mx-auto px-6 py-24 flex flex-col-reverse md:flex-row items-center gap-16">
 
         {/* Text */}
         <div className="flex-1 text-center md:text-left">
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.05] mb-6 tracking-tight">
             One District,
             <br />
-            <span style={{ color: "#a8d5b0" }}>One Mission</span>
+            One Mission
             <br />
-            for the Earth.
+            for the <span style={{ color: "#a8d5b0" }}>Earth</span>.
           </h1>
 
-          <p className="text-lg leading-relaxed mb-8 max-w-lg" style={{ color: "rgba(200,230,210,0.8)" }}>
+          <p className="text-lg leading-relaxed mb-8 max-w-lg" style={{ color: "rgba(230,244,234,0.92)" }}>
             <strong className="text-white font-semibold">LEADForEarth</strong> is a
             district-wide environmental campaign uniting Lasallian schools across East Asia.
             Each campus chooses its own action, and all of us post under one hashtag.
           </p>
 
+          {/* Primary + secondary CTA */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center md:justify-start gap-3 sm:gap-4 mb-8">
+            <Link
+              href="/report"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-[15px] font-semibold text-white transition-all duration-200 hover:-translate-y-0.5"
+              style={{
+                backgroundColor: "#1a5c2a",
+                boxShadow: "0 8px 24px -8px rgba(26,92,42,0.7), inset 0 0 0 1px rgba(255,255,255,0.08)",
+              }}
+            >
+              Submit a Report
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </Link>
+
+            <Link
+              href="/community"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-[15px] font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/5"
+              style={{
+                boxShadow: "inset 0 0 0 1.5px rgba(200,230,210,0.55)",
+              }}
+            >
+              See the Community
+            </Link>
+          </div>
+
+          {/* Scroll affordance */}
           <a
             href="#about"
-            className="inline-flex flex-col items-center gap-3 group"
-            style={{ color: "rgba(200,230,210,0.55)" }}
+            className="inline-flex items-center gap-2 group"
+            style={{ color: "rgba(200,230,210,0.85)" }}
           >
             <span
               className="text-xs uppercase tracking-[0.25em] font-light group-hover:text-white transition-colors duration-300"
@@ -145,26 +157,28 @@ export default function Hero() {
             </span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
+              width="14"
+              height="14"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="animate-bounce group-hover:text-white transition-colors duration-300"
+              className="motion-safe:animate-bounce group-hover:text-white transition-colors duration-300"
               style={{ animationDuration: "1.6s" }}
+              aria-hidden="true"
             >
               <path d="M12 5v14M5 12l7 7 7-7" />
             </svg>
           </a>
 
-          {/* Presented-by mark: placeholder for official LEAD corporate logo */}
+          {/* Presented-by lockup: La Salle mark leads; hairline separates the
+              secondary LEAD @ 15 anniversary badge. */}
           <div className="mt-10 flex items-center gap-4 justify-center md:justify-start">
             <span
               className="text-[10px] uppercase tracking-[0.2em]"
-              style={{ color: "rgba(200,230,210,0.55)" }}
+              style={{ color: "rgba(200,230,210,0.85)" }}
             >
               Presented by
             </span>
@@ -173,14 +187,19 @@ export default function Hero() {
               alt="Lasallian East Asia District"
               width={90}
               height={32}
-              className="object-contain opacity-80"
+              className="object-contain opacity-95"
+            />
+            <span
+              aria-hidden="true"
+              className="w-px h-6"
+              style={{ backgroundColor: "rgba(200,230,210,0.22)" }}
             />
             <Image
               src="/logos/LEAD%20%40%2015.png"
               alt="LEAD @ 15"
-              width={42}
-              height={42}
-              className="object-contain opacity-90"
+              width={36}
+              height={36}
+              className="object-contain opacity-85"
             />
           </div>
         </div>
@@ -194,7 +213,7 @@ export default function Hero() {
             fill
             sizes="(min-width: 768px) 380px, (min-width: 640px) 320px, 72vw"
             className="object-contain"
-            style={{ filter: "drop-shadow(0 0 24px rgba(40,130,80,0.35)) drop-shadow(0 0 12px rgba(20,80,160,0.2))" }}
+            style={{ filter: "drop-shadow(0 0 32px rgba(40,130,80,0.45)) drop-shadow(0 0 16px rgba(20,80,160,0.25))" }}
           />
           {/* White logo circle centered inside the wheel */}
           <div
@@ -218,6 +237,13 @@ export default function Hero() {
         </div>
       </div>
 
+      {/* Horizon hairline: reads as an intentional edge between the night
+          hero and the light AboutUs section. */}
+      <div
+        aria-hidden="true"
+        className="absolute bottom-0 left-0 right-0 h-px"
+        style={{ backgroundColor: "rgba(200,230,210,0.18)" }}
+      />
     </section>
   );
 }

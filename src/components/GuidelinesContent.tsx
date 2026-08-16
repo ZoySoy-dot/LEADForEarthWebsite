@@ -158,12 +158,9 @@ export default function GuidelinesContent() {
       {/* Hero */}
       <section
         className="relative overflow-hidden"
-        style={{
-          background:
-            "radial-gradient(1200px 500px at 50% 0%, #e8f5e9 0%, rgba(232,245,233,0) 60%), #ffffff",
-        }}
+        style={{ backgroundColor: "#fafbfa" }}
       >
-        <div className="max-w-4xl mx-auto px-6 lg:px-8 pt-24 pb-20 sm:pt-32 sm:pb-24 text-center">
+        <div className="max-w-6xl mx-auto px-6 lg:px-8 pt-24 pb-20 sm:pt-32 sm:pb-24 text-center">
           <p
             className="text-xs font-semibold uppercase tracking-[0.24em] mb-6"
             style={{ color: "#2d8c3e" }}
@@ -254,35 +251,14 @@ export default function GuidelinesContent() {
               {/* II. Objectives */}
               <SectionBlock id="objectives" num="II" title="Objectives">
                 <p>Three goals shape everything we do:</p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 not-prose pt-4">
+                <div className="space-y-3 not-prose pt-2">
                   {OBJECTIVES.map((o, i) => (
-                    <div
-                      key={o.title}
-                      className="rounded-3xl bg-white p-7 transition-transform hover:-translate-y-0.5"
-                      style={{
-                        boxShadow:
-                          "0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -8px rgba(26,92,42,0.08)",
-                      }}
-                    >
-                      <div
-                        className="text-xs font-semibold tracking-widest mb-4"
-                        style={{ color: "#2d8c3e" }}
-                      >
-                        {String(i + 1).padStart(2, "0")}
-                      </div>
-                      <h4
-                        className="font-semibold text-lg mb-3 tracking-tight"
-                        style={{ color: "#0d3d1a" }}
-                      >
-                        {o.title}
-                      </h4>
-                      <p className="text-sm text-gray-600 leading-relaxed">
-                        {o.body}
-                      </p>
-                    </div>
+                    <NumberedCard key={o.title} n={i + 1} title={o.title}>
+                      {o.body}
+                    </NumberedCard>
                   ))}
                 </div>
-                <p className="pt-6">
+                <p className="pt-4">
                   Together, they let us unite against climate change, prove that
                   collective work has real impact, and inspire more schools in
                   the Lasallian Network to document what they&apos;re already
@@ -418,16 +394,6 @@ export default function GuidelinesContent() {
                   ))}
                 </div>
               </SectionBlock>
-
-              {/* Document Control: quiet footer meta */}
-              <div className="pt-8 border-t border-gray-200">
-                <dl className="grid grid-cols-2 sm:grid-cols-4 gap-y-4 gap-x-6 text-xs">
-                  <MetaField label="Version" value="1.0" />
-                  <MetaField label="Effective" value="August 2026" />
-                  <MetaField label="Revised" value="August 2026" />
-                  <MetaField label="Approved by" value="Renz Aron Q. Gorre" />
-                </dl>
-              </div>
             </div>
           </div>
         </div>
@@ -439,9 +405,7 @@ export default function GuidelinesContent() {
       {/* Full-bleed CTA */}
       <section
         className="relative overflow-hidden"
-        style={{
-          background: "linear-gradient(135deg, #0d3d1a 0%, #1a5c2a 100%)",
-        }}
+        style={{ backgroundColor: "#1a5c2a" }}
       >
         <div className="max-w-4xl mx-auto px-6 lg:px-8 py-20 sm:py-28 text-center">
           <h3 className="text-4xl sm:text-5xl font-bold tracking-tight text-white mb-5 leading-tight">
@@ -470,6 +434,18 @@ export default function GuidelinesContent() {
               <polyline points="12 5 19 12 12 19" />
             </svg>
           </Link>
+        </div>
+      </section>
+
+      {/* Document Control: quiet footer meta for the whole document */}
+      <section style={{ backgroundColor: "#fafbfa" }} className="border-t border-gray-100">
+        <div className="max-w-6xl mx-auto px-6 lg:px-8 py-8">
+          <dl className="grid grid-cols-2 sm:grid-cols-4 gap-y-4 gap-x-6 text-xs">
+            <MetaField label="Version" value="1.0" />
+            <MetaField label="Effective" value="August 2026" />
+            <MetaField label="Revised" value="August 2026" />
+            <MetaField label="Approved by" value="Renz Aron Q. Gorre" />
+          </dl>
         </div>
       </section>
     </div>

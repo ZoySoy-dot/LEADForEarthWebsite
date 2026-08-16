@@ -64,17 +64,17 @@ const SOCIAL_PLATFORMS = [
 // Sidebar TOC + section metadata. Reorder here to reorder the sidebar; the form
 // itself still follows JSX order below, so move the matching <SectionCard> too.
 const SECTIONS = [
-  { id: "submitter", num: "1", title: "About You", subtitle: "Who is filing this report on behalf of the institution?" },
-  { id: "overview", num: "2", title: "Project Overview" },
-  { id: "participation", num: "3", title: "Participation Data" },
-  { id: "impact", num: "4", title: "Environmental Impact", subtitle: "Optional. Sub-sections appear based on your selections in Project Overview. Fill only indicators relevant to your activity, or skip if none apply." },
-  { id: "effectiveness", num: "5", title: "Effectiveness", subtitle: "Rate each criterion from 1 (Poor) to 5 (Excellent)." },
-  { id: "climate", num: "6", title: "Climate Literacy" },
-  { id: "feedback", num: "7", title: "Participant Feedback" },
-  { id: "digital", num: "8", title: "Digital Advocacy & Documentation", subtitle: "Share your campaign's online reach along with photos and supporting links." },
-  { id: "reflect-gate", num: "9", title: "Add Your Reflection?", subtitle: "You've covered all the required data. The next two sections are optional. They let you share how the activity went in your own words." },
-  { id: "lasallian", num: "10", title: "Lasallian Reflection" },
-  { id: "lessons", num: "11", title: "Lessons Learned", subtitle: "Honest reflections are more valuable than polished ones." },
+  { id: "submitter", num: "1", title: "About you", subtitle: "Just so we know who to thank, and follow up with if needed." },
+  { id: "overview", num: "2", title: "What did you do?", subtitle: "The elevator pitch of your project." },
+  { id: "participation", num: "3", title: "Who showed up?", subtitle: "Rough numbers are fine. We're not auditing." },
+  { id: "impact", num: "4", title: "What changed?", subtitle: "Only what you actually measured. Skip anything that doesn't apply." },
+  { id: "effectiveness", num: "5", title: "How'd it go?", subtitle: "1 = rough, 5 = crushed it. Your gut read is fine." },
+  { id: "climate", num: "6", title: "Climate literacy", subtitle: "Did participants walk away knowing something new?" },
+  { id: "feedback", num: "7", title: "What people said", subtitle: "Quotes, reactions, anything that stuck with you." },
+  { id: "digital", num: "8", title: "Where you shared it", subtitle: "Posts, hashtags, photos, links. Whatever you've got." },
+  { id: "reflect-gate", num: "9", title: "Want to add a reflection?", subtitle: "The data part is done. Two optional sections left if you'd like to share how it actually went." },
+  { id: "lasallian", num: "10", title: "Lasallian reflection", subtitle: "How the mission showed up in the work." },
+  { id: "lessons", num: "11", title: "Lessons learned", subtitle: "Honest beats polished. Future campaigns learn from this." },
 ] as const;
 
 type SectionId = (typeof SECTIONS)[number]["id"];
@@ -575,10 +575,12 @@ type Status = "idle" | "loading" | "success" | "error";
 
 type ReportFormProps = {
   initialSubmitter?: { name?: string; email?: string };
+  signInAction?: () => Promise<void>;
   signOutAction?: () => Promise<void>;
 };
 
-export default function ReportForm({ initialSubmitter, signOutAction }: ReportFormProps = {}) {
+export default function ReportForm({ initialSubmitter, signInAction, signOutAction }: ReportFormProps = {}) {
+  const isSignedIn = Boolean(initialSubmitter?.email);
   const seededInitial: Report = initialSubmitter
     ? {
         ...INITIAL,
@@ -610,61 +612,113 @@ export default function ReportForm({ initialSubmitter, signOutAction }: ReportFo
   // Only steps up to (and including) the gate count when the user is skipping.
   const effectiveTotalSteps = skipReflection ? REFLECT_GATE_INDEX + 1 : totalSteps;
 
-  // Restore any previously saved draft on first mount.
+  // Restore draft on first mount. When signed in, the server draft is truth
+  // (so a coordinator can move between devices); localStorage is truth
+  // otherwise. On first sign-in with an anonymous local draft, we upload it.
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed?.form) {
-          Object.keys(parsed.form).forEach((k) => {
-            dispatch({ type: "SET", path: k, value: parsed.form[k] });
-          });
+    let cancelled = false;
+
+    function applyDraft(parsed: { form?: Record<string, unknown>; step?: unknown; skipReflection?: unknown }) {
+      if (parsed?.form && typeof parsed.form === "object") {
+        Object.keys(parsed.form).forEach((k) => {
+          dispatch({ type: "SET", path: k, value: (parsed.form as Record<string, unknown>)[k] });
+        });
+      }
+      if (typeof parsed?.step === "number") {
+        const maxStep = SECTIONS.length - 1;
+        setCurrentStep(Math.max(0, Math.min(parsed.step, maxStep)));
+      }
+      if (typeof parsed?.skipReflection === "boolean") {
+        setSkipReflection(parsed.skipReflection);
+      }
+    }
+
+    function readLocal(): { form?: Record<string, unknown>; step?: unknown; skipReflection?: unknown } | null {
+      try {
+        const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    async function load() {
+      let restored: { form?: Record<string, unknown>; step?: unknown; skipReflection?: unknown } | null = null;
+
+      if (isSignedIn) {
+        try {
+          const res = await fetch("/api/report/draft", { cache: "no-store" });
+          if (res.ok) {
+            const body = await res.json();
+            if (body?.draft) restored = body.draft;
+          }
+        } catch { /* offline or network error; fall back to local */ }
+
+        if (!restored) {
+          // No server draft yet; promote the local draft if we have one.
+          const local = readLocal();
+          if (local) {
+            restored = local;
+            try {
+              await fetch("/api/report/draft", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(local),
+              });
+            } catch { /* best effort */ }
+          }
         }
-        if (typeof parsed?.step === "number") {
-          // Clamp to a valid index in case SECTIONS shrank since the draft was saved.
-          const maxStep = SECTIONS.length - 1;
-          setCurrentStep(Math.max(0, Math.min(parsed.step, maxStep)));
-        }
-        if (typeof parsed?.skipReflection === "boolean") {
-          setSkipReflection(parsed.skipReflection);
-        }
+      } else {
+        restored = readLocal();
+      }
+
+      if (cancelled) return;
+
+      if (restored) {
+        applyDraft(restored);
         setDraftState("saved");
       }
-      // Re-apply the current signed-in identity after any draft restore so a stale
-      // draft can't spoof the submitter (email is source-of-truth from the session).
+      // Signed-in identity always wins over any draft value so a stale draft
+      // can't spoof the submitter (server-side we also override with session).
       if (initialSubmitter?.email) {
         dispatch({ type: "SET", path: "submitter.email", value: initialSubmitter.email });
       }
       if (initialSubmitter?.name) {
         dispatch({ type: "SET", path: "submitter.name", value: initialSubmitter.name });
       }
-    } catch {
-      // ignore malformed drafts
+      draftLoadedRef.current = true;
     }
-    draftLoadedRef.current = true;
-  }, [initialSubmitter?.email, initialSubmitter?.name]);
 
-  // Debounced autosave to localStorage on any form/step change.
+    load();
+    return () => { cancelled = true; };
+  }, [isSignedIn, initialSubmitter?.email, initialSubmitter?.name]);
+
+  // Debounced autosave. Always writes localStorage; also PUTs to the server
+  // when signed in so drafts survive across devices.
   useEffect(() => {
     if (!draftLoadedRef.current) return;
     setDraftState("saving");
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    saveTimerRef.current = setTimeout(() => {
+    const payload = { form, step: currentStep, skipReflection };
+    saveTimerRef.current = setTimeout(async () => {
       try {
-        localStorage.setItem(
-          DRAFT_STORAGE_KEY,
-          JSON.stringify({ form, step: currentStep, skipReflection })
-        );
-        setDraftState("saved");
-      } catch {
-        // storage may be full or disabled
+        localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(payload));
+      } catch { /* storage may be full or disabled */ }
+      if (isSignedIn) {
+        try {
+          await fetch("/api/report/draft", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+        } catch { /* offline; localStorage still holds the draft */ }
       }
-    }, 600);
+      setDraftState("saved");
+    }, 1200);
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     };
-  }, [form, currentStep, skipReflection]);
+  }, [form, currentStep, skipReflection, isSignedIn]);
 
   function goTo(n: number) {
     if (n < 0 || n >= totalSteps) return;
@@ -703,6 +757,9 @@ export default function ReportForm({ initialSubmitter, signOutAction }: ReportFo
       try {
         localStorage.removeItem(DRAFT_STORAGE_KEY);
       } catch { /* ignore */ }
+      if (isSignedIn) {
+        fetch("/api/report/draft", { method: "DELETE" }).catch(() => { /* best effort */ });
+      }
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       setStatus("error");
@@ -781,12 +838,37 @@ export default function ReportForm({ initialSubmitter, signOutAction }: ReportFo
             #LEADforEarth Report
           </p>
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-3" style={{ color: "#0d3d1a" }}>
-            Submit your report
+            Tell us what you did
           </h2>
           <p className="text-gray-500 leading-relaxed max-w-lg mx-auto text-[15px] font-light">
-            Share your institution&apos;s environmental initiative. Fill only the indicators relevant to your activity, and take breaks. Your progress is saved automatically.
+            Skip anything that doesn&apos;t apply. Take a break whenever. Your progress saves as you go.
           </p>
         </div>
+
+        {/* Anonymous-mode banner: shown until the user signs in on submit. */}
+        {!isSignedIn && signInAction && (
+          <div
+            className="mb-6 rounded-2xl px-5 py-4 flex items-start gap-3"
+            style={{ backgroundColor: "#f0faf1", color: "#0d3d1a" }}
+          >
+            <svg viewBox="0 0 24 24" className="w-5 h-5 flex-none mt-0.5" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 16v-4M12 8h.01" />
+            </svg>
+            <div className="flex-1 text-[13.5px] leading-snug">
+              <p className="font-semibold mb-0.5">Browsing without an account</p>
+              <p style={{ color: "#3a3a3a" }}>
+                Fill in as much as you like. We&apos;ll ask you to sign in with Google when you&apos;re ready to submit. Progress is saved on this device.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Hidden form used by the "Sign in to submit" button (server action).
+            Kept outside the main form because HTML forms can't nest. */}
+        {!isSignedIn && signInAction && (
+          <form id="lfe-signin-form" action={signInAction} className="hidden" />
+        )}
 
         {/* Compact progress: bar + step counter + draft status */}
         <div className="mb-6">
@@ -825,7 +907,7 @@ export default function ReportForm({ initialSubmitter, signOutAction }: ReportFo
               className="h-full transition-all duration-500 ease-out rounded-full"
               style={{
                 width: `${percentComplete}%`,
-                background: "linear-gradient(90deg, #2d8c3e 0%, #1a5c2a 100%)",
+                backgroundColor: "#1a5c2a",
               }}
             />
           </div>
@@ -1236,11 +1318,11 @@ export default function ReportForm({ initialSubmitter, signOutAction }: ReportFo
               style={{ backgroundColor: "#f0faf1" }}
             >
               <p className="font-semibold mb-1.5" style={{ color: "#1a5c2a" }}>
-                We have the data we needed.
+                Nice work, that&apos;s the data covered.
               </p>
               <p>
-                The next two sections, <strong>Lasallian Reflection</strong> and{" "}
-                <strong>Lessons Learned</strong>, let you share how the activity went in your own words. They&apos;re optional, but the district committee reads them closely.
+                Two optional sections left: <strong>Lasallian Reflection</strong> and{" "}
+                <strong>Lessons Learned</strong>. They&apos;re where you tell the story behind the numbers, and the committee actually reads them.
               </p>
             </div>
 
@@ -1285,11 +1367,11 @@ export default function ReportForm({ initialSubmitter, signOutAction }: ReportFo
                     className="font-semibold text-[15px]"
                     style={{ color: "#0d3d1a" }}
                   >
-                    Yes, add my reflection
+                    Yeah, I&apos;ve got more to say
                   </p>
                 </div>
                 <p className="text-[13px] text-gray-600 leading-relaxed">
-                  Continue to the two reflection sections.
+                  Two more short sections and you&apos;re done.
                 </p>
               </button>
 
@@ -1330,11 +1412,11 @@ export default function ReportForm({ initialSubmitter, signOutAction }: ReportFo
                     className="font-semibold text-[15px]"
                     style={{ color: "#0d3d1a" }}
                   >
-                    No, submit as-is
+                    I&apos;m good, submit as-is
                   </p>
                 </div>
                 <p className="text-[13px] text-gray-600 leading-relaxed">
-                  Send just the data. You can always follow up by email.
+                  Just the data. You can always email us if more comes to mind.
                 </p>
               </button>
             </div>
@@ -1397,10 +1479,9 @@ export default function ReportForm({ initialSubmitter, signOutAction }: ReportFo
                 className="rounded-2xl px-6 py-5 text-[14px] text-gray-600 leading-relaxed"
                 style={{ backgroundColor: "#f0faf1" }}
               >
-                <p className="font-semibold mb-1.5" style={{ color: "#1a5c2a" }}>Before you submit</p>
+                <p className="font-semibold mb-1.5" style={{ color: "#1a5c2a" }}>One last thing</p>
                 <p>
-                  Your report will be used solely for the{" "}
-                  <strong>#LEADforEarth</strong> initiative of the Lasallian East Asia District, to track progress, compile district-wide results, and support future environmental campaigns.
+                  Your report goes to the <strong>#LEADforEarth</strong> committee at the Lasallian East Asia District. We use it to track progress, roll up district-wide results, and shape future campaigns. Nothing else.
                 </p>
               </div>
 
@@ -1417,7 +1498,7 @@ export default function ReportForm({ initialSubmitter, signOutAction }: ReportFo
                   className="mt-0.5 w-4 h-4 rounded accent-green-700 shrink-0"
                 />
                 <span className="text-[14px] text-gray-600 leading-relaxed">
-                  I confirm that all information is accurate to the best of my knowledge, and I consent on behalf of my institution to being contacted for follow-up questions related to this report.
+                  Everything above is accurate to the best of my knowledge, and my institution is OK with the committee reaching out if they have follow-up questions.
                 </span>
               </label>
             </div>
@@ -1467,7 +1548,7 @@ export default function ReportForm({ initialSubmitter, signOutAction }: ReportFo
                 <polyline points="9 18 15 12 9 6" />
               </svg>
             </button>
-          ) : (
+          ) : isSignedIn ? (
             <button
               type="submit"
               form="lfe-report-form"
@@ -1496,6 +1577,23 @@ export default function ReportForm({ initialSubmitter, signOutAction }: ReportFo
                   </svg>
                 </>
               )}
+            </button>
+          ) : (
+            <button
+              type="submit"
+              form="lfe-signin-form"
+              disabled={!consented}
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold text-[13.5px] text-white transition-all duration-200 hover:-translate-y-px disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+              style={{
+                backgroundColor: "#1a5c2a",
+                boxShadow: consented ? "0 6px 16px -4px rgba(26,92,42,0.4)" : "none",
+              }}
+              title={!consented ? "Please confirm the consent above first." : "Google verifies you're a real person before we accept the report."}
+            >
+              <svg viewBox="0 0 24 24" className="w-4 h-4" aria-hidden="true">
+                <path fill="#fff" d="M21.35 11.1H12v3.2h5.35c-.23 1.4-1.63 4.1-5.35 4.1-3.22 0-5.85-2.67-5.85-5.95S8.78 6.5 12 6.5c1.83 0 3.06.78 3.76 1.45l2.57-2.47C16.7 3.9 14.55 3 12 3 6.98 3 3 6.98 3 12s3.98 9 9 9c5.2 0 8.63-3.65 8.63-8.78 0-.6-.07-1.05-.15-1.52z" />
+              </svg>
+              Sign in to submit
             </button>
           )}
         </div>

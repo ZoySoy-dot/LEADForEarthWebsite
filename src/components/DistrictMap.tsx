@@ -97,7 +97,7 @@ export default function DistrictMap({ mapData, schoolsByCountry }: Props) {
         startSf = captureSf();
         e.preventDefault();
       } else if (e.touches.length === 1 && transformRef.current.scale > 1.02) {
-        // Prime a potential pan but DO NOT preventDefault yet — that would
+        // Prime a potential pan but DO NOT preventDefault yet; that would
         // suppress the follow-up click event and break buttons/taps.
         mode = "pan";
         setAnimate(false);
@@ -221,7 +221,7 @@ export default function DistrictMap({ mapData, schoolsByCountry }: Props) {
   const showTooltip = hovered !== null && focused === null;
 
   // Countries visible in the map layer. When zoomed in, only the focused
-  // country renders — everything else is hidden.
+  // country renders; everything else is hidden.
   const leadCountries = countries.filter((c) => c.leadCountry !== null);
   const contextCountries = countries.filter((c) => c.leadCountry === null);
 
@@ -285,7 +285,7 @@ export default function DistrictMap({ mapData, schoolsByCountry }: Props) {
         </defs>
 
         <g style={gStyle}>
-          {/* Context (non-LEAD) countries — hidden when focused */}
+          {/* Context (non-LEAD) countries; hidden when focused */}
           {!focused &&
             contextCountries.map((c) => (
               <path
@@ -299,7 +299,7 @@ export default function DistrictMap({ mapData, schoolsByCountry }: Props) {
               />
             ))}
 
-          {/* LEAD countries — only the focused one when focused */}
+          {/* LEAD countries; only the focused one when focused */}
           <g filter="url(#lead-shadow)">
             {leadCountries.map((c) => {
               if (focused && c.leadCountry !== focused) return null;
@@ -328,7 +328,7 @@ export default function DistrictMap({ mapData, schoolsByCountry }: Props) {
             })}
           </g>
 
-          {/* Pins & labels — hidden when zoomed in */}
+          {/* Pins & labels; hidden when zoomed in */}
           {!focused && (
             <>
               {pins.map((p) => {

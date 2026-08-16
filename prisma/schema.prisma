@@ -168,6 +168,20 @@ model InquiryReply {
 }
 
 // ---------------------------------------------------------------------------
+// ReportDraft: server-side autosave for the /report form, one per Google user.
+// Lets a coordinator start on desktop and finish on their phone. Written by the
+// autosave loop in ReportForm; cleared on successful submit.
+// ---------------------------------------------------------------------------
+model ReportDraft {
+  userEmail String   @id @map("user_email")
+  data      Json     // { form, step, skipReflection }
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@map("report_drafts")
+}
+
+// ---------------------------------------------------------------------------
 // AdminUser: allowlist of committee members who can sign into /admin with Google.
 // Presence in this table = permission to view the admin site.
 // Grant access with: INSERT INTO admin_users (email, name) VALUES ('a@x.com', 'A');

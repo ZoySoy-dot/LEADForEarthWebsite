@@ -58,18 +58,6 @@ export default function Contact() {
 
   return (
     <section id="contact" style={{ backgroundColor: "#fafbfa" }} className="py-24 sm:py-32 relative overflow-hidden">
-      {/* Subtle decorative accents */}
-      <div
-        aria-hidden="true"
-        className="absolute -left-32 top-24 w-80 h-80 rounded-full opacity-40"
-        style={{ background: "radial-gradient(circle, #e8f5e9 0%, rgba(232,245,233,0) 70%)" }}
-      />
-      <div
-        aria-hidden="true"
-        className="absolute -right-32 bottom-24 w-96 h-96 rounded-full opacity-40"
-        style={{ background: "radial-gradient(circle, #f0f7ff 0%, rgba(240,247,255,0) 70%)" }}
-      />
-
       <div className="relative max-w-5xl mx-auto px-6">
         {status === "success" ? (
           <div className="max-w-xl mx-auto">
@@ -87,13 +75,7 @@ export default function Contact() {
           >
             <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.4fr)]">
               {/* LEFT: Heading + supporting copy */}
-              <div
-                className="px-8 sm:px-10 lg:px-12 py-10 lg:py-12 relative overflow-hidden"
-                style={{
-                  background:
-                    "radial-gradient(600px 300px at 0% 0%, #f0faf1 0%, rgba(240,250,241,0) 60%), #ffffff",
-                }}
-              >
+              <div className="px-8 sm:px-10 lg:px-12 py-10 lg:py-12 relative overflow-hidden bg-white">
                 <div
                   className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6"
                   style={{ backgroundColor: "#f0faf1" }}
@@ -108,8 +90,8 @@ export default function Contact() {
                     className="w-6 h-6"
                     aria-hidden="true"
                   >
-                    <path d="M11 20A7 7 0 0 1 4 13c0-6 6-11 15-11 0 8-4 15-8 15z" />
-                    <path d="M4 13c2 0 6 1 8 8" />
+                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                    <path d="m3 7 9 6 9-6" />
                   </svg>
                 </div>
 

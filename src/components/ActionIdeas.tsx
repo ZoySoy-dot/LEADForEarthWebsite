@@ -23,9 +23,8 @@ const CATEGORIES: Category[] = [
     title: "Trees & Biodiversity",
     icon: (
       <svg {...iconProps}>
-        <path d="M12 22V12" />
-        <path d="M12 12c-3-1-5-4-5-7 0-1 1-2 2-2 2 0 3 2 3 4" />
-        <path d="M12 12c3-1 5-4 5-7 0-1-1-2-2-2-2 0-3 2-3 4" />
+        <path d="m17 14 3 3.3a1 1 0 0 1-.7 1.7H4.7a1 1 0 0 1-.7-1.7L7 14h-.3a1 1 0 0 1-.7-1.7L9 9h-.2A1 1 0 0 1 8 7.3L12 3l4 4.3a1 1 0 0 1-.8 1.7H15l3 3.3a1 1 0 0 1-.7 1.7H17Z" />
+        <path d="M12 22v-3" />
       </svg>
     ),
     items: [
@@ -57,10 +56,10 @@ const CATEGORIES: Category[] = [
     title: "Urban Growing & Food",
     icon: (
       <svg {...iconProps}>
-        <path d="M12 20V10" />
-        <path d="M12 10c0-3 2-5 5-5-1 3-2 5-5 5z" />
-        <path d="M12 12c0-3-2-5-5-5 1 3 2 5 5 5z" />
-        <path d="M6 20h12" />
+        <path d="M7 20h10" />
+        <path d="M10 20c5.5-2.5.8-6.4 3-10" />
+        <path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z" />
+        <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z" />
       </svg>
     ),
     items: ["Urban gardening", "Composting", "Vermiculture", "Hydroponics"],
@@ -88,7 +87,10 @@ const CATEGORIES: Category[] = [
     title: "Community Wellbeing",
     icon: (
       <svg {...iconProps}>
-        <path d="M20.8 11.5a5 5 0 0 0-8.8-3.3 5 5 0 0 0-8.8 3.3c0 6 8.8 10.5 8.8 10.5s8.8-4.5 8.8-10.5z" />
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
       </svg>
     ),
     items: [
@@ -102,8 +104,8 @@ const CATEGORIES: Category[] = [
     title: "Advocacy & Awareness",
     icon: (
       <svg {...iconProps}>
-        <path d="M3 11l14-7v16L3 13z" />
-        <path d="M8 12v5a3 3 0 0 0 6 0" />
+        <path d="m3 11 18-5v12L3 14v-3z" />
+        <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
       </svg>
     ),
     items: [
@@ -128,9 +130,7 @@ export default function ActionIdeas() {
         aria-controls="action-ideas-panel"
         className="group w-full flex items-center justify-between gap-4 rounded-3xl px-6 sm:px-8 py-6 text-left transition-all duration-300"
         style={{
-          background: open
-            ? "linear-gradient(135deg, #1a5c2a 0%, #2d8c3e 100%)"
-            : "#ffffff",
+          backgroundColor: open ? "#1a5c2a" : "#ffffff",
           color: open ? "#ffffff" : "#1a5c2a",
           boxShadow: open
             ? "0 20px 40px -12px rgba(26,92,42,0.35)"

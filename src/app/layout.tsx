@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import TranslateWidget from "@/components/TranslateWidget";
+import TranslationDisclaimer from "@/components/TranslationDisclaimer";
+import LanguageMenu from "@/components/LanguageMenu";
 import "./globals.css";
 
 const inter = Inter({
@@ -49,6 +52,9 @@ export default function RootLayout({
     <html lang="en" className={`h-full antialiased ${inter.variable}`}>
       <body className="min-h-full flex flex-col">
         {children}
+        <TranslateWidget />
+        <LanguageMenu variant="floating" />
+        <TranslationDisclaimer />
         <Analytics />
       </body>
     </html>

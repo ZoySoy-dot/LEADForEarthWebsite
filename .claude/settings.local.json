@@ -9,7 +9,12 @@
       "Bash(mv E-WEB-Goal-05.png sdg-04.png)",
       "Bash(node scripts/optimize-images.mjs)",
       "Bash(grep -E \"\\\\.\\(png|jpg|svg\\)$\")",
-      "Bash(xargs wc *)"
+      "Bash(xargs wc *)",
+      "Bash(python *)",
+      "Bash(grep -qE \"Ready in|error|Error:\" \"C:\\\\\\\\Users\\\\\\\\1rago\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\C--Users-1rago-OneDrive---Safeway-Fire-Safety-Specialist-Phils--Inc-Documents-GitHub-LEADForEarthWebsite\\\\\\\\85fbfaed-18b4-41b4-88aa-72befa310eba\\\\\\\\tasks\\\\\\\\bwfo2q67t.output\")",
+      "Bash(npx playwright *)",
+      "Bash(node scripts/screenshot.mjs http://localhost:3000/community community-before 1440 900)",
+      "Bash(node scripts/screenshot.mjs http://localhost:3000/community community-after 1440 900)"
     ],
     "additionalDirectories": [
       "d:\\Github\\LEADForEarthWebsite"

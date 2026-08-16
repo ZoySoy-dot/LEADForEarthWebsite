@@ -26,8 +26,9 @@ const ID_TO_LEAD_COUNTRY = Object.fromEntries(
 // Emphasis pins so the two smallest sectors read at any zoom
 const PIN_IDS = new Set(["344", "702"]);
 
-// Label anchor overrides (default is middle, centered on country label point)
-const LABEL_META: Record<string, { lng: number; lat: number; anchor?: "start" | "end" | "middle"; dx?: number; dy?: number }> = {
+// Label anchor overrides (default is middle, centered on country label point).
+// Exported so the globe can reuse the curated lng/lat as star marker positions.
+export const LABEL_META: Record<string, { lng: number; lat: number; anchor?: "start" | "end" | "middle"; dx?: number; dy?: number }> = {
   Japan:        { lng: 138.0, lat: 36.5 },
   Myanmar:      { lng: 96.0,  lat: 21.0 },
   Thailand:     { lng: 100.5, lat: 15.5 },
