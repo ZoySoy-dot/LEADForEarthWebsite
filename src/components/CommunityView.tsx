@@ -25,6 +25,8 @@ type ReportItem = {
   title: string;
   createdAt: string;
   participants: number | null;
+  projectLead: string | null;
+  submitterName: string | null;
 };
 
 type Institution = {
@@ -60,14 +62,20 @@ export default function CommunityView({
   const visible = useMemo(() => {
     const base = selected ? schoolsByCountry[selected] ?? [] : institutions;
     const q = query.trim().toLowerCase();
-    // Match school name, country, or any report title so a search like
-    // "energy" or "singapore" surfaces relevant institutions.
+    // Match school name, country, report title, project lead (org/dept),
+    // or the submitter's name. So "energy", "singapore", "juan dela cruz",
+    // "sustainability office" all surface relevant institutions.
     const filtered = q
       ? base.filter(
           (i) =>
             i.name.toLowerCase().includes(q) ||
             (i.country?.toLowerCase().includes(q) ?? false) ||
-            i.items.some((r) => r.title.toLowerCase().includes(q)),
+            i.items.some(
+              (r) =>
+                r.title.toLowerCase().includes(q) ||
+                (r.projectLead?.toLowerCase().includes(q) ?? false) ||
+                (r.submitterName?.toLowerCase().includes(q) ?? false),
+            ),
         )
       : base;
     const sorted = [...filtered].sort((a, b) => {
@@ -434,7 +442,7 @@ function FilterSection({
             type="search"
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
-            placeholder="Search schools, countries, or projects"
+            placeholder="Search schools, countries, projects, or people"
             className="w-full h-10 pl-9 pr-3 rounded-full text-[13.5px] bg-[#f5f8f4] border border-transparent focus:outline-none focus:bg-white focus:border-[#2d8c3e] focus:ring-2 focus:ring-[#2d8c3e]/15 transition-all"
           />
           {query && (

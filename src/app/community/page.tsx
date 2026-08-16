@@ -21,6 +21,8 @@ type ReportItem = {
   title: string;
   createdAt: string; // ISO
   participants: number | null;
+  projectLead: string | null;
+  submitterName: string | null;
 };
 
 type Institution = {
@@ -45,6 +47,8 @@ async function loadInstitutions(): Promise<Institution[]> {
       projectTitle: true,
       createdAt: true,
       totalParticipants: true,
+      projectLead: true,
+      submitterName: true,
     },
     orderBy: { createdAt: "desc" },
   });
@@ -60,6 +64,8 @@ async function loadInstitutions(): Promise<Institution[]> {
       title: row.projectTitle,
       createdAt: iso,
       participants: row.totalParticipants ?? null,
+      projectLead: row.projectLead ?? null,
+      submitterName: row.submitterName ?? null,
     };
     const existing = byKey.get(key);
     if (existing) {
