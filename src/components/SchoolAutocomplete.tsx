@@ -5,8 +5,8 @@ import { LEAD_SCHOOLS } from "@/data/schools";
 
 const MAX_RESULTS = 10;
 const INPUT_CLS =
-  "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 transition";
-const LABEL_CLS = "block text-sm font-medium text-gray-700 mb-1.5";
+  "w-full border border-[color:var(--border-input)] rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-[color:var(--border-input-focus)] transition";
+const LABEL_CLS = "block text-sm font-medium mb-1.5";
 
 // API matches <Field /> so this can be swapped in/out with a one-line change.
 type Props = {
@@ -91,7 +91,7 @@ export default function SchoolAutocomplete({
 
   return (
     <div ref={containerRef} className="relative">
-      <label className={LABEL_CLS}>
+      <label className={LABEL_CLS} style={{ color: "var(--text-body)" }}>
         {label}
         {required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
@@ -108,13 +108,15 @@ export default function SchoolAutocomplete({
         required={required}
         autoComplete="off"
         className={INPUT_CLS}
+        style={{ backgroundColor: "var(--surface)", color: "var(--text-primary)" }}
       />
-      {hint && <p className="text-xs text-gray-500 mt-1">{hint}</p>}
+      {hint && <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>{hint}</p>}
 
       {showDropdown && (
         <ul
           role="listbox"
-          className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-80 overflow-y-auto"
+          className="absolute z-20 mt-1 w-full rounded-xl shadow-lg overflow-hidden max-h-80 overflow-y-auto border"
+          style={{ backgroundColor: "var(--surface-elevated)", borderColor: "var(--border-input)" }}
         >
           {matches.map((s, i) => (
             <li key={`${s.country}:${s.name}`}>
@@ -124,12 +126,13 @@ export default function SchoolAutocomplete({
                 aria-selected={safeIdx === i}
                 onClick={() => pick(s.name)}
                 onMouseEnter={() => setActiveIdx(i)}
-                className={`w-full text-left px-4 py-2.5 text-sm flex justify-between items-center gap-3 transition-colors ${
-                  safeIdx === i ? "bg-green-50" : "bg-white"
-                }`}
+                className="w-full text-left px-4 py-2.5 text-sm flex justify-between items-center gap-3 transition-colors"
+                style={{
+                  backgroundColor: safeIdx === i ? "var(--overlay-brand-hover)" : "var(--surface-elevated)",
+                }}
               >
-                <span className="text-gray-800">{s.name}</span>
-                <span className="text-xs text-gray-400 shrink-0">{s.country}</span>
+                <span style={{ color: "var(--text-primary)" }}>{s.name}</span>
+                <span className="text-xs shrink-0" style={{ color: "var(--text-subtle)" }}>{s.country}</span>
               </button>
             </li>
           ))}

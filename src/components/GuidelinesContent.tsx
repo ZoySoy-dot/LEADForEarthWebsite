@@ -39,7 +39,7 @@ const REQUIREMENTS = [
         <a
           href="mailto:LeadForEarth@gmail.com"
           className="font-medium underline decoration-green-200 underline-offset-4 hover:decoration-green-500 transition"
-          style={{ color: "#1a5c2a" }}
+          style={{ color: "var(--brand)" }}
         >
           LeadForEarth@gmail.com
         </a>{" "}
@@ -63,12 +63,12 @@ const REQUIREMENTS = [
     body: (
       <>
         Post about your action on social media with{" "}
-        <strong style={{ color: "#1a5c2a" }}>#LEADForEarth</strong>, then submit
+        <strong style={{ color: "var(--brand)" }}>#LEADForEarth</strong>, then submit
         the details through the{" "}
         <Link
           href="/report"
           className="font-medium underline decoration-green-200 underline-offset-4 hover:decoration-green-500 transition"
-          style={{ color: "#1a5c2a" }}
+          style={{ color: "var(--brand)" }}
         >
           Report Portal
         </Link>{" "}
@@ -154,27 +154,30 @@ const RECORD_KEEPING = [
 
 export default function GuidelinesContent() {
   return (
-    <div className="bg-white">
+    <div style={{ backgroundColor: "var(--surface)" }}>
       {/* Hero */}
       <section
         className="relative overflow-hidden"
-        style={{ backgroundColor: "#fafbfa" }}
+        style={{ backgroundColor: "var(--surface-page)" }}
       >
         <div className="max-w-6xl mx-auto px-6 lg:px-8 pt-24 pb-20 sm:pt-32 sm:pb-24 text-center">
           <p
             className="text-xs font-semibold uppercase tracking-[0.24em] mb-6"
-            style={{ color: "#2d8c3e" }}
+            style={{ color: "var(--brand-mid)" }}
           >
             Official Document · Version 1.0
           </p>
           <h1
             className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight mb-6"
-            style={{ color: "#0d3d1a" }}
+            style={{ color: "var(--text-heading)" }}
           >
             <span className="block">LEADForEarth</span>
-            <span className="block" style={{ color: "#2d8c3e" }}>Guidelines.</span>
+            <span className="block" style={{ color: "var(--brand-mid)" }}>Guidelines.</span>
           </h1>
-          <p className="text-lg sm:text-xl text-gray-500 leading-relaxed max-w-2xl mx-auto font-light mb-10">
+          <p
+            className="text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto font-light mb-10"
+            style={{ color: "var(--text-muted)" }}
+          >
             Everything your institution needs to know to join the district&apos;s
             shared environmental movement. Workflow, roles, standards, and
             record-keeping in one place.
@@ -184,10 +187,11 @@ export default function GuidelinesContent() {
           <div className="flex flex-wrap items-center justify-center gap-3">
             <a
               href="#introduction"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5"
               style={{
-                backgroundColor: "#1a5c2a",
-                boxShadow: "0 8px 20px -6px rgba(26,92,42,0.45)",
+                color: "var(--text-inverse)",
+                backgroundColor: "var(--brand)",
+                boxShadow: "var(--shadow-brand-strong)",
               }}
             >
               Start reading
@@ -199,10 +203,11 @@ export default function GuidelinesContent() {
             <a
               href="/LEADForEarth-Guidelines.pdf"
               download="LEADForEarth-Guidelines.pdf"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 bg-white/60 hover:bg-green-50"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5"
               style={{
-                color: "#1a5c2a",
-                boxShadow: "inset 0 0 0 1.5px rgba(26,92,42,0.25)",
+                color: "var(--brand)",
+                backgroundColor: "var(--surface)",
+                boxShadow: "inset 0 0 0 1.5px var(--border-brand)",
               }}
             >
               <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -219,7 +224,7 @@ export default function GuidelinesContent() {
       {/* Content */}
       <section
         className="pb-24 sm:pb-32"
-        style={{ backgroundColor: "#fafbfa" }}
+        style={{ backgroundColor: "var(--surface-page)" }}
       >
         <div className="max-w-6xl mx-auto px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-12 lg:gap-20 items-start">
@@ -232,8 +237,11 @@ export default function GuidelinesContent() {
             <div className="space-y-24 sm:space-y-32 pt-4">
               {/* I. Introduction */}
               <SectionBlock id="introduction" num="I" title="Introduction">
-                <p className="text-xl sm:text-2xl font-light text-gray-800 leading-relaxed tracking-tight">
-                  <strong className="font-semibold" style={{ color: "#0d3d1a" }}>
+                <p
+                  className="text-xl sm:text-2xl font-light leading-relaxed tracking-tight"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  <strong className="font-semibold" style={{ color: "var(--text-heading)" }}>
                     LEADForEarth
                   </strong>{" "}
                   is a district-wide digital initiative from the Lasallian East
@@ -297,7 +305,7 @@ export default function GuidelinesContent() {
                     {/* Vertical connector line */}
                     <div
                       className="absolute left-6 top-4 bottom-4 w-px"
-                      style={{ backgroundColor: "#c8e6c9" }}
+                      style={{ backgroundColor: "var(--brand-glow)" }}
                       aria-hidden="true"
                     />
                     {WORKFLOW.map((w, i) => (
@@ -308,9 +316,9 @@ export default function GuidelinesContent() {
                         <span
                           className="absolute left-0 top-0 w-12 h-12 rounded-full flex items-center justify-center text-sm font-semibold z-10"
                           style={{
-                            backgroundColor: "#1a5c2a",
-                            color: "#ffffff",
-                            boxShadow: "0 0 0 4px #fafbfa",
+                            backgroundColor: "var(--brand)",
+                            color: "var(--text-inverse)",
+                            boxShadow: "0 0 0 4px var(--surface-page)",
                           }}
                           aria-hidden="true"
                         >
@@ -318,17 +326,20 @@ export default function GuidelinesContent() {
                         </span>
                         <h4
                           className="font-semibold text-lg tracking-tight mb-1"
-                          style={{ color: "#0d3d1a" }}
+                          style={{ color: "var(--text-heading)" }}
                         >
                           {w.phase}
                         </h4>
                         <p
                           className="text-xs uppercase tracking-widest font-semibold mb-2"
-                          style={{ color: "#2d8c3e" }}
+                          style={{ color: "var(--brand-mid)" }}
                         >
                           {w.party}
                         </p>
-                        <p className="text-gray-600 leading-relaxed text-[15px]">
+                        <p
+                          className="leading-relaxed text-[15px]"
+                          style={{ color: "var(--text-body)" }}
+                        >
                           {w.action}
                         </p>
                       </li>
@@ -349,8 +360,8 @@ export default function GuidelinesContent() {
                   ))}
                 </div>
                 <p
-                  className="text-sm italic text-gray-500 pt-4 pl-4 border-l-2"
-                  style={{ borderColor: "#c8e6c9" }}
+                  className="text-sm italic pt-4 pl-4 border-l-2"
+                  style={{ color: "var(--text-muted)", borderColor: "var(--border-brand-soft)" }}
                 >
                   One person can wear more than one hat if your team is small.
                   What matters is that each phase has someone owning it.
@@ -405,20 +416,26 @@ export default function GuidelinesContent() {
       {/* Full-bleed CTA */}
       <section
         className="relative overflow-hidden"
-        style={{ backgroundColor: "#1a5c2a" }}
+        style={{ backgroundColor: "var(--brand)" }}
       >
         <div className="max-w-4xl mx-auto px-6 lg:px-8 py-20 sm:py-28 text-center">
-          <h3 className="text-4xl sm:text-5xl font-bold tracking-tight text-white mb-5 leading-tight">
+          <h3
+            className="text-4xl sm:text-5xl font-bold tracking-tight mb-5 leading-tight"
+            style={{ color: "var(--text-inverse)" }}
+          >
             Ready to file your report?
           </h3>
-          <p className="text-green-100 text-lg font-light max-w-lg mx-auto mb-10 leading-relaxed">
+          <p
+            className="text-lg font-light max-w-lg mx-auto mb-10 leading-relaxed"
+            style={{ color: "var(--brand-glow)" }}
+          >
             Once your campus has carried out its environmental action, submit
             the standardized report through the official portal.
           </p>
           <Link
             href="/report"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-[15px] bg-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-            style={{ color: "#0d3d1a" }}
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-[15px] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+            style={{ color: "var(--text-heading)", backgroundColor: "var(--surface)" }}
           >
             Submit Your Report
             <svg
@@ -438,7 +455,9 @@ export default function GuidelinesContent() {
       </section>
 
       {/* Document Control: quiet footer meta for the whole document */}
-      <section style={{ backgroundColor: "#fafbfa" }} className="border-t border-gray-100">
+      <section
+        style={{ backgroundColor: "var(--surface-page)", borderTop: "1px solid var(--border-subtle)" }}
+      >
         <div className="max-w-6xl mx-auto px-6 lg:px-8 py-8">
           <dl className="grid grid-cols-2 sm:grid-cols-4 gap-y-4 gap-x-6 text-xs">
             <MetaField label="Version" value="1.0" />
@@ -468,18 +487,21 @@ function SectionBlock({
       <div className="mb-10">
         <p
           className="text-xs font-semibold tracking-[0.24em] uppercase mb-3"
-          style={{ color: "#2d8c3e" }}
+          style={{ color: "var(--brand-mid)" }}
         >
           Section {num}
         </p>
         <h2
           className="text-4xl sm:text-5xl font-bold tracking-tight leading-[1.05]"
-          style={{ color: "#0d3d1a" }}
+          style={{ color: "var(--text-heading)" }}
         >
           {title}
         </h2>
       </div>
-      <div className="space-y-6 text-[17px] text-gray-600 leading-[1.7] max-w-2xl">
+      <div
+        className="space-y-6 text-[17px] leading-[1.7] max-w-2xl"
+        style={{ color: "var(--text-body)" }}
+      >
         {children}
       </div>
     </section>
@@ -491,13 +513,13 @@ function SubHeading({ num, title }: { num: string; title: string }) {
     <div className="pt-6 flex items-baseline gap-3">
       <span
         className="text-sm font-mono font-semibold"
-        style={{ color: "#2d8c3e" }}
+        style={{ color: "var(--brand-mid)" }}
       >
         {num}
       </span>
       <h3
         className="text-2xl font-semibold tracking-tight"
-        style={{ color: "#0d3d1a" }}
+        style={{ color: "var(--text-heading)" }}
       >
         {title}
       </h3>
@@ -516,15 +538,15 @@ function NumberedCard({
 }) {
   return (
     <div
-      className="rounded-2xl bg-white p-6 flex gap-5 transition-transform hover:-translate-y-0.5"
+      className="rounded-2xl p-6 flex gap-5 transition-transform hover:-translate-y-0.5"
       style={{
-        boxShadow:
-          "0 1px 2px rgba(0,0,0,0.04), 0 6px 20px -8px rgba(0,0,0,0.06)",
+        backgroundColor: "var(--surface)",
+        boxShadow: "var(--shadow-card)",
       }}
     >
       <div
         className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold"
-        style={{ backgroundColor: "#f0faf1", color: "#1a5c2a" }}
+        style={{ backgroundColor: "var(--surface-accent)", color: "var(--brand)" }}
         aria-hidden="true"
       >
         {n}
@@ -532,11 +554,14 @@ function NumberedCard({
       <div className="min-w-0">
         <h4
           className="font-semibold text-base sm:text-lg tracking-tight mb-1.5"
-          style={{ color: "#0d3d1a" }}
+          style={{ color: "var(--text-heading)" }}
         >
           {title}
         </h4>
-        <p className="text-[15px] text-gray-600 leading-relaxed">
+        <p
+          className="text-[15px] leading-relaxed"
+          style={{ color: "var(--text-body)" }}
+        >
           {children}
         </p>
       </div>
@@ -553,19 +578,24 @@ function SoftCard({
 }) {
   return (
     <div
-      className="rounded-2xl bg-white p-6 transition-transform hover:-translate-y-0.5"
+      className="rounded-2xl p-6 transition-transform hover:-translate-y-0.5"
       style={{
-        boxShadow:
-          "0 1px 2px rgba(0,0,0,0.04), 0 6px 20px -8px rgba(0,0,0,0.06)",
+        backgroundColor: "var(--surface)",
+        boxShadow: "var(--shadow-card)",
       }}
     >
       <h4
         className="font-semibold text-base sm:text-lg tracking-tight mb-2"
-        style={{ color: "#0d3d1a" }}
+        style={{ color: "var(--text-heading)" }}
       >
         {title}
       </h4>
-      <p className="text-[15px] text-gray-600 leading-relaxed">{children}</p>
+      <p
+        className="text-[15px] leading-relaxed"
+        style={{ color: "var(--text-body)" }}
+      >
+        {children}
+      </p>
     </div>
   );
 }
@@ -573,10 +603,18 @@ function SoftCard({
 function MetaField({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-400 mb-1.5">
+      <dt
+        className="text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5"
+        style={{ color: "var(--text-subtle)" }}
+      >
         {label}
       </dt>
-      <dd className="text-sm font-medium text-gray-700">{value}</dd>
+      <dd
+        className="text-sm font-medium"
+        style={{ color: "var(--text-body)" }}
+      >
+        {value}
+      </dd>
     </div>
   );
 }

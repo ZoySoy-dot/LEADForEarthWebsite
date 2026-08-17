@@ -130,19 +130,17 @@ export default function ActionIdeas() {
         aria-controls="action-ideas-panel"
         className="group w-full flex items-center justify-between gap-4 rounded-3xl px-6 sm:px-8 py-6 text-left transition-all duration-300"
         style={{
-          backgroundColor: open ? "#1a5c2a" : "#ffffff",
-          color: open ? "#ffffff" : "#1a5c2a",
-          boxShadow: open
-            ? "0 20px 40px -12px rgba(26,92,42,0.35)"
-            : "0 1px 3px rgba(0,0,0,0.04), 0 8px 24px -8px rgba(26,92,42,0.08)",
+          backgroundColor: open ? "var(--brand)" : "var(--surface)",
+          color: open ? "var(--text-inverse)" : "var(--brand)",
+          boxShadow: open ? "var(--shadow-brand-strong)" : "var(--shadow-card)",
         }}
       >
         <div className="flex items-center gap-5 min-w-0">
           <span
             className="shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center transition-colors"
             style={{
-              backgroundColor: open ? "rgba(255,255,255,0.15)" : "#f0faf1",
-              color: open ? "#ffffff" : "#1a5c2a",
+              backgroundColor: open ? "rgba(255,255,255,0.15)" : "var(--surface-accent)",
+              color: open ? "var(--text-inverse)" : "var(--brand)",
             }}
             aria-hidden="true"
           >
@@ -166,7 +164,7 @@ export default function ActionIdeas() {
             </p>
             <p
               className="text-sm mt-1"
-              style={{ color: open ? "rgba(255,255,255,0.75)" : "#6b7280" }}
+              style={{ color: open ? "rgba(255,255,255,0.75)" : "var(--text-muted)" }}
             >
               Browse ideas your campus can adapt, combine, or replace.
             </p>
@@ -197,23 +195,23 @@ export default function ActionIdeas() {
               {CATEGORIES.map((c) => (
                 <div
                   key={c.title}
-                  className="rounded-2xl bg-white p-6 transition-transform hover:-translate-y-0.5"
+                  className="rounded-2xl p-6 transition-transform hover:-translate-y-0.5"
                   style={{
-                    boxShadow:
-                      "0 1px 2px rgba(0,0,0,0.04), 0 4px 16px -4px rgba(0,0,0,0.05)",
+                    backgroundColor: "var(--surface)",
+                    boxShadow: "var(--shadow-card)",
                   }}
                 >
                   <div className="flex items-center gap-3 mb-4">
                     <span
                       className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center"
-                      style={{ backgroundColor: "#f0faf1", color: "#1a5c2a" }}
+                      style={{ backgroundColor: "var(--surface-accent)", color: "var(--brand)" }}
                       aria-hidden="true"
                     >
                       {c.icon}
                     </span>
                     <h5
                       className="font-semibold text-[15px] tracking-tight"
-                      style={{ color: "#1a5c2a" }}
+                      style={{ color: "var(--brand)" }}
                     >
                       {c.title}
                     </h5>
@@ -222,11 +220,12 @@ export default function ActionIdeas() {
                     {c.items.map((item) => (
                       <li
                         key={item}
-                        className="flex items-start gap-2.5 text-[13.5px] text-gray-600 leading-snug"
+                        className="flex items-start gap-2.5 text-[13.5px] leading-snug"
+                        style={{ color: "var(--text-body)" }}
                       >
                         <span
                           className="shrink-0 mt-1.5 w-1 h-1 rounded-full"
-                          style={{ backgroundColor: "#2d8c3e" }}
+                          style={{ backgroundColor: "var(--brand-mid)" }}
                           aria-hidden="true"
                         />
                         <span>{item}</span>
@@ -236,7 +235,7 @@ export default function ActionIdeas() {
                 </div>
               ))}
             </div>
-            <p className="text-xs text-gray-400 italic mt-5 text-center tracking-wide">
+            <p className="text-xs italic mt-5 text-center tracking-wide" style={{ color: "var(--text-subtle)" }}>
               Inspirations, not requirements. Adapt, combine, or design your own.
             </p>
           </div>

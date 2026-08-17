@@ -24,9 +24,9 @@ export function AdminNav() {
             aria-current={active ? "page" : undefined}
             className="px-4 py-2 rounded-full text-[13px] font-medium transition-all duration-200"
             style={{
-              color: active ? "#ffffff" : "#0d3d1a",
-              backgroundColor: active ? "#1a5c2a" : "transparent",
-              boxShadow: active ? "0 6px 16px -6px rgba(26,92,42,0.4)" : "none",
+              color: active ? "var(--text-inverse)" : "var(--text-heading)",
+              backgroundColor: active ? "var(--brand)" : "transparent",
+              boxShadow: active ? "var(--shadow-brand)" : "none",
             }}
           >
             {l.label}

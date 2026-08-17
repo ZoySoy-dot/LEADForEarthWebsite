@@ -14,20 +14,21 @@ const COUNTRY_FLAG_CODE: Record<string, string> = {
   Thailand: "th",
 };
 
-// Palette aligned to the Lasallian brand tokens in globals.css:
-// --green-dark, --green-mid, --green-light, --green-pale.
-const OCEAN = "#e8f5e9"; // green-pale, reads as Lasallian rather than a generic atlas
-const LAND = "#ede8d9"; // warm cream so LEAD greens pop without competing with the ocean
-const LAND_BORDER = "#d8d1bc";
-const LEAD = "#2d8c3e"; // green-mid
-const LEAD_HOVER = "#4aab5a"; // green-light
-const LEAD_ACTIVE = "#1a5c2a"; // green-dark
-const LEAD_BORDER = "#ffffff";
-const LEAD_SELECTED_GLOW = "#0d3d1a";
-const GRATICULE = "#b3d4b9";
-const SPHERE_BORDER = "#1a5c2a";
-const STAR_FILL = "#ffffff";
-const STAR_STROKE = "#0d3d1a";
+// Palette aligned to the Lasallian brand tokens in globals.css. All routed
+// through CSS vars so [data-theme="dark"] can flip the ocean/land treatment
+// while keeping the LEAD greens on-brand.
+const OCEAN = "var(--brand-pale)"; // green-pale, reads as Lasallian rather than a generic atlas
+const LAND = "var(--map-land)"; // warm cream so LEAD greens pop without competing with the ocean
+const LAND_BORDER = "var(--map-land-border)";
+const LEAD = "var(--brand-mid)"; // green-mid
+const LEAD_HOVER = "var(--brand-light)"; // green-light
+const LEAD_ACTIVE = "var(--brand)"; // green-dark
+const LEAD_BORDER = "var(--surface)";
+const LEAD_SELECTED_GLOW = "#0d3d1a"; // static seed color for feFlood (SVG filters resolve CSS vars unreliably)
+const GRATICULE = "var(--map-graticule)";
+const SPHERE_BORDER = "var(--brand)";
+const STAR_FILL = "var(--surface)";
+const STAR_STROKE = "var(--text-heading)";
 
 // 5-point star (Signum Fidei) centered at origin, outer radius 1, inner ~0.382.
 const STAR_PATH =
@@ -79,12 +80,12 @@ export default function DistrictGlobe({ globeData, selected, onSelect }: Props) 
           </filter>
         </defs>
 
-        <circle cx={size / 2} cy={size / 2} r={size / 2 - 6} fill={OCEAN} />
+        <circle cx={size / 2} cy={size / 2} r={size / 2 - 6} style={{ fill: OCEAN }} />
 
         <path
           d={graticuleD}
           fill="none"
-          stroke={GRATICULE}
+          style={{ stroke: GRATICULE }}
           strokeWidth={0.5}
           opacity={0.55}
         />
@@ -93,8 +94,7 @@ export default function DistrictGlobe({ globeData, selected, onSelect }: Props) 
           <path
             key={c.id}
             d={c.d}
-            fill={LAND}
-            stroke={LAND_BORDER}
+            style={{ fill: LAND, stroke: LAND_BORDER }}
             strokeWidth={0.5}
           />
         ))}
@@ -109,11 +109,11 @@ export default function DistrictGlobe({ globeData, selected, onSelect }: Props) 
             <path
               key={c.id}
               d={c.d}
-              fill={fill}
-              stroke={LEAD_BORDER}
               strokeWidth={strokeWidth}
               filter={isSelected ? "url(#selected-glow)" : undefined}
               style={{
+                fill,
+                stroke: LEAD_BORDER,
                 cursor: "pointer",
                 transition: "fill 180ms, stroke-width 180ms",
               }}
@@ -152,11 +152,14 @@ export default function DistrictGlobe({ globeData, selected, onSelect }: Props) 
               <path
                 d={STAR_PATH}
                 transform={`scale(${scale})`}
-                fill={STAR_FILL}
-                stroke={STAR_STROKE}
                 strokeWidth={0.18}
                 strokeLinejoin="round"
-                style={{ pointerEvents: "none", transition: "transform 180ms" }}
+                style={{
+                  fill: STAR_FILL,
+                  stroke: STAR_STROKE,
+                  pointerEvents: "none",
+                  transition: "transform 180ms",
+                }}
               />
             </g>
           );
@@ -167,16 +170,17 @@ export default function DistrictGlobe({ globeData, selected, onSelect }: Props) 
           cy={size / 2}
           r={size / 2 - 6}
           fill="none"
-          stroke={SPHERE_BORDER}
+          style={{ stroke: SPHERE_BORDER }}
           strokeWidth={1}
           opacity={0.55}
         />
       </svg>
 
       <div
-        className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-sm"
+        className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3.5 py-1.5 rounded-full backdrop-blur-sm"
         style={{
-          boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 6px 20px -8px rgba(26,92,42,0.2)",
+          backgroundColor: "var(--header-bg-scrolled)",
+          boxShadow: "var(--shadow-card)",
         }}
       >
         {selected ? (
@@ -190,20 +194,29 @@ export default function DistrictGlobe({ globeData, selected, onSelect }: Props) 
                 className="rounded-sm"
                 style={{
                   objectFit: "cover",
-                  boxShadow: "0 0 0 1px rgba(0,0,0,0.06)",
+                  boxShadow: "0 0 0 1px var(--border-subtle)",
                 }}
               />
             )}
             <span
               className="text-[11.5px] font-semibold uppercase tracking-[0.18em]"
-              style={{ color: "#1a5c2a" }}
+              style={{ color: "var(--brand)" }}
             >
               {selected}
             </span>
             <button
               type="button"
               onClick={() => onSelect(null)}
-              className="ml-1 -mr-1 w-5 h-5 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+              className="ml-1 -mr-1 w-5 h-5 rounded-full flex items-center justify-center transition-colors"
+              style={{ color: "var(--text-subtle)" }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--overlay-hover)";
+                e.currentTarget.style.color = "var(--text-body)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "";
+                e.currentTarget.style.color = "var(--text-subtle)";
+              }}
               aria-label="Clear country filter"
             >
               <svg
@@ -227,7 +240,7 @@ export default function DistrictGlobe({ globeData, selected, onSelect }: Props) 
             />
             <span
               className="text-[11.5px] font-semibold uppercase tracking-[0.18em]"
-              style={{ color: "#1a5c2a" }}
+              style={{ color: "var(--brand)" }}
             >
               Tap a country to filter
             </span>
@@ -250,12 +263,12 @@ export default function DistrictGlobe({ globeData, selected, onSelect }: Props) 
               className="inline-flex items-center gap-1.5 pl-1.5 pr-2.5 py-1 rounded-full border transition-colors"
               style={{
                 backgroundColor: isSelected
-                  ? LEAD_ACTIVE
+                  ? "var(--brand)"
                   : isHovered
-                    ? "#f0faf1"
-                    : "#ffffff",
-                borderColor: isSelected ? LEAD_ACTIVE : "#e6ebe1",
-                color: isSelected ? "#ffffff" : "#0d3d1a",
+                    ? "var(--surface-accent)"
+                    : "var(--surface)",
+                borderColor: isSelected ? "var(--brand)" : "var(--border-input)",
+                color: isSelected ? "var(--text-inverse)" : "var(--text-heading)",
               }}
               aria-pressed={isSelected}
             >
@@ -268,7 +281,7 @@ export default function DistrictGlobe({ globeData, selected, onSelect }: Props) 
                   className="rounded-sm"
                   style={{
                     objectFit: "cover",
-                    boxShadow: "0 0 0 1px rgba(0,0,0,0.06)",
+                    boxShadow: "0 0 0 1px var(--border-subtle)",
                   }}
                 />
               )}

@@ -11,21 +11,21 @@ const sdgs = [
 
 export default function Foundations() {
   return (
-    <section id="foundations" className="py-28 sm:py-36" style={{ backgroundColor: "#fafbfa" }}>
+    <section id="foundations" className="py-28 sm:py-36" style={{ backgroundColor: "var(--surface-page)" }}>
       <div className="max-w-6xl mx-auto px-6 lg:px-8">
 
         {/* Left-aligned editorial header */}
         <div className="max-w-3xl mb-16 sm:mb-20">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] mb-5" style={{ color: "#2d8c3e" }}>
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] mb-5" style={{ color: "var(--brand-mid)" }}>
             Our Foundations
           </p>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]" style={{ color: "#0d3d1a" }}>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]" style={{ color: "var(--text-heading)" }}>
             Faith. Science. Action.
           </h2>
           <div className="mt-8 flex items-start gap-6">
-            <div className="w-16 h-px mt-3 shrink-0" style={{ backgroundColor: "#2d8c3e" }} />
-            <p className="text-lg text-gray-500 leading-[1.65] font-light">
-              Rooted in the Catholic Church&apos;s call to care for creation through <span className="text-gray-700 font-medium">Laudato Si&apos;</span>, and aligned with the United Nations&apos; <span className="text-gray-700 font-medium">Sustainable Development Goals</span>.
+            <div className="w-16 h-px mt-3 shrink-0" style={{ backgroundColor: "var(--brand-mid)" }} />
+            <p className="text-lg leading-[1.65] font-light" style={{ color: "var(--text-muted)" }}>
+              Rooted in the Catholic Church&apos;s call to care for creation through <span className="font-medium" style={{ color: "var(--text-body)" }}>Laudato Si&apos;</span>, and aligned with the United Nations&apos; <span className="font-medium" style={{ color: "var(--text-body)" }}>Sustainable Development Goals</span>.
             </p>
           </div>
         </div>
@@ -34,41 +34,41 @@ export default function Foundations() {
 
           {/* Laudato Si' Card */}
           <div
-            className="rounded-3xl bg-white p-10 sm:p-12 flex flex-col relative overflow-hidden"
-            style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -12px rgba(26,92,42,0.12)" }}
+            className="rounded-3xl p-10 sm:p-12 flex flex-col relative overflow-hidden"
+            style={{ backgroundColor: "var(--surface)", boxShadow: "var(--shadow-card)" }}
           >
             {/* Decorative watermark */}
             <div
               className="absolute -top-4 -right-2 text-[220px] font-serif leading-none select-none pointer-events-none"
-              style={{ color: "#2d8c3e", opacity: 0.06 }}
+              style={{ color: "var(--brand-mid)", opacity: 0.06 }}
               aria-hidden="true"
             >
               &ldquo;
             </div>
 
-            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-8 relative" style={{ color: "#2d8c3e" }}>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-8 relative" style={{ color: "var(--brand-mid)" }}>
               Laudato Si&apos; · 2015
             </p>
 
             <blockquote className="mb-8 relative">
-              <p className="text-2xl font-semibold italic leading-[1.35] tracking-tight mb-5" style={{ color: "#0d3d1a" }}>
+              <p className="text-2xl font-semibold italic leading-[1.35] tracking-tight mb-5" style={{ color: "var(--text-heading)" }}>
                 All of us can cooperate as instruments of God for the care of creation, each according to his or her own culture, experience, involvements and talents.
               </p>
               <footer className="flex items-center gap-3">
-                <div className="w-8 h-px" style={{ backgroundColor: "#2d8c3e" }} />
-                <span className="text-sm text-gray-500 font-medium">Pope Francis, §14</span>
+                <div className="w-8 h-px" style={{ backgroundColor: "var(--brand-mid)" }} />
+                <span className="text-sm font-medium" style={{ color: "var(--text-muted)" }}>Pope Francis, §14</span>
               </footer>
             </blockquote>
 
-            <p className="text-[15px] text-gray-600 leading-relaxed pt-6 border-t border-gray-100 mt-auto relative">
+            <p className="text-[15px] leading-relaxed pt-6 border-t mt-auto relative" style={{ color: "var(--text-body)", borderColor: "var(--border-subtle)" }}>
               <em>&ldquo;Praise be to you,&rdquo;</em> Pope Francis&apos;s encyclical on caring for our common home, calls every individual, community, and institution to take responsibility for the environment. For Lasallian schools, it is a spiritual mandate that directly informs our participation in LEADForEarth.
             </p>
           </div>
 
           {/* SDGs Card */}
           <div
-            className="rounded-3xl bg-white p-10 sm:p-12 flex flex-col"
-            style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -12px rgba(26,92,42,0.12)" }}
+            className="rounded-3xl p-10 sm:p-12 flex flex-col"
+            style={{ backgroundColor: "var(--surface)", boxShadow: "var(--shadow-card)" }}
           >
             <div className="flex items-center gap-5 mb-8">
               <Image
@@ -87,7 +87,7 @@ export default function Foundations() {
               />
             </div>
 
-            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-6" style={{ color: "#2d8c3e" }}>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-6" style={{ color: "var(--brand-mid)" }}>
               Goals We Are Aligned With
             </p>
 

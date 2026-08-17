@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import TranslateWidget from "@/components/TranslateWidget";
 import TranslationDisclaimer from "@/components/TranslationDisclaimer";
 import LanguageMenu from "@/components/LanguageMenu";
+import ThemeToggle from "@/components/ThemeToggle";
 import "./globals.css";
 
 const inter = Inter({
@@ -49,11 +50,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`h-full antialiased ${inter.variable}`}>
+    <html lang="en" className={`h-full antialiased ${inter.variable}`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col">
         {children}
         <TranslateWidget />
         <LanguageMenu variant="floating" />
+        <ThemeToggle />
         <TranslationDisclaimer />
         <Analytics />
       </body>

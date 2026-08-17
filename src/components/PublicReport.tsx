@@ -114,13 +114,13 @@ const CLEANUP_AREA_LABELS: Record<string, string> = {
   other: "Other",
 };
 
-// Palette
-const GREEN_DARK = "#0d3d1a";
-const GREEN_MID = "#2d8c3e";
-const GREEN_LIGHT = "#4aab5a";
-const GREEN_PALE = "#e8f5e9";
-const GREEN_CREAM = "#f4faf3";
-const CREAM = "#f7f3e7";
+// Palette — routed through CSS variables so dark mode flips automatically.
+const GREEN_DARK = "var(--text-heading)";
+const GREEN_MID = "var(--brand-mid)";
+const GREEN_LIGHT = "var(--brand-light)";
+const GREEN_PALE = "var(--brand-pale)";
+const GREEN_CREAM = "var(--brand-cream)";
+const CREAM = "var(--brand-cream-warm)";
 
 // Signum Fidei star: retained specifically for the "Spirit of Faith"
 // Lasallian reflection section where the name literally means "Sign of Faith".
@@ -361,7 +361,7 @@ function HeroCard({
             className="rounded-[2px]"
             style={{
               objectFit: "cover",
-              boxShadow: "0 0 0 1px rgba(0,0,0,0.06)",
+              boxShadow: "0 0 0 1px var(--border-subtle)",
             }}
           />
         )}
@@ -383,13 +383,19 @@ function HeroCard({
 
       {/* Lead paragraph */}
       {report.description && (
-        <p className="text-[17px] sm:text-[18px] text-gray-700 leading-[1.65] max-w-2xl relative">
+        <p
+          className="text-[17px] sm:text-[18px] leading-[1.65] max-w-2xl relative"
+          style={{ color: "var(--text-body)" }}
+        >
           {report.description}
         </p>
       )}
 
       {/* Meta row */}
-      <div className="flex flex-wrap gap-x-6 gap-y-3 mt-8 pt-6 border-t border-black/5 relative">
+      <div
+        className="flex flex-wrap gap-x-6 gap-y-3 mt-8 pt-6 border-t relative"
+        style={{ borderColor: "var(--border-subtle)" }}
+      >
         <MetaItem icon={<IconCalendar />} label="Implemented">
           {fmtShortDate(report.dateImplemented)}
         </MetaItem>
@@ -408,7 +414,10 @@ function HeroCard({
       {/* SDG chips */}
       {report.sdgGoals.length > 0 && (
         <div className="mt-6 relative">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-500 mb-2.5">
+          <p
+            className="text-[10px] font-semibold uppercase tracking-[0.2em] mb-2.5"
+            style={{ color: "var(--text-muted)" }}
+          >
             Sustainable Development Goals
           </p>
           <div className="flex flex-wrap gap-1.5">
@@ -442,12 +451,15 @@ function MetaItem({
     <div className="flex items-start gap-2">
       <span
         className="flex-none w-8 h-8 rounded-full flex items-center justify-center mt-0.5"
-        style={{ backgroundColor: "#ffffff", color: GREEN_DARK }}
+        style={{ backgroundColor: "var(--surface)", color: GREEN_DARK }}
       >
         {icon}
       </span>
       <div>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-gray-500">
+        <p
+          className="text-[10px] font-semibold uppercase tracking-[0.15em]"
+          style={{ color: "var(--text-muted)" }}
+        >
           {label}
         </p>
         <p
@@ -539,9 +551,8 @@ function ImpactStatRow({
           key={i}
           className="rounded-2xl p-5 sm:p-6"
           style={{
-            backgroundColor: "#ffffff",
-            boxShadow:
-              "0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(26,92,42,0.12)",
+            backgroundColor: "var(--surface)",
+            boxShadow: "var(--shadow-card)",
           }}
         >
           <span
@@ -556,7 +567,10 @@ function ImpactStatRow({
           >
             {c.value}
           </p>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-gray-500 mt-2">
+          <p
+            className="text-[11px] font-semibold uppercase tracking-[0.15em] mt-2"
+            style={{ color: "var(--text-muted)" }}
+          >
             {c.label}
           </p>
         </div>
@@ -583,10 +597,10 @@ function ParticipationSection({ report }: { report: ReportWithReflection }) {
   if (total === 0 && population === 0) return null;
 
   const segments = [
-    { label: "Students", value: students, color: "#1a5c2a" },
-    { label: "Faculty", value: faculty, color: "#2d8c3e" },
-    { label: "Staff / Admin", value: staff, color: "#4aab5a" },
-    { label: "Community", value: community, color: "#a0c99a" },
+    { label: "Students", value: students, color: "var(--brand)" },
+    { label: "Faculty", value: faculty, color: "var(--brand-mid)" },
+    { label: "Staff / Admin", value: staff, color: "var(--brand-light)" },
+    { label: "Community", value: community, color: "var(--brand-glow)" },
   ].filter((s) => s.value > 0);
 
   return (
@@ -599,7 +613,9 @@ function ParticipationSection({ report }: { report: ReportWithReflection }) {
           >
             {total.toLocaleString()}
           </p>
-          <p className="text-[12px] text-gray-500 mt-1">total participants</p>
+          <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>
+            total participants
+          </p>
         </div>
         {rate !== null && (
           <div className="text-right">
@@ -609,7 +625,9 @@ function ParticipationSection({ report }: { report: ReportWithReflection }) {
             >
               {rate.toFixed(1)}%
             </p>
-            <p className="text-[11px] text-gray-500 mt-1">of school population</p>
+            <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>
+              of school population
+            </p>
           </div>
         )}
       </div>
@@ -619,7 +637,7 @@ function ParticipationSection({ report }: { report: ReportWithReflection }) {
         <>
           <div
             className="flex h-3 rounded-full overflow-hidden mt-4"
-            style={{ backgroundColor: "#eef1ec" }}
+            style={{ backgroundColor: "var(--surface-sunken)" }}
           >
             {segments.map((s) => (
               <div
@@ -646,7 +664,12 @@ function ParticipationSection({ report }: { report: ReportWithReflection }) {
                   >
                     {s.value.toLocaleString()}
                   </p>
-                  <p className="text-[10.5px] text-gray-500 mt-1">{s.label}</p>
+                  <p
+                    className="text-[10.5px] mt-1"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    {s.label}
+                  </p>
                 </div>
               </li>
             ))}
@@ -711,13 +734,13 @@ function ImpactPanel({
   return (
     <div
       className="rounded-2xl p-5 sm:p-6 border"
-      style={{ backgroundColor: GREEN_CREAM, borderColor: "#dbeadb" }}
+      style={{ backgroundColor: GREEN_CREAM, borderColor: "var(--border-brand-soft)" }}
     >
       <div className="flex items-center gap-2.5 mb-4">
         {icon && (
           <span
             className="inline-flex items-center justify-center w-8 h-8 rounded-lg"
-            style={{ backgroundColor: "#ffffff", color: GREEN_DARK }}
+            style={{ backgroundColor: "var(--surface)", color: GREEN_DARK }}
           >
             {icon}
           </span>
@@ -816,10 +839,13 @@ function renderBeforeAfter(key: string, data: ImpactBucket): React.ReactNode {
   return (
     <div
       className="rounded-xl p-4 mb-3"
-      style={{ backgroundColor: "#ffffff", border: "1px solid #eef2ea" }}
+      style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border-subtle)" }}
     >
       <div className="flex items-center justify-between mb-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-gray-500">
+        <p
+          className="text-[11px] font-semibold uppercase tracking-[0.15em]"
+          style={{ color: "var(--text-muted)" }}
+        >
           Baseline vs. after
         </p>
         {delta > 0 && (
@@ -837,7 +863,7 @@ function renderBeforeAfter(key: string, data: ImpactBucket): React.ReactNode {
           value={before}
           unit={unit}
           pct={beforePct}
-          color="#c9d5c1"
+          color="var(--brand-glow)"
         />
         <BeforeAfterBar
           label="After"
@@ -866,15 +892,24 @@ function BeforeAfterBar({
 }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="text-[11px] font-semibold text-gray-500 w-14 flex-none">
+      <span
+        className="text-[11px] font-semibold w-14 flex-none"
+        style={{ color: "var(--text-muted)" }}
+      >
         {label}
       </span>
-      <div className="flex-1 h-5 rounded-md bg-gray-100 overflow-hidden">
+      <div
+        className="flex-1 h-5 rounded-md overflow-hidden"
+        style={{ backgroundColor: "var(--surface-sunken)" }}
+      >
         <div
           className="h-full flex items-center justify-end pr-2 rounded-md"
           style={{ width: `${Math.max(pct, 8)}%`, backgroundColor: color }}
         >
-          <span className="text-[10.5px] font-bold text-white whitespace-nowrap">
+          <span
+            className="text-[10.5px] font-bold whitespace-nowrap"
+            style={{ color: "#ffffff" }}
+          >
             {value.toLocaleString()} {unit}
           </span>
         </div>
@@ -922,7 +957,8 @@ function EffectivenessSection({ effectiveness }: { effectiveness: unknown }) {
           return (
             <div
               key={i}
-              className="pb-4 border-b border-gray-50 last:pb-0 last:border-0"
+              className="pb-4 border-b last:pb-0 last:border-0"
+              style={{ borderColor: "var(--border-subtle)" }}
             >
               <div className="flex items-baseline justify-between gap-3 mb-2">
                 <p
@@ -934,7 +970,10 @@ function EffectivenessSection({ effectiveness }: { effectiveness: unknown }) {
                 {validRating && <RatingDots value={rating} />}
               </div>
               {item.remarks && (
-                <p className="text-[13.5px] text-gray-600 whitespace-pre-wrap leading-relaxed">
+                <p
+                  className="text-[13.5px] whitespace-pre-wrap leading-relaxed"
+                  style={{ color: "var(--text-body)" }}
+                >
                   {item.remarks}
                 </p>
               )}
@@ -953,7 +992,7 @@ function RatingDots({ value }: { value: number }) {
         <span
           key={n}
           className="w-2.5 h-2.5 rounded-full"
-          style={{ backgroundColor: n <= value ? GREEN_DARK : "#e2e8de" }}
+          style={{ backgroundColor: n <= value ? GREEN_DARK : "var(--border-input)" }}
         />
       ))}
       <span
@@ -1025,7 +1064,10 @@ function DigitalReachSection({
               </span>
               <div className="flex-1 min-w-0">
                 <div className="flex items-baseline justify-between">
-                  <p className="text-[12px] font-semibold text-gray-500 uppercase tracking-[0.1em]">
+                  <p
+                    className="text-[12px] font-semibold uppercase tracking-[0.1em]"
+                    style={{ color: "var(--text-muted)" }}
+                  >
                     {r.label}
                   </p>
                   <p
@@ -1035,7 +1077,10 @@ function DigitalReachSection({
                     {r.value.toLocaleString()}
                   </p>
                 </div>
-                <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden mt-1">
+                <div
+                  className="h-1.5 rounded-full overflow-hidden mt-1"
+                  style={{ backgroundColor: "var(--surface-sunken)" }}
+                >
                   <div
                     className="h-full rounded-full"
                     style={{
@@ -1249,10 +1294,10 @@ function Section({
 }) {
   return (
     <section
-      className="bg-white rounded-3xl p-6 sm:p-8"
+      className="rounded-3xl p-6 sm:p-8"
       style={{
-        boxShadow:
-          "0 1px 2px rgba(0,0,0,0.04), 0 10px 32px -12px rgba(26,92,42,0.1)",
+        backgroundColor: "var(--surface)",
+        boxShadow: "var(--shadow-card)",
       }}
     >
       <div className="flex items-center gap-2.5 mb-5">

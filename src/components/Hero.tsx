@@ -6,7 +6,7 @@ export default function Hero() {
     <section
       id="home"
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
-      style={{ backgroundColor: "#0a1e18" }}
+      style={{ backgroundColor: "var(--hero-night)" }}
     >
       {/* Editorial botanical accent: top-right leaf-blob. Flat fill, no
           gradient; sits behind everything at low opacity to add depth. */}
@@ -18,12 +18,12 @@ export default function Hero() {
       >
         <path
           d="M480 60C560 120 590 240 550 350C520 435 430 500 320 505C210 510 130 460 100 370C70 285 105 190 190 130C275 70 400 20 480 60Z"
-          fill="#14332a"
+          style={{ fill: "var(--hero-botanical)" }}
           opacity="0.55"
         />
         <path
           d="M450 110C510 160 530 250 500 335C475 400 410 445 330 445C255 445 195 405 175 345C155 285 185 220 245 180C305 140 390 60 450 110Z"
-          fill="#1a5c2a"
+          style={{ fill: "var(--brand)" }}
           opacity="0.28"
         />
       </svg>
@@ -37,12 +37,12 @@ export default function Hero() {
       >
         <path
           d="M120 540C40 480 10 360 50 250C80 165 170 100 280 95C390 90 470 140 500 230C530 315 495 410 410 470C325 530 200 600 120 540Z"
-          fill="#14332a"
+          style={{ fill: "var(--hero-botanical)" }}
           opacity="0.5"
         />
         <path
           d="M150 490C90 440 70 350 100 265C125 200 190 155 270 155C345 155 405 195 425 255C445 315 415 380 355 420C295 460 210 540 150 490Z"
-          fill="#1a5c2a"
+          style={{ fill: "var(--brand)" }}
           opacity="0.25"
         />
       </svg>
@@ -106,7 +106,7 @@ export default function Hero() {
             <br />
             One Mission
             <br />
-            for the <span style={{ color: "#a8d5b0" }}>Earth</span>.
+            for the <span style={{ color: "var(--brand-glow)" }}>Earth</span>.
           </h1>
 
           <p className="text-lg leading-relaxed mb-8 max-w-lg" style={{ color: "rgba(230,244,234,0.92)" }}>
@@ -119,10 +119,11 @@ export default function Hero() {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center md:justify-start gap-3 sm:gap-4 mb-8">
             <Link
               href="/report"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-[15px] font-semibold text-white transition-all duration-200 hover:-translate-y-0.5"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-[15px] font-semibold transition-all duration-200 hover:-translate-y-0.5"
               style={{
-                backgroundColor: "#1a5c2a",
-                boxShadow: "0 8px 24px -8px rgba(26,92,42,0.7), inset 0 0 0 1px rgba(255,255,255,0.08)",
+                color: "var(--text-inverse)",
+                backgroundColor: "var(--brand)",
+                boxShadow: "var(--shadow-brand-strong), inset 0 0 0 1px rgba(255,255,255,0.08)",
               }}
             >
               Submit a Report
@@ -219,8 +220,10 @@ export default function Hero() {
           <div
             className="relative z-10 w-[43vw] h-[43vw] max-w-[155px] max-h-[155px] sm:max-w-[190px] sm:max-h-[190px] md:w-[228px] md:h-[228px] md:max-w-none md:max-h-none rounded-full flex items-center justify-center"
             style={{
-              background: "white",
-              boxShadow: "0 8px 40px rgba(0,0,0,0.5)",
+              // Logo lockup disc stays visually white in both themes so the
+              // brand mark reads correctly on the dark hero.
+              background: "#ffffff",
+              boxShadow: "var(--shadow-lift)",
             }}
           >
             <div className="relative w-[34vw] h-[34vw] max-w-[120px] max-h-[120px] sm:max-w-[148px] sm:max-h-[148px] md:w-[175px] md:h-[175px] md:max-w-none md:max-h-none">
@@ -242,7 +245,7 @@ export default function Hero() {
       <div
         aria-hidden="true"
         className="absolute bottom-0 left-0 right-0 h-px"
-        style={{ backgroundColor: "rgba(200,230,210,0.18)" }}
+        style={{ backgroundColor: "var(--hero-hairline)" }}
       />
     </section>
   );

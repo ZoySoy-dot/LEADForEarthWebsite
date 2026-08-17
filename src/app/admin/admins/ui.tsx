@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { addAdmin, removeAdmin } from "./actions";
 
 const INPUT_CLS =
-  "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 transition";
+  "w-full rounded-xl px-4 py-3 text-sm border transition focus:outline-none focus:ring-2 text-[color:var(--text-primary)] bg-[color:var(--surface)] border-[color:var(--border-input)] focus:border-[color:var(--border-input-focus)] focus:ring-[color:var(--brand-mid)]/25 placeholder:text-[color:var(--text-subtle)]";
 
 export function AddAdminForm() {
   const [pending, startTransition] = useTransition();
@@ -45,20 +45,21 @@ export function AddAdminForm() {
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex items-center justify-center gap-1.5 px-6 py-3 rounded-full font-semibold text-[13.5px] text-white transition-all duration-200 hover:-translate-y-px disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center justify-center gap-1.5 px-6 py-3 rounded-full font-semibold text-[13.5px] transition-all duration-200 hover:-translate-y-px disabled:opacity-50 disabled:cursor-not-allowed"
           style={{
-            backgroundColor: "#1a5c2a",
-            boxShadow: "0 6px 16px -4px rgba(26,92,42,0.4)",
+            color: "var(--text-inverse)",
+            backgroundColor: "var(--brand)",
+            boxShadow: "var(--shadow-brand)",
           }}
         >
           {pending ? "Adding…" : "Add Admin"}
         </button>
       </div>
       {error && (
-        <p className="text-[13px] text-red-600 font-medium">{error}</p>
+        <p className="text-[13px] font-medium" style={{ color: "var(--danger-fg)" }}>{error}</p>
       )}
       {success && (
-        <p className="text-[13px] font-medium" style={{ color: "#1a5c2a" }}>{success}</p>
+        <p className="text-[13px] font-medium" style={{ color: "var(--brand)" }}>{success}</p>
       )}
     </form>
   );
@@ -87,11 +88,14 @@ export function RemoveAdminButton({
         onClick={handleClick}
         disabled={disabled || pending}
         title={disabled ? "You can't remove your own access." : "Remove admin"}
-        className="px-3 py-1.5 rounded-full text-[12px] font-medium text-red-600 transition-colors hover:bg-red-50 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+        className="px-3 py-1.5 rounded-full text-[12px] font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        style={{ color: "var(--danger-fg)" }}
+        onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = "var(--danger-bg)"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
       >
         {pending ? "Removing…" : "Remove"}
       </button>
-      {error && <span className="text-[11px] text-red-600">{error}</span>}
+      {error && <span className="text-[11px]" style={{ color: "var(--danger-fg)" }}>{error}</span>}
     </div>
   );
 }

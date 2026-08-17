@@ -82,11 +82,10 @@ export default function SectionNav() {
           ref={scrollerRef}
           className="lfe-hide-scrollbar overflow-x-auto rounded-full mx-auto"
           style={{
-            backgroundColor: "rgba(255,255,255,0.85)",
+            backgroundColor: "var(--header-bg-scrolled)",
             backdropFilter: "saturate(150%) blur(20px)",
             WebkitBackdropFilter: "saturate(150%) blur(20px)",
-            boxShadow:
-              "0 1px 0 rgba(0,0,0,0.04), 0 8px 24px -8px rgba(0,0,0,0.12)",
+            boxShadow: "var(--shadow-card)",
             width: "fit-content",
             maxWidth: "100%",
           }}
@@ -105,11 +104,11 @@ export default function SectionNav() {
                   aria-current={isActive ? "location" : undefined}
                   className="px-3 sm:px-3.5 py-1.5 rounded-full text-[12px] sm:text-[12.5px] font-medium transition-colors duration-200 whitespace-nowrap shrink-0"
                   style={{
-                    color: isActive ? "#ffffff" : "#3a3a3a",
-                    backgroundColor: isActive ? "#1a5c2a" : "transparent",
+                    color: isActive ? "var(--text-inverse)" : "var(--text-body)",
+                    backgroundColor: isActive ? "var(--brand)" : "transparent",
                   }}
                   onMouseEnter={(e) => {
-                    if (!isActive) e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.05)";
+                    if (!isActive) e.currentTarget.style.backgroundColor = "var(--overlay-hover-strong)";
                   }}
                   onMouseLeave={(e) => {
                     if (!isActive) e.currentTarget.style.backgroundColor = "transparent";

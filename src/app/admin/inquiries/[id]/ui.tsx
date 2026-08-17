@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { sendReply, archiveInquiry } from "../actions";
 
 const INPUT_CLS =
-  "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 transition resize-none";
+  "w-full rounded-xl px-4 py-3 text-sm border transition resize-none focus:outline-none focus:ring-2 text-[color:var(--text-primary)] bg-[color:var(--surface)] border-[color:var(--border-input)] focus:border-[color:var(--border-input-focus)] focus:ring-[color:var(--brand-mid)]/25 placeholder:text-[color:var(--text-subtle)]";
 
 export function ReplyForm({ inquiryId }: { inquiryId: string }) {
   const [body, setBody] = useState("");
@@ -38,9 +38,9 @@ export function ReplyForm({ inquiryId }: { inquiryId: string }) {
         className={INPUT_CLS}
         disabled={pending}
       />
-      {error && <p className="text-[13px] text-red-600 font-medium">{error}</p>}
+      {error && <p className="text-[13px] font-medium" style={{ color: "var(--danger-fg)" }}>{error}</p>}
       {success && (
-        <p className="text-[13px] font-medium" style={{ color: "#1a5c2a" }}>
+        <p className="text-[13px] font-medium" style={{ color: "var(--brand)" }}>
           Reply sent.
         </p>
       )}
@@ -48,10 +48,11 @@ export function ReplyForm({ inquiryId }: { inquiryId: string }) {
         <button
           type="submit"
           disabled={pending || !body.trim()}
-          className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full font-semibold text-[13.5px] text-white transition-all duration-200 hover:-translate-y-px disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+          className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full font-semibold text-[13.5px] transition-all duration-200 hover:-translate-y-px disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
           style={{
-            backgroundColor: "#1a5c2a",
-            boxShadow: "0 6px 16px -4px rgba(26,92,42,0.4)",
+            color: "var(--text-inverse)",
+            backgroundColor: "var(--brand)",
+            boxShadow: "var(--shadow-brand)",
           }}
         >
           {pending ? (
@@ -90,11 +91,14 @@ export function ArchiveButton({ inquiryId }: { inquiryId: string }) {
         type="button"
         onClick={handleClick}
         disabled={pending}
-        className="px-4 py-2 rounded-full text-[12.5px] font-medium text-gray-600 transition-colors hover:bg-gray-100 disabled:opacity-40"
+        className="px-4 py-2 rounded-full text-[12.5px] font-medium transition-colors disabled:opacity-40"
+        style={{ color: "var(--text-body)" }}
+        onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = "var(--overlay-hover)"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
       >
         {pending ? "Archiving…" : "Archive"}
       </button>
-      {error && <span className="text-[11px] text-red-600">{error}</span>}
+      {error && <span className="text-[11px]" style={{ color: "var(--danger-fg)" }}>{error}</span>}
     </div>
   );
 }

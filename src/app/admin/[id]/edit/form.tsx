@@ -25,8 +25,8 @@ type Values = {
 };
 
 const INPUT_CLS =
-  "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 transition";
-const LABEL_CLS = "block text-sm font-medium text-gray-700 mb-1.5";
+  "w-full rounded-xl px-4 py-3 text-sm border transition focus:outline-none focus:ring-2 text-[color:var(--text-primary)] bg-[color:var(--surface)] border-[color:var(--border-input)] focus:border-[color:var(--border-input-focus)] focus:ring-[color:var(--brand-mid)]/25 placeholder:text-[color:var(--text-subtle)]";
+const LABEL_CLS = "block text-sm font-medium mb-1.5 text-[color:var(--text-body)]";
 
 export function EditReportForm({ reportId, initial }: { reportId: string; initial: Values }) {
   const router = useRouter();
@@ -83,24 +83,28 @@ export function EditReportForm({ reportId, initial }: { reportId: string; initia
       </Card>
 
       {error && (
-        <p className="text-[13px] text-red-600 font-medium">{error}</p>
+        <p className="text-[13px] font-medium" style={{ color: "var(--danger-fg)" }}>{error}</p>
       )}
 
       <div className="flex justify-end gap-3">
         <button
           type="button"
           onClick={() => router.push(`/admin/${reportId}`)}
-          className="px-5 py-2.5 rounded-full font-medium text-[13.5px] text-gray-700 transition-colors hover:bg-gray-100"
+          className="px-5 py-2.5 rounded-full font-medium text-[13.5px] transition-colors"
+          style={{ color: "var(--text-body)" }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--overlay-hover)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full font-semibold text-[13.5px] text-white transition-all duration-200 hover:-translate-y-px disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+          className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full font-semibold text-[13.5px] transition-all duration-200 hover:-translate-y-px disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
           style={{
-            backgroundColor: "#1a5c2a",
-            boxShadow: "0 6px 16px -4px rgba(26,92,42,0.4)",
+            color: "var(--text-inverse)",
+            backgroundColor: "var(--brand)",
+            boxShadow: "var(--shadow-brand)",
           }}
         >
           {pending ? "Saving…" : "Save Changes"}
@@ -113,12 +117,12 @@ export function EditReportForm({ reportId, initial }: { reportId: string; initia
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section
-      className="bg-white rounded-3xl p-6 sm:p-8"
-      style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 10px 32px -12px rgba(26,92,42,0.1)" }}
+      className="rounded-3xl p-6 sm:p-8"
+      style={{ backgroundColor: "var(--surface)", boxShadow: "var(--shadow-card)" }}
     >
       <h2
         className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-5"
-        style={{ color: "#2d8c3e" }}
+        style={{ color: "var(--brand-mid)" }}
       >
         {title}
       </h2>

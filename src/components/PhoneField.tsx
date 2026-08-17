@@ -179,7 +179,7 @@ export default function PhoneField({ label, path, value, onChange, required, hin
 
   return (
     <div ref={rootRef}>
-      <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 mb-1.5">
+      <label htmlFor={inputId} className="block text-sm font-medium mb-1.5" style={{ color: "var(--text-body)" }}>
         {label}
         {required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
@@ -190,7 +190,10 @@ export default function PhoneField({ label, path, value, onChange, required, hin
           aria-haspopup="listbox"
           aria-expanded={isOpen}
           aria-label={country ? `Country: ${REGION_NAMES.of(country)}` : "Select country"}
-          className="shrink-0 inline-flex items-center gap-2 border border-gray-200 rounded-xl px-4 py-4 text-base bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+          className="shrink-0 inline-flex items-center gap-2 border border-[color:var(--border-input)] rounded-xl px-4 py-4 text-base focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-[color:var(--border-input-focus)] transition"
+          style={{ backgroundColor: "var(--surface)", color: "var(--text-primary)" }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--overlay-hover)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "var(--surface)"; }}
         >
           {country ? (
             <span className="text-xl leading-none" aria-hidden="true">
@@ -199,11 +202,14 @@ export default function PhoneField({ label, path, value, onChange, required, hin
           ) : (
             <span className="text-xl leading-none" aria-hidden="true">🌐</span>
           )}
-          <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" style={{ color: "var(--text-subtle)" }} fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <polyline points="6 9 12 15 18 9" />
           </svg>
         </button>
-        <div className="flex-1 min-w-0 flex items-center border border-gray-200 rounded-xl bg-white focus-within:ring-2 focus-within:ring-green-400 transition">
+        <div
+          className="flex-1 min-w-0 flex items-center border border-[color:var(--border-input)] rounded-xl focus-within:ring-2 focus-within:ring-green-400 focus-within:border-[color:var(--border-input-focus)] transition"
+          style={{ backgroundColor: "var(--surface)" }}
+        >
           {country && (
             <span
               onMouseDown={(e) => {
@@ -212,7 +218,8 @@ export default function PhoneField({ label, path, value, onChange, required, hin
                 e.preventDefault();
                 document.getElementById(inputId)?.focus();
               }}
-              className="pl-5 pr-1 text-base text-gray-500 select-none shrink-0 cursor-text tabular-nums"
+              className="pl-5 pr-1 text-base select-none shrink-0 cursor-text tabular-nums"
+              style={{ color: "var(--text-muted)" }}
               aria-hidden="true"
             >
               +{getCountryCallingCode(country)}
@@ -228,28 +235,30 @@ export default function PhoneField({ label, path, value, onChange, required, hin
             placeholder={country ? "Phone number" : "Pick a country, or paste with +country code"}
             required={required}
             className={`flex-1 min-w-0 bg-transparent py-4 text-base focus:outline-none ${country ? "pl-2 pr-5" : "px-5"}`}
+            style={{ color: "var(--text-primary)" }}
           />
         </div>
 
         {isOpen && (
           <div
-            className="absolute top-full left-0 z-50 mt-2 w-[22rem] max-w-[calc(100vw-2rem)] bg-white rounded-2xl border border-gray-200 flex flex-col overflow-hidden"
-            style={{ boxShadow: "0 20px 40px -12px rgba(0,0,0,0.15), 0 4px 8px -4px rgba(0,0,0,0.08)" }}
+            className="absolute top-full left-0 z-50 mt-2 w-[22rem] max-w-[calc(100vw-2rem)] rounded-2xl border border-[color:var(--border-input)] flex flex-col overflow-hidden"
+            style={{ backgroundColor: "var(--surface-elevated)", boxShadow: "var(--shadow-strong)" }}
             role="listbox"
           >
-            <div className="p-2 border-b border-gray-100">
+            <div className="p-2 border-b" style={{ borderColor: "var(--border-subtle)" }}>
               <input
                 ref={searchRef}
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search country or code"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="w-full border border-[color:var(--border-input)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-[color:var(--border-input-focus)]"
+                style={{ backgroundColor: "var(--surface)", color: "var(--text-primary)" }}
               />
             </div>
             <ul className="overflow-y-auto max-h-72">
               {filteredCountries.length === 0 && (
-                <li className="px-4 py-3 text-sm text-gray-500">No matches</li>
+                <li className="px-4 py-3 text-sm" style={{ color: "var(--text-muted)" }}>No matches</li>
               )}
               {filteredCountries.map((c) => {
                 const active = c.code === country;
@@ -260,15 +269,20 @@ export default function PhoneField({ label, path, value, onChange, required, hin
                       onClick={() => selectCountry(c.code)}
                       role="option"
                       aria-selected={active}
-                      className={`w-full text-left px-3 py-2.5 flex items-center gap-3 text-sm hover:bg-green-50 transition-colors ${
-                        active ? "bg-green-50" : ""
-                      }`}
+                      className="w-full text-left px-3 py-2.5 flex items-center gap-3 text-sm transition-colors"
+                      style={{ backgroundColor: active ? "var(--overlay-brand-hover)" : "transparent" }}
+                      onMouseEnter={(e) => {
+                        if (!active) e.currentTarget.style.backgroundColor = "var(--overlay-brand-hover)";
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!active) e.currentTarget.style.backgroundColor = "transparent";
+                      }}
                     >
                       <span className="text-lg leading-none shrink-0" aria-hidden="true">
                         {flagEmoji(c.code)}
                       </span>
-                      <span className="flex-1 min-w-0 truncate text-gray-800">{c.name}</span>
-                      <span className="text-gray-500 tabular-nums shrink-0">+{c.calling}</span>
+                      <span className="flex-1 min-w-0 truncate" style={{ color: "var(--text-primary)" }}>{c.name}</span>
+                      <span className="tabular-nums shrink-0" style={{ color: "var(--text-muted)" }}>+{c.calling}</span>
                     </button>
                   </li>
                 );
@@ -277,7 +291,7 @@ export default function PhoneField({ label, path, value, onChange, required, hin
           </div>
         )}
       </div>
-      {hint && <p className="text-xs text-gray-500 mt-1">{hint}</p>}
+      {hint && <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>{hint}</p>}
     </div>
   );
 }

@@ -111,7 +111,7 @@ export default function CommunityView({
           centered inside via max-w-7xl. */}
       <section
         className="relative overflow-hidden flex items-center px-6 sm:px-10 lg:px-14 py-14 sm:py-20"
-        style={{ backgroundColor: "#f4faf3", minHeight: "calc(100vh - 68px)" }}
+        style={{ backgroundColor: "var(--brand-cream)", minHeight: "calc(100vh - 68px)" }}
       >
         {/* Editorial botanical blob, top-right */}
         <svg
@@ -122,12 +122,12 @@ export default function CommunityView({
         >
           <path
             d="M480 60C560 120 590 240 550 350C520 435 430 500 320 505C210 510 130 460 100 370C70 285 105 190 190 130C275 70 400 20 480 60Z"
-            fill="#1a5c2a"
+            style={{ fill: "var(--brand)" }}
             opacity="0.08"
           />
           <path
             d="M450 110C510 160 530 250 500 335C475 400 410 445 330 445C255 445 195 405 175 345C155 285 185 220 245 180C305 140 390 60 450 110Z"
-            fill="#2d8c3e"
+            style={{ fill: "var(--brand-mid)" }}
             opacity="0.07"
           />
         </svg>
@@ -140,7 +140,7 @@ export default function CommunityView({
         >
           <path
             d="M120 540C40 480 10 360 50 250C80 165 170 100 280 95C390 90 470 140 500 230C530 315 495 410 410 470C325 530 200 600 120 540Z"
-            fill="#1a5c2a"
+            style={{ fill: "var(--brand)" }}
             opacity="0.07"
           />
         </svg>
@@ -152,25 +152,28 @@ export default function CommunityView({
           preserveAspectRatio="xMidYMid slice"
           fill="none"
         >
-          <ellipse cx="880" cy="300" rx="360" ry="360" stroke="rgba(45,140,62,0.10)" strokeWidth="1" />
-          <ellipse cx="880" cy="300" rx="260" ry="260" stroke="rgba(45,140,62,0.07)" strokeWidth="1" />
+          <ellipse cx="880" cy="300" rx="360" ry="360" style={{ stroke: "var(--brand-mid)" }} strokeOpacity="0.10" strokeWidth="1" />
+          <ellipse cx="880" cy="300" rx="260" ry="260" style={{ stroke: "var(--brand-mid)" }} strokeOpacity="0.07" strokeWidth="1" />
         </svg>
 
         <div className="relative w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[minmax(260px,340px)_minmax(400px,560px)] md:justify-center gap-8 md:gap-10 lg:gap-14 items-center">
           <div className="text-center md:text-left">
             <p
               className="text-[11px] font-bold uppercase tracking-[0.24em] mb-3"
-              style={{ color: "#2d8c3e" }}
+              style={{ color: "var(--brand-mid)" }}
             >
               #LEADforEarth
             </p>
             <h1
               className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05] mb-4"
-              style={{ color: "#0d3d1a" }}
+              style={{ color: "var(--text-heading)" }}
             >
-              Our <span style={{ color: "#2d8c3e" }}>Community</span>
+              Our <span style={{ color: "var(--brand-mid)" }}>Community</span>
             </h1>
-            <p className="text-[15px] sm:text-[16px] text-gray-600 leading-relaxed max-w-xl mx-auto md:mx-0">
+            <p
+              className="text-[15px] sm:text-[16px] leading-relaxed max-w-xl mx-auto md:mx-0"
+              style={{ color: "var(--text-body)" }}
+            >
               Seven sectors across East Asia, one Lasallian district
               contributing to the #LEADforEarth campaign.
             </p>
@@ -187,19 +190,19 @@ export default function CommunityView({
 
       <section
         className="px-6 pt-4 pb-16 sm:pt-6 sm:pb-20"
-        style={{ backgroundColor: "#fafbfa" }}
+        style={{ backgroundColor: "var(--surface-page)" }}
       >
         <div className="max-w-5xl mx-auto">
           {/* Campaign proof strip: display-type figures make the numbers
               feel like the second visual beat after the hero. */}
           <div
-            className="mb-10 sm:mb-14 rounded-3xl bg-white px-6 sm:px-10 py-8 sm:py-10"
+            className="mb-10 sm:mb-14 rounded-3xl px-6 sm:px-10 py-8 sm:py-10"
             style={{
-              boxShadow:
-                "0 1px 2px rgba(0,0,0,0.04), 0 12px 40px -14px rgba(26,92,42,0.12)",
+              backgroundColor: "var(--surface)",
+              boxShadow: "var(--shadow-card)",
             }}
           >
-            <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
+            <div className="grid grid-cols-1 sm:grid-cols-3 [&>*+*]:border-t sm:[&>*+*]:border-t-0 sm:[&>*+*]:border-l [&>*+*]:[border-color:var(--border-subtle)]">
               <BigStat
                 label={selected ? "Schools" : "Institutions"}
                 value={visible.length.toLocaleString()}
@@ -215,24 +218,30 @@ export default function CommunityView({
             </div>
           </div>
 
-          <div className="flex items-baseline justify-between gap-3 mb-4 pb-3 border-b border-gray-200">
+          <div
+            className="flex items-baseline justify-between gap-3 mb-4 pb-3 border-b"
+            style={{ borderColor: "var(--border-input)" }}
+          >
             <div className="flex items-center gap-2.5">
               <svg
                 viewBox="0 0 24 24"
                 className="w-4 h-4"
-                fill="#2d8c3e"
+                style={{ fill: "var(--brand-mid)" }}
                 aria-hidden="true"
               >
                 <path d={LEAF_PATH} />
               </svg>
               <h2
                 className="text-lg sm:text-xl font-semibold tracking-tight"
-                style={{ color: "#0d3d1a" }}
+                style={{ color: "var(--text-heading)" }}
               >
                 Institutions taking part
               </h2>
             </div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500">
+            <p
+              className="text-[11px] font-semibold uppercase tracking-[0.2em]"
+              style={{ color: "var(--text-muted)" }}
+            >
               {selected ?? "All sectors"}
             </p>
           </div>
@@ -254,10 +263,10 @@ export default function CommunityView({
             <EmptyState country={selected} />
           ) : (
             <div
-              className="bg-white rounded-3xl overflow-hidden"
+              className="rounded-3xl overflow-hidden"
               style={{
-                boxShadow:
-                  "0 1px 2px rgba(0,0,0,0.04), 0 10px 32px -10px rgba(26,92,42,0.1)",
+                backgroundColor: "var(--surface)",
+                boxShadow: "var(--shadow-card)",
               }}
             >
               <ul>
@@ -269,15 +278,22 @@ export default function CommunityView({
                   return (
                     <li
                       key={inst.name}
-                      className="border-b border-gray-50 last:border-0"
+                      className="border-b last:border-0"
+                      style={{ borderColor: "var(--border-subtle)" }}
                     >
                       <button
                         type="button"
                         onClick={() => toggleExpanded(inst.name)}
                         aria-expanded={isExpanded}
-                        className="w-full flex items-center gap-4 sm:gap-6 px-5 sm:px-7 py-5 text-left cursor-pointer transition-colors hover:bg-[#f4faf3]"
+                        className="w-full flex items-center gap-4 sm:gap-6 px-5 sm:px-7 py-5 text-left cursor-pointer transition-colors"
                         style={{
-                          backgroundColor: isExpanded ? "#f4faf3" : undefined,
+                          backgroundColor: isExpanded ? "var(--brand-cream)" : undefined,
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isExpanded) e.currentTarget.style.backgroundColor = "var(--brand-cream)";
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isExpanded) e.currentTarget.style.backgroundColor = "";
                         }}
                       >
                         <div className="flex-1 min-w-0">
@@ -292,23 +308,29 @@ export default function CommunityView({
                                   className="rounded-[2px]"
                                   style={{
                                     objectFit: "cover",
-                                    boxShadow: "0 0 0 1px rgba(0,0,0,0.06)",
+                                    boxShadow: "0 0 0 1px var(--border-subtle)",
                                   }}
                                 />
                               )}
-                              <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-500">
+                              <span
+                                className="text-[10px] font-semibold uppercase tracking-[0.2em]"
+                                style={{ color: "var(--text-muted)" }}
+                              >
                                 {inst.country}
                               </span>
                             </div>
                           )}
                           <p
                             className="font-semibold text-[15px] truncate"
-                            style={{ color: "#0d3d1a" }}
+                            style={{ color: "var(--text-heading)" }}
                           >
                             {inst.name}
                           </p>
                           {inst.participants > 0 && (
-                            <p className="text-[12.5px] text-gray-500 mt-0.5">
+                            <p
+                              className="text-[12.5px] mt-0.5"
+                              style={{ color: "var(--text-muted)" }}
+                            >
                               {inst.participants.toLocaleString()} people reached
                             </p>
                           )}
@@ -316,18 +338,22 @@ export default function CommunityView({
                         <div className="flex-none text-right">
                           <p
                             className="text-2xl font-bold tracking-tight leading-none tabular-nums"
-                            style={{ color: "#0d3d1a" }}
+                            style={{ color: "var(--text-heading)" }}
                           >
                             {inst.reports.toLocaleString()}
                           </p>
-                          <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-gray-400 mt-1">
+                          <p
+                            className="text-[11px] font-medium uppercase tracking-[0.15em] mt-1"
+                            style={{ color: "var(--text-subtle)" }}
+                          >
                             {inst.reports === 1 ? "report" : "reports"}
                           </p>
                         </div>
                         <svg
                           viewBox="0 0 24 24"
-                          className="flex-none w-4 h-4 text-gray-400 transition-transform"
+                          className="flex-none w-4 h-4 transition-transform"
                           style={{
+                            color: "var(--text-subtle)",
                             transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
                           }}
                           fill="none"
@@ -349,7 +375,10 @@ export default function CommunityView({
             </div>
           )}
 
-          <p className="text-center text-[12.5px] text-gray-400 mt-8 leading-relaxed">
+          <p
+            className="text-center text-[12.5px] mt-8 leading-relaxed"
+            style={{ color: "var(--text-subtle)" }}
+          >
             {selected
               ? `Showing schools in ${selected}. Tap the country again or the × to clear.`
               : "Take a look at who's taking part. Institution counts refresh a few minutes after new reports come in."}
@@ -383,17 +412,17 @@ function FilterSection({
 }) {
   return (
     <div
-      className="mb-6 bg-white rounded-2xl px-4 sm:px-5 py-4"
+      className="mb-6 rounded-2xl px-4 sm:px-5 py-4"
       style={{
-        boxShadow:
-          "0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(26,92,42,0.12)",
+        backgroundColor: "var(--surface)",
+        boxShadow: "var(--shadow-card)",
       }}
     >
       <div className="flex items-center justify-between gap-3 mb-3">
-        <p className="text-[12.5px]" style={{ color: "#4a5b4d" }}>
+        <p className="text-[12.5px]" style={{ color: "var(--text-body)" }}>
           <span
             className="font-bold tabular-nums"
-            style={{ color: "#0d3d1a" }}
+            style={{ color: "var(--text-heading)" }}
           >
             {resultCount.toLocaleString()}
           </span>{" "}
@@ -404,7 +433,7 @@ function FilterSection({
             type="button"
             onClick={onResetAll}
             className="inline-flex items-center gap-1 text-[11.5px] font-semibold uppercase tracking-[0.15em] transition-colors hover:opacity-70"
-            style={{ color: "#2f8f42" }}
+            style={{ color: "var(--brand-mid)" }}
           >
             <svg
               viewBox="0 0 24 24"
@@ -433,7 +462,8 @@ function FilterSection({
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
+            style={{ color: "var(--text-subtle)" }}
           >
             <circle cx="11" cy="11" r="7" />
             <path d="M21 21l-4.35-4.35" />
@@ -443,13 +473,32 @@ function FilterSection({
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
             placeholder="Search schools, countries, projects, or people"
-            className="w-full h-10 pl-9 pr-3 rounded-full text-[13.5px] bg-[#f5f8f4] border border-transparent focus:outline-none focus:bg-white focus:border-[#2d8c3e] focus:ring-2 focus:ring-[#2d8c3e]/15 transition-all"
+            className="w-full h-10 pl-9 pr-3 rounded-full text-[13.5px] border border-transparent focus:outline-none focus:border-[var(--brand-mid)] focus:ring-2 focus:ring-[color:var(--brand-mid)]/15 transition-all"
+            style={{
+              backgroundColor: "var(--surface-sunken)",
+              color: "var(--text-primary)",
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--surface)";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--surface-sunken)";
+            }}
           />
           {query && (
             <button
               type="button"
               onClick={() => onQueryChange("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center transition-colors"
+              style={{ color: "var(--text-subtle)" }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--overlay-hover)";
+                e.currentTarget.style.color = "var(--text-body)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "";
+                e.currentTarget.style.color = "var(--text-subtle)";
+              }}
               aria-label="Clear search"
             >
               <svg
@@ -475,7 +524,17 @@ function FilterSection({
             id="sort-key"
             value={sortKey}
             onChange={(e) => onSortChange(e.target.value as SortKey)}
-            className="appearance-none w-full h-10 pl-9 pr-9 rounded-full text-[13.5px] bg-[#f5f8f4] border border-transparent focus:outline-none focus:bg-white focus:border-[#2d8c3e] focus:ring-2 focus:ring-[#2d8c3e]/15 transition-all cursor-pointer"
+            className="appearance-none w-full h-10 pl-9 pr-9 rounded-full text-[13.5px] border border-transparent focus:outline-none focus:border-[var(--brand-mid)] focus:ring-2 focus:ring-[color:var(--brand-mid)]/15 transition-all cursor-pointer"
+            style={{
+              backgroundColor: "var(--surface-sunken)",
+              color: "var(--text-primary)",
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--surface)";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--surface-sunken)";
+            }}
           >
             <option value="reports">Most reports</option>
             <option value="recent">Most recent</option>
@@ -489,7 +548,8 @@ function FilterSection({
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
+            style={{ color: "var(--text-subtle)" }}
           >
             <path d="M3 6h18M6 12h12M10 18h4" />
           </svg>
@@ -500,7 +560,8 @@ function FilterSection({
             strokeWidth={2.5}
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
+            style={{ color: "var(--text-subtle)" }}
           >
             <path d="M6 9l6 6 6-6" />
           </svg>
@@ -508,13 +569,19 @@ function FilterSection({
       </div>
 
       {selectedCountry && (
-        <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-2 flex-wrap">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-500">
+        <div
+          className="mt-3 pt-3 border-t flex items-center gap-2 flex-wrap"
+          style={{ borderColor: "var(--border-subtle)" }}
+        >
+          <span
+            className="text-[11px] font-semibold uppercase tracking-[0.18em]"
+            style={{ color: "var(--text-muted)" }}
+          >
             Country
           </span>
           <span
             className="inline-flex items-center gap-2 pl-2 pr-1 py-1 rounded-full"
-            style={{ backgroundColor: "#f0faf1" }}
+            style={{ backgroundColor: "var(--surface-accent)" }}
           >
             {COUNTRY_FLAG_CODE[selectedCountry] && (
               <Image
@@ -525,20 +592,29 @@ function FilterSection({
                 className="rounded-sm"
                 style={{
                   objectFit: "cover",
-                  boxShadow: "0 0 0 1px rgba(0,0,0,0.06)",
+                  boxShadow: "0 0 0 1px var(--border-subtle)",
                 }}
               />
             )}
             <span
               className="text-[12.5px] font-semibold"
-              style={{ color: "#0d3d1a" }}
+              style={{ color: "var(--text-heading)" }}
             >
               {selectedCountry}
             </span>
             <button
               type="button"
               onClick={onClearCountry}
-              className="w-5 h-5 rounded-full flex items-center justify-center text-gray-400 hover:bg-white hover:text-gray-700 transition-colors"
+              className="w-5 h-5 rounded-full flex items-center justify-center transition-colors"
+              style={{ color: "var(--text-subtle)" }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--surface)";
+                e.currentTarget.style.color = "var(--text-body)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "";
+                e.currentTarget.style.color = "var(--text-subtle)";
+              }}
               aria-label="Clear country filter"
             >
               <svg
@@ -568,23 +644,26 @@ function ReportList({ items }: { items: ReportItem[] }) {
       day: "numeric",
     }).format(new Date(iso));
   return (
-    // Panel bg is a deeper tinted-green than the institution row (white) so
+    // Panel bg is a deeper tinted-green than the institution row (surface) so
     // the "these are children of the row above" relationship reads at a
     // glance. Inner scroll caps overall height so 50+ reports don't push
     // everything below off-screen.
-    <div style={{ backgroundColor: "#eef5eb" }}>
+    <div style={{ backgroundColor: "var(--brand-cream)" }}>
       <div className="max-h-[60vh] overflow-y-auto">
         <div
           className="sticky top-0 z-10 flex items-center justify-between pl-14 sm:pl-20 pr-5 sm:pr-8 py-3 border-b"
-          style={{ backgroundColor: "#e3ede0", borderColor: "#d3e0cf" }}
+          style={{ backgroundColor: "var(--surface-accent)", borderColor: "var(--border-subtle)" }}
         >
           <p
             className="text-[10px] font-bold uppercase tracking-[0.22em]"
-            style={{ color: "#1a5c2a" }}
+            style={{ color: "var(--brand)" }}
           >
             Reports from this school
           </p>
-          <p className="text-[10.5px] font-medium text-gray-500">
+          <p
+            className="text-[10.5px] font-medium"
+            style={{ color: "var(--text-muted)" }}
+          >
             {items.length} · Newest first
           </p>
         </div>
@@ -593,20 +672,23 @@ function ReportList({ items }: { items: ReportItem[] }) {
             <li key={r.id}>
               <Link
                 href={`/reports/${r.id}`}
-                className="flex items-center gap-3 pl-4 pr-3 py-3 rounded-xl bg-white transition-all hover:-translate-y-px"
+                className="flex items-center gap-3 pl-4 pr-3 py-3 rounded-xl transition-all hover:-translate-y-px"
                 style={{
-                  boxShadow:
-                    "0 1px 2px rgba(0,0,0,0.03), 0 4px 12px -6px rgba(26,92,42,0.08)",
+                  backgroundColor: "var(--surface)",
+                  boxShadow: "var(--shadow-card)",
                 }}
               >
                 <div className="flex-1 min-w-0">
                   <p
                     className="text-[14px] font-semibold truncate"
-                    style={{ color: "#0d3d1a" }}
+                    style={{ color: "var(--text-heading)" }}
                   >
                     {r.title}
                   </p>
-                  <p className="text-[11.5px] text-gray-500 mt-0.5">
+                  <p
+                    className="text-[11.5px] mt-0.5"
+                    style={{ color: "var(--text-muted)" }}
+                  >
                     {fmtDate(r.createdAt)}
                     {r.participants != null && r.participants > 0 && (
                       <> · {r.participants.toLocaleString()} participants</>
@@ -615,7 +697,7 @@ function ReportList({ items }: { items: ReportItem[] }) {
                 </div>
                 <span
                   className="flex-none inline-flex items-center gap-1 text-[10.5px] font-semibold uppercase tracking-[0.15em]"
-                  style={{ color: "#2d8c3e" }}
+                  style={{ color: "var(--brand-mid)" }}
                 >
                   View
                   <svg
@@ -645,11 +727,14 @@ function BigStat({ label, value }: { label: string; value: string }) {
     <div className="px-2 sm:px-6 py-4 sm:py-2 text-center first:pt-0 sm:first:pt-2 last:pb-0 sm:last:pb-2">
       <p
         className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-none tabular-nums"
-        style={{ color: "#0d3d1a" }}
+        style={{ color: "var(--text-heading)" }}
       >
         {value}
       </p>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 mt-3">
+      <p
+        className="text-[11px] font-semibold uppercase tracking-[0.2em] mt-3"
+        style={{ color: "var(--text-muted)" }}
+      >
         {label}
       </p>
     </div>
@@ -659,14 +744,15 @@ function BigStat({ label, value }: { label: string; value: string }) {
 function EmptyState({ country }: { country: string | null }) {
   return (
     <div
-      className="bg-white rounded-3xl p-12 sm:p-16 text-center"
+      className="rounded-3xl p-12 sm:p-16 text-center"
       style={{
-        boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 10px 32px -10px rgba(26,92,42,0.1)",
+        backgroundColor: "var(--surface)",
+        boxShadow: "var(--shadow-card)",
       }}
     >
       <div
         className="w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center"
-        style={{ backgroundColor: "#f0faf1", color: "#1a5c2a" }}
+        style={{ backgroundColor: "var(--surface-accent)", color: "var(--brand)" }}
       >
         <svg
           viewBox="0 0 24 24"
@@ -683,10 +769,13 @@ function EmptyState({ country }: { country: string | null }) {
           <path d="M16 3.13a4 4 0 0 1 0 7.75" />
         </svg>
       </div>
-      <h3 className="text-xl font-bold tracking-tight mb-2" style={{ color: "#0d3d1a" }}>
+      <h3 className="text-xl font-bold tracking-tight mb-2" style={{ color: "var(--text-heading)" }}>
         {country ? `No reports yet from ${country}` : "No reports yet"}
       </h3>
-      <p className="text-[14px] text-gray-500 max-w-sm mx-auto leading-relaxed">
+      <p
+        className="text-[14px] max-w-sm mx-auto leading-relaxed"
+        style={{ color: "var(--text-muted)" }}
+      >
         {country
           ? `Schools in ${country} contributing to #LEADforEarth will appear here.`
           : "Once schools begin submitting #LEADforEarth reports, the community contributing to the campaign will appear here."}

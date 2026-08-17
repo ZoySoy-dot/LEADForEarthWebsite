@@ -224,8 +224,8 @@ function reducer(state: Report, action: Action): Report {
 // ============================================================================
 
 const INPUT_CLS =
-  "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 transition";
-const LABEL_CLS = "block text-sm font-medium text-gray-700 mb-1.5";
+  "w-full border border-[color:var(--border-input)] rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-[color:var(--border-input-focus)] transition";
+const LABEL_CLS = "block text-sm font-medium mb-1.5";
 
 type SetFn = (path: string, value: unknown) => void;
 
@@ -238,7 +238,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className={LABEL_CLS}>
+      <label className={LABEL_CLS} style={{ color: "var(--text-body)" }}>
         {label}
         {required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
@@ -250,9 +250,13 @@ function Field({
         required={required}
         readOnly={readOnly}
         min={min}
-        className={`${INPUT_CLS}${readOnly ? " bg-gray-50 text-gray-600 cursor-not-allowed" : ""}`}
+        className={`${INPUT_CLS}${readOnly ? " cursor-not-allowed" : ""}`}
+        style={{
+          backgroundColor: readOnly ? "var(--surface-sunken)" : "var(--surface)",
+          color: readOnly ? "var(--text-muted)" : "var(--text-primary)",
+        }}
       />
-      {hint && <p className="text-xs text-gray-500 mt-1">{hint}</p>}
+      {hint && <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>{hint}</p>}
     </div>
   );
 }
@@ -285,7 +289,7 @@ function Textarea({
 
   return (
     <div>
-      <label className={LABEL_CLS}>
+      <label className={LABEL_CLS} style={{ color: "var(--text-body)" }}>
         {label}
         {required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
@@ -296,11 +300,15 @@ function Textarea({
         placeholder={placeholder}
         required={required}
         className={`${INPUT_CLS} resize-none`}
+        style={{ backgroundColor: "var(--surface)", color: "var(--text-primary)" }}
       />
       <div className="flex items-start justify-between mt-1 gap-3">
-        <p className="text-xs text-gray-500">{hint}</p>
+        <p className="text-xs" style={{ color: "var(--text-muted)" }}>{hint}</p>
         {maxWords && (
-          <p className={`text-xs shrink-0 ${over ? "text-red-600 font-semibold" : "text-gray-400"}`}>
+          <p
+            className={`text-xs shrink-0 ${over ? "font-semibold" : ""}`}
+            style={{ color: over ? "var(--danger-fg)" : "var(--text-subtle)" }}
+          >
             {count} / {maxWords} words
           </p>
         )}
@@ -329,10 +337,14 @@ function CheckboxGroup({
 }) {
   return (
     <div>
-      <label className={LABEL_CLS}>{label}</label>
+      <label className={LABEL_CLS} style={{ color: "var(--text-body)" }}>{label}</label>
       <div className={`grid ${CHECKBOX_COLS[cols]} gap-2`}>
         {options.map((opt) => (
-          <label key={opt.key} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+          <label
+            key={opt.key}
+            className="flex items-center gap-2 text-sm cursor-pointer"
+            style={{ color: "var(--text-body)" }}
+          >
             <input
               type="checkbox"
               checked={!!values[opt.key]}
@@ -361,8 +373,8 @@ function SdgPicker({
   return (
     <div>
       <div className="flex items-center justify-between mb-1.5 gap-3">
-        <label className="block text-sm font-medium text-gray-700">{label}</label>
-        <span className="text-xs text-gray-500 shrink-0">
+        <label className="block text-sm font-medium" style={{ color: "var(--text-body)" }}>{label}</label>
+        <span className="text-xs shrink-0" style={{ color: "var(--text-muted)" }}>
           {selectedCount} selected
         </span>
       </div>
@@ -376,15 +388,19 @@ function SdgPicker({
               onClick={() => onChange(`${basePath}.${g.key}`, !checked)}
               aria-pressed={checked}
               className={`group relative flex flex-col text-left rounded-xl overflow-hidden border transition-all ${
-                checked
-                  ? "border-transparent shadow-sm"
-                  : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50"
+                checked ? "border-transparent shadow-sm" : ""
               }`}
               style={
                 checked
                   ? { backgroundColor: `${g.color}14`, boxShadow: `inset 0 0 0 2px ${g.color}` }
-                  : undefined
+                  : { backgroundColor: "var(--surface)", borderColor: "var(--border-input)" }
               }
+              onMouseEnter={(e) => {
+                if (!checked) e.currentTarget.style.backgroundColor = "var(--overlay-hover)";
+              }}
+              onMouseLeave={(e) => {
+                if (!checked) e.currentTarget.style.backgroundColor = "var(--surface)";
+              }}
             >
               <span
                 className="relative block w-full aspect-square"
@@ -398,10 +414,10 @@ function SdgPicker({
                   className="object-cover"
                 />
                 <span
-                  className={`absolute top-1.5 right-1.5 w-5 h-5 rounded-full flex items-center justify-center text-white shadow-sm transition-opacity ${
+                  className={`absolute top-1.5 right-1.5 w-5 h-5 rounded-full flex items-center justify-center shadow-sm transition-opacity ${
                     checked ? "opacity-100" : "opacity-0"
                   }`}
-                  style={{ backgroundColor: g.color, boxShadow: "0 0 0 2px #fff" }}
+                  style={{ backgroundColor: g.color, color: "var(--text-inverse)", boxShadow: "0 0 0 2px var(--surface)" }}
                   aria-hidden="true"
                 >
                   <svg viewBox="0 0 12 12" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -409,7 +425,10 @@ function SdgPicker({
                   </svg>
                 </span>
               </span>
-              <span className="px-2.5 py-2 text-[12px] sm:text-[13px] font-medium text-gray-800 leading-snug">
+              <span
+                className="px-2.5 py-2 text-[12px] sm:text-[13px] font-medium leading-snug"
+                style={{ color: "var(--text-primary)" }}
+              >
                 {g.title}
               </span>
             </button>
@@ -431,10 +450,14 @@ function RadioGroup({
 }) {
   return (
     <div>
-      <label className={LABEL_CLS}>{label}</label>
+      <label className={LABEL_CLS} style={{ color: "var(--text-body)" }}>{label}</label>
       <div className="flex flex-wrap gap-4">
         {options.map((opt) => (
-          <label key={opt.key} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+          <label
+            key={opt.key}
+            className="flex items-center gap-2 text-sm cursor-pointer"
+            style={{ color: "var(--text-body)" }}
+          >
             <input
               type="radio"
               checked={value === opt.key}
@@ -470,9 +493,9 @@ function RatingScale({ value, onChange }: { value: string; onChange: (v: string)
             onClick={() => onChange(o.v)}
             className="flex-1 min-w-0 rounded-xl py-2.5 text-sm font-semibold transition-all duration-150 hover:-translate-y-px"
             style={{
-              backgroundColor: active ? "#1a5c2a" : "#f0faf1",
-              color: active ? "#ffffff" : "#1a5c2a",
-              boxShadow: active ? "0 6px 16px -6px rgba(26,92,42,0.4)" : "inset 0 0 0 1px rgba(26,92,42,0.15)",
+              backgroundColor: active ? "var(--brand)" : "var(--surface-accent)",
+              color: active ? "var(--text-inverse)" : "var(--brand)",
+              boxShadow: active ? "var(--shadow-brand)" : "inset 0 0 0 1px var(--border-brand)",
             }}
           >
             <div className="text-base leading-none">{o.v}</div>
@@ -517,26 +540,26 @@ function SectionCard({
     <section
       id={id}
       data-section-id={id}
-      className={`bg-white rounded-3xl p-6 sm:p-10 ${
+      className={`rounded-3xl p-6 sm:p-10 ${
         direction === 1 ? "lfe-slide-right" : "lfe-slide-left"
       }`}
-      style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 10px 32px -10px rgba(26,92,42,0.1)" }}
+      style={{ backgroundColor: "var(--surface)", boxShadow: "var(--shadow-card)" }}
     >
       <div className="mb-8">
         <p
           className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-2"
-          style={{ color: "#2d8c3e" }}
+          style={{ color: "var(--brand-mid)" }}
         >
           Section {meta.num} of {SECTIONS.length}
         </p>
         <h3
           className="text-2xl sm:text-3xl font-bold tracking-tight leading-[1.1]"
-          style={{ color: "#0d3d1a" }}
+          style={{ color: "var(--text-heading)" }}
         >
           {meta.title}
         </h3>
         {"subtitle" in meta && meta.subtitle && (
-          <p className="text-[15px] text-gray-500 mt-3 leading-relaxed max-w-xl">{meta.subtitle}</p>
+          <p className="text-[15px] mt-3 leading-relaxed max-w-xl" style={{ color: "var(--text-muted)" }}>{meta.subtitle}</p>
         )}
       </div>
       <div className="space-y-5">{children}</div>
@@ -548,8 +571,11 @@ function SectionCard({
 // so multiple selected initiative types don't visually blur together.
 function ImpactPanel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="border border-green-100 rounded-xl p-5 bg-green-50/40">
-      <h4 className="font-semibold mb-4" style={{ color: "#2d8c3e" }}>{title}</h4>
+    <div
+      className="border rounded-xl p-5"
+      style={{ borderColor: "var(--border-brand-soft)", backgroundColor: "var(--surface-accent)" }}
+    >
+      <h4 className="font-semibold mb-4" style={{ color: "var(--brand-mid)" }}>{title}</h4>
       <div className="space-y-4">{children}</div>
     </div>
   );
@@ -769,27 +795,27 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
 
   if (status === "success") {
     return (
-      <section style={{ backgroundColor: "#fafbfa" }} className="py-24 min-h-[70vh] flex items-center">
+      <section style={{ backgroundColor: "var(--surface-page)" }} className="py-24 min-h-[70vh] flex items-center">
         <div className="max-w-2xl mx-auto px-6 w-full">
           <div
-            className="bg-white rounded-3xl p-10 sm:p-14 text-center"
-            style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 20px 60px -20px rgba(26,92,42,0.18)" }}
+            className="rounded-3xl p-10 sm:p-14 text-center"
+            style={{ backgroundColor: "var(--surface)", boxShadow: "var(--shadow-strong)" }}
           >
             <div
               className="w-20 h-20 mx-auto mb-8 rounded-full flex items-center justify-center"
-              style={{ backgroundColor: "#f0faf1", color: "#1a5c2a" }}
+              style={{ backgroundColor: "var(--surface-accent)", color: "var(--brand)" }}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] mb-3" style={{ color: "#2d8c3e" }}>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] mb-3" style={{ color: "var(--brand-mid)" }}>
               Report received
             </p>
-            <h3 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4" style={{ color: "#0d3d1a" }}>
+            <h3 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4" style={{ color: "var(--text-heading)" }}>
               Thanks for showing up.
             </h3>
-            <p className="text-[16px] text-gray-500 mb-10 max-w-md mx-auto leading-relaxed">
+            <p className="text-[16px] mb-10 max-w-md mx-auto leading-relaxed" style={{ color: "var(--text-muted)" }}>
               Your report is now part of the district-wide record. The LEADForEarth committee will reach out if we have follow-up questions.
             </p>
 
@@ -802,8 +828,8 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
             <div className="flex flex-wrap items-center justify-center gap-3">
               <button
                 onClick={() => setStatus("idle")}
-                className="px-6 py-3 rounded-full text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-px"
-                style={{ backgroundColor: "#1a5c2a", boxShadow: "0 8px 20px -6px rgba(26,92,42,0.45)" }}
+                className="px-6 py-3 rounded-full text-sm font-semibold transition-all duration-200 hover:-translate-y-px"
+                style={{ backgroundColor: "var(--brand)", color: "var(--text-inverse)", boxShadow: "var(--shadow-brand-strong)" }}
               >
                 Submit another report
               </button>
@@ -811,9 +837,9 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
                 href="/"
                 className="px-6 py-3 rounded-full text-sm font-semibold transition-all duration-200 hover:-translate-y-px"
                 style={{
-                  color: "#1a5c2a",
+                  color: "var(--brand)",
                   backgroundColor: "transparent",
-                  boxShadow: "inset 0 0 0 1.5px rgba(26,92,42,0.25)",
+                  boxShadow: "inset 0 0 0 1.5px var(--border-brand)",
                 }}
               >
                 Back to home
@@ -830,17 +856,17 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
 
   return (
     <StepContext.Provider value={{ currentStep, direction, goTo }}>
-    <section style={{ backgroundColor: "#fafbfa" }} className="py-10 sm:py-14 pb-40 sm:pb-32">
+    <section style={{ backgroundColor: "var(--surface-page)" }} className="py-10 sm:py-14 pb-32 md:pb-20">
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
         {/* Compact header */}
         <div className="text-center mb-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] mb-3" style={{ color: "#2d8c3e" }}>
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] mb-3" style={{ color: "var(--brand-mid)" }}>
             #LEADforEarth Report
           </p>
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-3" style={{ color: "#0d3d1a" }}>
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-3" style={{ color: "var(--text-heading)" }}>
             Tell us what you did
           </h2>
-          <p className="text-gray-500 leading-relaxed max-w-lg mx-auto text-[15px] font-light">
+          <p className="leading-relaxed max-w-lg mx-auto text-[15px] font-light" style={{ color: "var(--text-muted)" }}>
             Skip anything that doesn&apos;t apply. Take a break whenever. Your progress saves as you go.
           </p>
         </div>
@@ -849,7 +875,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
         {!isSignedIn && signInAction && (
           <div
             className="mb-6 rounded-2xl px-5 py-4 flex items-start gap-3"
-            style={{ backgroundColor: "#f0faf1", color: "#0d3d1a" }}
+            style={{ backgroundColor: "var(--surface-accent)", color: "var(--text-heading)" }}
           >
             <svg viewBox="0 0 24 24" className="w-5 h-5 flex-none mt-0.5" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <circle cx="12" cy="12" r="10" />
@@ -857,7 +883,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
             </svg>
             <div className="flex-1 text-[13.5px] leading-snug">
               <p className="font-semibold mb-0.5">Browsing without an account</p>
-              <p style={{ color: "#3a3a3a" }}>
+              <p style={{ color: "var(--text-body)" }}>
                 Fill in as much as you like. We&apos;ll ask you to sign in with Google when you&apos;re ready to submit. Progress is saved on this device.
               </p>
             </div>
@@ -873,14 +899,14 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
         {/* Compact progress: bar + step counter + draft status */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3 px-1">
-            <p className="text-[13px] font-semibold" style={{ color: "#0d3d1a" }}>
+            <p className="text-[13px] font-semibold" style={{ color: "var(--text-heading)" }}>
               Step {currentStep + 1} of {effectiveTotalSteps}
-              <span className="ml-2 font-normal text-gray-500">· {currentMeta.title}</span>
+              <span className="ml-2 font-normal" style={{ color: "var(--text-muted)" }}>· {currentMeta.title}</span>
             </p>
-            <p className="text-[11px] font-medium flex items-center gap-1.5" style={{ color: draftState === "saving" ? "#9ca3af" : "#2d8c3e" }} aria-live="polite">
+            <p className="text-[11px] font-medium flex items-center gap-1.5" style={{ color: draftState === "saving" ? "var(--text-subtle)" : "var(--brand-mid)" }} aria-live="polite">
               {draftState === "saving" ? (
                 <>
-                  <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-gray-400" />
+                  <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: "var(--text-subtle)" }} />
                   Saving…
                 </>
               ) : draftState === "saved" ? (
@@ -897,7 +923,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
           {/* Progress bar */}
           <div
             className="h-1.5 rounded-full overflow-hidden"
-            style={{ backgroundColor: "rgba(26,92,42,0.1)" }}
+            style={{ backgroundColor: "var(--overlay-brand-hover)" }}
             role="progressbar"
             aria-valuenow={percentComplete}
             aria-valuemin={0}
@@ -907,7 +933,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
               className="h-full transition-all duration-500 ease-out rounded-full"
               style={{
                 width: `${percentComplete}%`,
-                backgroundColor: "#1a5c2a",
+                backgroundColor: "var(--brand)",
               }}
             />
           </div>
@@ -934,7 +960,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
                   style={{
                     width: state === "current" ? 24 : 8,
                     height: 8,
-                    backgroundColor: state === "todo" ? "#e5e7eb" : "#1a5c2a",
+                    backgroundColor: state === "todo" ? "var(--border-input)" : "var(--brand)",
                     opacity: willBeSkipped ? 0.25 : state === "done" ? 0.55 : 1,
                   }}
                 />
@@ -944,7 +970,14 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
         </div>
 
         {status === "error" && (
-          <div className="mb-5 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+          <div
+            className="mb-5 px-4 py-3 rounded-xl border text-sm"
+            style={{
+              backgroundColor: "var(--danger-bg)",
+              borderColor: "var(--danger-border)",
+              color: "var(--danger-fg)",
+            }}
+          >
             {errorMsg}
           </div>
         )}
@@ -969,13 +1002,13 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
             />
             <PhoneField label="Phone (optional)" path="submitter.phone" value={form.submitter.phone} onChange={set} />
             {emailLocked && signOutAction && (
-              <p className="text-xs text-gray-500 pt-1">
+              <p className="text-xs pt-1" style={{ color: "var(--text-muted)" }}>
                 Not your Google account?{" "}
                 <button
                   type="button"
                   onClick={() => signOutAction()}
                   className="font-semibold underline underline-offset-2 hover:no-underline transition-colors"
-                  style={{ color: "#1a5c2a" }}
+                  style={{ color: "var(--brand)" }}
                 >
                   Log out and switch here
                 </button>
@@ -1042,7 +1075,14 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
           {/* -------- III. Environmental Impact Evaluation -------- */}
           <SectionCard id="impact">
             {!Object.values(form.overview.initiativeTypes).some(Boolean) && (
-              <div className="text-sm text-gray-500 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
+              <div
+                className="text-sm border rounded-xl px-4 py-3"
+                style={{
+                  color: "var(--text-muted)",
+                  backgroundColor: "var(--surface-sunken)",
+                  borderColor: "var(--border-input)",
+                }}
+              >
                 Nothing to fill in here yet. If your activity fits one of the initiative types in Project Overview, pick it there to see the matching indicators. Otherwise, feel free to continue.
               </div>
             )}
@@ -1173,8 +1213,12 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
           {/* -------- V. Effectiveness of Implementation -------- */}
           <SectionCard id="effectiveness">
             {form.effectiveness.map((c, i) => (
-              <div key={i} className="pb-6 border-b border-gray-100 last:border-0 last:pb-0">
-                <p className="text-[15px] font-medium text-gray-800 mb-3">{c.criteria}</p>
+              <div
+                key={i}
+                className="pb-6 border-b last:border-0 last:pb-0"
+                style={{ borderColor: "var(--border-subtle)" }}
+              >
+                <p className="text-[15px] font-medium mb-3" style={{ color: "var(--text-primary)" }}>{c.criteria}</p>
                 <RatingScale
                   value={c.rating}
                   onChange={(v) => set(`effectiveness.${i}.rating`, v)}
@@ -1185,6 +1229,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
                   onChange={(e) => set(`effectiveness.${i}.remarks`, e.target.value)}
                   placeholder="Add a short remark (optional)"
                   className={`${INPUT_CLS} mt-3`}
+                  style={{ backgroundColor: "var(--surface)", color: "var(--text-primary)" }}
                 />
               </div>
             ))}
@@ -1254,13 +1299,14 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
             />
 
             <div>
-              <label className={LABEL_CLS}>Campaign Reach</label>
+              <label className={LABEL_CLS} style={{ color: "var(--text-body)" }}>Campaign Reach</label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <input
                   type="number"
                   min={0}
                   placeholder="Reactions / Likes"
                   className={INPUT_CLS}
+                  style={{ backgroundColor: "var(--surface)", color: "var(--text-primary)" }}
                   value={form.digitalAdvocacy.reach.reactions}
                   onChange={(e) => set("digitalAdvocacy.reach.reactions", e.target.value)}
                 />
@@ -1269,6 +1315,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
                   min={0}
                   placeholder="Comments"
                   className={INPUT_CLS}
+                  style={{ backgroundColor: "var(--surface)", color: "var(--text-primary)" }}
                   value={form.digitalAdvocacy.reach.comments}
                   onChange={(e) => set("digitalAdvocacy.reach.comments", e.target.value)}
                 />
@@ -1277,6 +1324,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
                   min={0}
                   placeholder="Shares / Reposts"
                   className={INPUT_CLS}
+                  style={{ backgroundColor: "var(--surface)", color: "var(--text-primary)" }}
                   value={form.digitalAdvocacy.reach.shares}
                   onChange={(e) => set("digitalAdvocacy.reach.shares", e.target.value)}
                 />
@@ -1285,6 +1333,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
                   min={0}
                   placeholder="Reach / Views"
                   className={INPUT_CLS}
+                  style={{ backgroundColor: "var(--surface)", color: "var(--text-primary)" }}
                   value={form.digitalAdvocacy.reach.views}
                   onChange={(e) => set("digitalAdvocacy.reach.views", e.target.value)}
                 />
@@ -1314,10 +1363,10 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
           {/* -------- Reflection gate: opt in/out of the last two sections -------- */}
           <SectionCard id="reflect-gate">
             <div
-              className="rounded-2xl px-6 py-5 text-[14px] text-gray-700 leading-relaxed"
-              style={{ backgroundColor: "#f0faf1" }}
+              className="rounded-2xl px-6 py-5 text-[14px] leading-relaxed"
+              style={{ backgroundColor: "var(--surface-accent)", color: "var(--text-body)" }}
             >
-              <p className="font-semibold mb-1.5" style={{ color: "#1a5c2a" }}>
+              <p className="font-semibold mb-1.5" style={{ color: "var(--brand)" }}>
                 Nice work, that&apos;s the data covered.
               </p>
               <p>
@@ -1326,7 +1375,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
               </p>
             </div>
 
-            <p className="text-[15px] font-medium text-gray-800 pt-2">
+            <p className="text-[15px] font-medium pt-2" style={{ color: "var(--text-primary)" }}>
               Do you want to provide your own reflection?
             </p>
 
@@ -1339,17 +1388,15 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
                 }}
                 className="text-left rounded-2xl p-5 border transition-all hover:-translate-y-px"
                 style={{
-                  backgroundColor: !skipReflection ? "#f0faf1" : "#ffffff",
-                  borderColor: !skipReflection ? "#1a5c2a" : "#e5e7eb",
-                  boxShadow: !skipReflection
-                    ? "0 6px 16px -6px rgba(26,92,42,0.25)"
-                    : "none",
+                  backgroundColor: !skipReflection ? "var(--surface-accent)" : "var(--surface)",
+                  borderColor: !skipReflection ? "var(--brand)" : "var(--border-input)",
+                  boxShadow: !skipReflection ? "var(--shadow-brand)" : "none",
                 }}
               >
                 <div className="flex items-center gap-3 mb-2">
                   <span
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-white shrink-0"
-                    style={{ backgroundColor: "#1a5c2a" }}
+                    className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                    style={{ backgroundColor: "var(--brand)", color: "var(--text-inverse)" }}
                   >
                     <svg
                       viewBox="0 0 24 24"
@@ -1365,12 +1412,12 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
                   </span>
                   <p
                     className="font-semibold text-[15px]"
-                    style={{ color: "#0d3d1a" }}
+                    style={{ color: "var(--text-heading)" }}
                   >
                     Yeah, I&apos;ve got more to say
                   </p>
                 </div>
-                <p className="text-[13px] text-gray-600 leading-relaxed">
+                <p className="text-[13px] leading-relaxed" style={{ color: "var(--text-body)" }}>
                   Two more short sections and you&apos;re done.
                 </p>
               </button>
@@ -1380,19 +1427,17 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
                 onClick={() => setSkipReflection(true)}
                 className="text-left rounded-2xl p-5 border transition-all hover:-translate-y-px"
                 style={{
-                  backgroundColor: skipReflection ? "#f0faf1" : "#ffffff",
-                  borderColor: skipReflection ? "#1a5c2a" : "#e5e7eb",
-                  boxShadow: skipReflection
-                    ? "0 6px 16px -6px rgba(26,92,42,0.25)"
-                    : "none",
+                  backgroundColor: skipReflection ? "var(--surface-accent)" : "var(--surface)",
+                  borderColor: skipReflection ? "var(--brand)" : "var(--border-input)",
+                  boxShadow: skipReflection ? "var(--shadow-brand)" : "none",
                 }}
               >
                 <div className="flex items-center gap-3 mb-2">
                   <span
                     className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
                     style={{
-                      backgroundColor: skipReflection ? "#1a5c2a" : "#f3f4f6",
-                      color: skipReflection ? "#ffffff" : "#6b7280",
+                      backgroundColor: skipReflection ? "var(--brand)" : "var(--surface-sunken)",
+                      color: skipReflection ? "var(--text-inverse)" : "var(--text-muted)",
                     }}
                   >
                     <svg
@@ -1410,12 +1455,12 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
                   </span>
                   <p
                     className="font-semibold text-[15px]"
-                    style={{ color: "#0d3d1a" }}
+                    style={{ color: "var(--text-heading)" }}
                   >
                     I&apos;m good, submit as-is
                   </p>
                 </div>
-                <p className="text-[13px] text-gray-600 leading-relaxed">
+                <p className="text-[13px] leading-relaxed" style={{ color: "var(--text-body)" }}>
                   Just the data. You can always email us if more comes to mind.
                 </p>
               </button>
@@ -1476,10 +1521,10 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
           {isLastStep && (
             <div className="mt-6 space-y-4">
               <div
-                className="rounded-2xl px-6 py-5 text-[14px] text-gray-600 leading-relaxed"
-                style={{ backgroundColor: "#f0faf1" }}
+                className="rounded-2xl px-6 py-5 text-[14px] leading-relaxed"
+                style={{ backgroundColor: "var(--surface-accent)", color: "var(--text-body)" }}
               >
-                <p className="font-semibold mb-1.5" style={{ color: "#1a5c2a" }}>One last thing</p>
+                <p className="font-semibold mb-1.5" style={{ color: "var(--brand)" }}>One last thing</p>
                 <p>
                   Your report goes to the <strong>#LEADforEarth</strong> committee at the Lasallian East Asia District. We use it to track progress, roll up district-wide results, and shape future campaigns. Nothing else.
                 </p>
@@ -1488,7 +1533,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
               <label
                 htmlFor="consent-check"
                 className="flex items-start gap-3 cursor-pointer select-none rounded-2xl p-4 transition-colors"
-                style={{ backgroundColor: consented ? "rgba(26,92,42,0.06)" : "transparent" }}
+                style={{ backgroundColor: consented ? "var(--overlay-brand-hover)" : "transparent" }}
               >
                 <input
                   id="consent-check"
@@ -1497,105 +1542,51 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
                   onChange={(e) => setConsented(e.target.checked)}
                   className="mt-0.5 w-4 h-4 rounded accent-green-700 shrink-0"
                 />
-                <span className="text-[14px] text-gray-600 leading-relaxed">
+                <span className="text-[14px] leading-relaxed" style={{ color: "var(--text-body)" }}>
                   Everything above is accurate to the best of my knowledge, and my institution is OK with the committee reaching out if they have follow-up questions.
                 </span>
               </label>
             </div>
           )}
         </form>
+
+        {/* Desktop wizard nav: inline below the section card, matches the
+            form's max-w-3xl. Hidden on mobile in favour of the sticky bar. */}
+        <div className="hidden md:block mt-8">
+          <WizardNav
+            currentStep={currentStep}
+            isLastStep={isLastStep}
+            isSignedIn={isSignedIn}
+            status={status}
+            consented={consented}
+            currentMetaTitle={currentMeta.title}
+            onPrev={() => goTo(currentStep - 1)}
+            onNext={() => handleNext()}
+          />
+        </div>
       </div>
 
-      {/* -------- Sticky wizard nav (Prev / Next / Submit) -------- */}
+      {/* Mobile sticky wizard nav (hidden on desktop). */}
       <div
-        className="fixed bottom-0 left-0 right-0 z-40 border-t"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t"
         style={{
-          borderColor: "rgba(0,0,0,0.06)",
-          backgroundColor: "rgba(255,255,255,0.9)",
+          borderColor: "var(--border-subtle)",
+          backgroundColor: "var(--nav-bg-blur)",
           backdropFilter: "saturate(150%) blur(16px)",
           WebkitBackdropFilter: "saturate(150%) blur(16px)",
         }}
       >
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={() => goTo(currentStep - 1)}
-            disabled={currentStep === 0}
-            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full font-medium text-[13.5px] text-gray-700 transition-all duration-200 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
-          >
-            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-            <span className="hidden sm:inline">Previous</span>
-          </button>
-
-          <p className="hidden sm:block text-[12px] text-gray-500 truncate max-w-[40%]">
-            {currentMeta.title}
-          </p>
-
-          {!isLastStep ? (
-            <button
-              type="button"
-              onClick={() => handleNext()}
-              className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full font-semibold text-[13.5px] text-white transition-all duration-200 hover:-translate-y-px"
-              style={{
-                backgroundColor: "#1a5c2a",
-                boxShadow: "0 6px 16px -4px rgba(26,92,42,0.4)",
-              }}
-            >
-              Next
-              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
-            </button>
-          ) : isSignedIn ? (
-            <button
-              type="submit"
-              form="lfe-report-form"
-              disabled={status === "loading" || !consented}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold text-[13.5px] text-white transition-all duration-200 hover:-translate-y-px disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-              style={{
-                backgroundColor: "#1a5c2a",
-                boxShadow: consented ? "0 6px 16px -4px rgba(26,92,42,0.4)" : "none",
-              }}
-              title={!consented ? "Please confirm the consent above to submit." : undefined}
-            >
-              {status === "loading" ? (
-                <>
-                  <svg viewBox="0 0 24 24" className="w-4 h-4 animate-spin" fill="none" aria-hidden="true">
-                    <circle cx="12" cy="12" r="9" stroke="rgba(255,255,255,0.3)" strokeWidth={2.5} />
-                    <path d="M21 12a9 9 0 0 0-9-9" stroke="#ffffff" strokeWidth={2.5} strokeLinecap="round" />
-                  </svg>
-                  Submitting…
-                </>
-              ) : (
-                <>
-                  Submit Report
-                  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12 5 19 12 12 19" />
-                  </svg>
-                </>
-              )}
-            </button>
-          ) : (
-            <button
-              type="submit"
-              form="lfe-signin-form"
-              disabled={!consented}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold text-[13.5px] text-white transition-all duration-200 hover:-translate-y-px disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-              style={{
-                backgroundColor: "#1a5c2a",
-                boxShadow: consented ? "0 6px 16px -4px rgba(26,92,42,0.4)" : "none",
-              }}
-              title={!consented ? "Please confirm the consent above first." : "Google verifies you're a real person before we accept the report."}
-            >
-              <svg viewBox="0 0 24 24" className="w-4 h-4" aria-hidden="true">
-                <path fill="#fff" d="M21.35 11.1H12v3.2h5.35c-.23 1.4-1.63 4.1-5.35 4.1-3.22 0-5.85-2.67-5.85-5.95S8.78 6.5 12 6.5c1.83 0 3.06.78 3.76 1.45l2.57-2.47C16.7 3.9 14.55 3 12 3 6.98 3 3 6.98 3 12s3.98 9 9 9c5.2 0 8.63-3.65 8.63-8.78 0-.6-.07-1.05-.15-1.52z" />
-              </svg>
-              Sign in to submit
-            </button>
-          )}
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3">
+          <WizardNav
+            currentStep={currentStep}
+            isLastStep={isLastStep}
+            isSignedIn={isSignedIn}
+            status={status}
+            consented={consented}
+            currentMetaTitle={currentMeta.title}
+            onPrev={() => goTo(currentStep - 1)}
+            onNext={() => handleNext()}
+          />
         </div>
       </div>
     </section>
@@ -1603,19 +1594,131 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
   );
 }
 
+// Prev / (Next | Submit | Sign in) button trio. Same markup in both the
+// desktop inline nav and the mobile sticky bar.
+function WizardNav({
+  currentStep,
+  isLastStep,
+  isSignedIn,
+  status,
+  consented,
+  currentMetaTitle,
+  onPrev,
+  onNext,
+}: {
+  currentStep: number;
+  isLastStep: boolean;
+  isSignedIn: boolean;
+  status: Status;
+  consented: boolean;
+  currentMetaTitle: string;
+  onPrev: () => void;
+  onNext: () => void;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <button
+        type="button"
+        onClick={onPrev}
+        disabled={currentStep === 0}
+        className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full font-medium text-[13.5px] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+        style={{ color: "var(--text-body)" }}
+        onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = "var(--overlay-hover)"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
+      >
+        <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+        <span className="hidden sm:inline">Previous</span>
+      </button>
+
+      <p className="hidden sm:block text-[12px] truncate max-w-[40%]" style={{ color: "var(--text-muted)" }}>
+        {currentMetaTitle}
+      </p>
+
+      {!isLastStep ? (
+        <button
+          type="button"
+          onClick={onNext}
+          className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full font-semibold text-[13.5px] transition-all duration-200 hover:-translate-y-px"
+          style={{
+            color: "var(--text-inverse)",
+            backgroundColor: "var(--brand)",
+            boxShadow: "var(--shadow-brand)",
+          }}
+        >
+          Next
+          <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      ) : isSignedIn ? (
+        <button
+          type="submit"
+          form="lfe-report-form"
+          disabled={status === "loading" || !consented}
+          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold text-[13.5px] transition-all duration-200 hover:-translate-y-px disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+          style={{
+            color: "var(--text-inverse)",
+            backgroundColor: "var(--brand)",
+            boxShadow: consented ? "var(--shadow-brand)" : "none",
+          }}
+          title={!consented ? "Please confirm the consent above to submit." : undefined}
+        >
+          {status === "loading" ? (
+            <>
+              <svg viewBox="0 0 24 24" className="w-4 h-4 animate-spin" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" stroke="rgba(255,255,255,0.3)" strokeWidth={2.5} />
+                <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" />
+              </svg>
+              Submitting…
+            </>
+          ) : (
+            <>
+              Submit Report
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </>
+          )}
+        </button>
+      ) : (
+        <button
+          type="submit"
+          form="lfe-signin-form"
+          disabled={!consented}
+          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold text-[13.5px] transition-all duration-200 hover:-translate-y-px disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+          style={{
+            color: "var(--text-inverse)",
+            backgroundColor: "var(--brand)",
+            boxShadow: consented ? "var(--shadow-brand)" : "none",
+          }}
+          title={!consented ? "Please confirm the consent above first." : "Google verifies you're a real person before we accept the report."}
+        >
+          <svg viewBox="0 0 24 24" className="w-4 h-4" aria-hidden="true">
+            <path fill="#fff" d="M21.35 11.1H12v3.2h5.35c-.23 1.4-1.63 4.1-5.35 4.1-3.22 0-5.85-2.67-5.85-5.95S8.78 6.5 12 6.5c1.83 0 3.06.78 3.76 1.45l2.57-2.47C16.7 3.9 14.55 3 12 3 6.98 3 3 6.98 3 12s3.98 9 9 9c5.2 0 8.63-3.65 8.63-8.78 0-.6-.07-1.05-.15-1.52z" />
+          </svg>
+          Sign in to submit
+        </button>
+      )}
+    </div>
+  );
+}
+
 function NextStep({ n, label, text }: { n: string; label: string; text: string }) {
   return (
-    <div className="rounded-2xl p-4" style={{ backgroundColor: "#f7faf7" }}>
+    <div className="rounded-2xl p-4" style={{ backgroundColor: "var(--off-white)" }}>
       <div
         className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-semibold mb-2"
-        style={{ backgroundColor: "#1a5c2a", color: "#fff" }}
+        style={{ backgroundColor: "var(--brand)", color: "var(--text-inverse)" }}
       >
         {n}
       </div>
-      <p className="text-[11px] font-semibold uppercase tracking-widest mb-1" style={{ color: "#2d8c3e" }}>
+      <p className="text-[11px] font-semibold uppercase tracking-widest mb-1" style={{ color: "var(--brand-mid)" }}>
         {label}
       </p>
-      <p className="text-[13px] text-gray-600 leading-snug">{text}</p>
+      <p className="text-[13px] leading-snug" style={{ color: "var(--text-body)" }}>{text}</p>
     </div>
   );
 }

@@ -14,16 +14,17 @@ const MIN_SCALE = 1;
 const MAX_SCALE = 30;
 const FOCUS_FIT = 0.85; // country fills ~85% of the visible (non-panel) area when focused
 
-// Palette
-const SEA = "#dce7ea";
-const LAND = "#c6cec2";
-const LAND_BORDER = "#b6bfb0";
-const LEAD = "#2f8f42";
-const LEAD_HOVER = "#3aa550";
-const LEAD_ACTIVE = "#1a5c2a";
-const LEAD_BORDER = "#ffffff";
-const LABEL_TEXT = "#ffffff";
-const LABEL_HALO = "#123b1c";
+// Palette — every UI color routes through a token so [data-theme="dark"] can
+// flip the ocean/land treatment while keeping the LEAD greens on-brand.
+const SEA = "var(--map-sea)";
+const LAND = "var(--map-context-land)";
+const LAND_BORDER = "var(--map-context-land-border)";
+const LEAD = "var(--brand-mid)";
+const LEAD_HOVER = "var(--brand-light)";
+const LEAD_ACTIVE = "var(--brand)";
+const LEAD_BORDER = "var(--surface)";
+const LABEL_TEXT = "var(--surface)";
+const LABEL_HALO = "var(--map-label-halo)";
 
 export default function DistrictMap({ mapData, schoolsByCountry }: Props) {
   const { width, height, countries, labels, pins, places } = mapData;
@@ -260,7 +261,7 @@ export default function DistrictMap({ mapData, schoolsByCountry }: Props) {
     <div
       ref={containerRef}
       className="relative w-full h-[380px] sm:h-[440px] overflow-hidden"
-      style={{ touchAction: "pan-y", backgroundColor: SEA }}
+      style={{ touchAction: "pan-y", backgroundColor: "var(--map-sea)" }}
       onMouseMove={trackPointer}
     >
       <svg
@@ -291,11 +292,10 @@ export default function DistrictMap({ mapData, schoolsByCountry }: Props) {
               <path
                 key={c.id}
                 d={c.d}
-                fill={LAND}
-                stroke={LAND_BORDER}
                 strokeWidth={0.6}
                 strokeLinejoin="round"
                 vectorEffect="non-scaling-stroke"
+                style={{ fill: LAND, stroke: LAND_BORDER }}
               />
             ))}
 
@@ -310,12 +310,15 @@ export default function DistrictMap({ mapData, schoolsByCountry }: Props) {
                 <path
                   key={c.id}
                   d={c.d}
-                  fill={fill}
-                  stroke={LEAD_BORDER}
                   strokeWidth={0.8}
                   strokeLinejoin="round"
                   vectorEffect="non-scaling-stroke"
-                  style={{ cursor: focused ? "default" : "pointer", transition: "fill 180ms" }}
+                  style={{
+                    fill,
+                    stroke: LEAD_BORDER,
+                    cursor: focused ? "default" : "pointer",
+                    transition: "fill 180ms",
+                  }}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (!focused && c.leadCountry && c.bbox) focusCountry(c.leadCountry, c.bbox);
@@ -360,7 +363,7 @@ export default function DistrictMap({ mapData, schoolsByCountry }: Props) {
                       onMouseLeave={() => setHovered(null)}
                       aria-label={`${p.country}, ${totalReports(p.country)} reports`}
                     />
-                    <circle cx={p.x} cy={p.y} r={2.5} fill="#ffffff" pointerEvents="none" />
+                    <circle cx={p.x} cy={p.y} r={2.5} style={{ fill: "var(--surface)" }} pointerEvents="none" />
                   </g>
                 );
               })}
@@ -411,11 +414,11 @@ export default function DistrictMap({ mapData, schoolsByCountry }: Props) {
           const labelStyle: React.CSSProperties = {
             fontSize: isCapital ? 12 : 11,
             fontWeight: isCapital ? 700 : 600,
-            color: "#0d3d1a",
+            color: "var(--text-heading)",
             padding: "1px 6px",
             borderRadius: 4,
-            backgroundColor: "rgba(255,255,255,0.92)",
-            boxShadow: "0 1px 2px rgba(0,0,0,0.06)",
+            backgroundColor: "var(--header-bg-scrolled)",
+            boxShadow: "var(--shadow-soft)",
             letterSpacing: "0.01em",
           };
           switch (p.labelPos) {
@@ -459,8 +462,8 @@ export default function DistrictMap({ mapData, schoolsByCountry }: Props) {
                   left: -half,
                   width: dotSize,
                   height: dotSize,
-                  backgroundColor: "#ffffff",
-                  border: `${isCapital ? 2 : 1.5}px solid #0d3d1a`,
+                  backgroundColor: "var(--surface)",
+                  border: `${isCapital ? 2 : 1.5}px solid var(--text-heading)`,
                 }}
               />
               <span className="absolute whitespace-nowrap" style={labelStyle}>
@@ -473,26 +476,26 @@ export default function DistrictMap({ mapData, schoolsByCountry }: Props) {
       {/* Hover tooltip -----------------------------------------------------*/}
       {showTooltip && (
         <div
-          className="absolute pointer-events-none bg-white rounded-xl px-4 py-2.5 z-10"
+          className="absolute pointer-events-none rounded-xl px-4 py-2.5 z-10"
           style={{
             left: tooltipPos.x,
             top: tooltipPos.y,
             transform: above
               ? "translate(-50%, calc(-100% - 14px))"
               : "translate(-50%, 14px)",
-            boxShadow:
-              "0 1px 2px rgba(0,0,0,0.06), 0 8px 24px -6px rgba(26,92,42,0.25)",
+            backgroundColor: "var(--surface)",
+            boxShadow: "var(--shadow-card)",
           }}
         >
           <p
             className="text-[11px] font-semibold uppercase tracking-[0.15em] whitespace-nowrap"
-            style={{ color: "#2f8f42" }}
+            style={{ color: "var(--brand-mid)" }}
           >
             {hovered}
           </p>
-          <p className="text-lg font-bold leading-tight tracking-tight mt-0.5" style={{ color: "#0d3d1a" }}>
+          <p className="text-lg font-bold leading-tight tracking-tight mt-0.5" style={{ color: "var(--text-heading)" }}>
             {hoveredCount.toLocaleString()}{" "}
-            <span className="text-[11px] font-medium uppercase tracking-[0.15em] text-gray-400">
+            <span className="text-[11px] font-medium uppercase tracking-[0.15em]" style={{ color: "var(--text-subtle)" }}>
               {hoveredCount === 1 ? "report" : "reports"}
             </span>
           </p>
@@ -525,24 +528,28 @@ function CountryPanel({
 
   return (
     <div
-      className="absolute inset-x-0 bottom-0 top-1/2 sm:top-0 sm:bottom-0 sm:right-0 sm:inset-x-auto sm:w-[360px] bg-white/95 backdrop-blur-md flex flex-col z-20"
+      className="absolute inset-x-0 bottom-0 top-1/2 sm:top-0 sm:bottom-0 sm:right-0 sm:inset-x-auto sm:w-[360px] backdrop-blur-md flex flex-col z-20"
       style={{
-        boxShadow: "-1px 0 2px rgba(0,0,0,0.03), -12px 0 40px -12px rgba(26,92,42,0.18)",
+        backgroundColor: "var(--header-bg-scrolled)",
+        boxShadow: "var(--shadow-strong)",
       }}
     >
-      <div className="flex items-start justify-between gap-3 px-5 py-4 border-b border-gray-100">
+      <div className="flex items-start justify-between gap-3 px-5 py-4" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
         <div className="min-w-0">
-          <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em]" style={{ color: "#2f8f42" }}>
+          <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em]" style={{ color: "var(--brand-mid)" }}>
             Sector
           </p>
-          <h2 className="text-xl font-bold tracking-tight mt-0.5" style={{ color: "#0d3d1a" }}>
+          <h2 className="text-xl font-bold tracking-tight mt-0.5" style={{ color: "var(--text-heading)" }}>
             {country}
           </h2>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="flex-none w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+          className="flex-none w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+          style={{ color: "var(--text-subtle)" }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--overlay-hover)"; e.currentTarget.style.color = "var(--text-body)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "var(--text-subtle)"; }}
           aria-label="Close"
         >
           <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
@@ -551,7 +558,7 @@ function CountryPanel({
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 px-5 py-4 border-b border-gray-100">
+      <div className="grid grid-cols-2 gap-3 px-5 py-4" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
         <Stat label="Schools" value={schools.length.toLocaleString()} />
         <Stat label="Reports" value={totalReports.toLocaleString()} />
         {totalParticipants > 0 && (
@@ -564,31 +571,31 @@ function CountryPanel({
       <div className="flex-1 overflow-y-auto">
         {schools.length === 0 ? (
           <div className="px-5 py-10 text-center">
-            <p className="text-sm text-gray-500 leading-relaxed">
+            <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
               No reports yet from {country}.
               <br />
               Schools contributing to #LEADforEarth will appear here.
             </p>
           </div>
         ) : (
-          <ul className="divide-y divide-gray-50">
+          <ul>
             {schools.map((s) => (
-              <li key={s.name} className="px-5 py-3.5 flex items-center gap-3">
+              <li key={s.name} className="px-5 py-3.5 flex items-center gap-3" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-[13.5px] leading-snug" style={{ color: "#0d3d1a" }}>
+                  <p className="font-semibold text-[13.5px] leading-snug" style={{ color: "var(--text-heading)" }}>
                     {s.name}
                   </p>
                   {s.participants > 0 && (
-                    <p className="text-[11.5px] text-gray-500 mt-0.5">
+                    <p className="text-[11.5px] mt-0.5" style={{ color: "var(--text-muted)" }}>
                       {s.participants.toLocaleString()} people reached
                     </p>
                   )}
                 </div>
                 <div className="flex-none text-right">
-                  <p className="text-lg font-bold leading-none tracking-tight" style={{ color: "#0d3d1a" }}>
+                  <p className="text-lg font-bold leading-none tracking-tight" style={{ color: "var(--text-heading)" }}>
                     {s.reports.toLocaleString()}
                   </p>
-                  <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-gray-400 mt-1">
+                  <p className="text-[10px] font-medium uppercase tracking-[0.15em] mt-1" style={{ color: "var(--text-subtle)" }}>
                     {s.reports === 1 ? "report" : "reports"}
                   </p>
                 </div>
@@ -601,8 +608,8 @@ function CountryPanel({
       <button
         type="button"
         onClick={onClose}
-        className="mx-5 mb-5 mt-3 py-2.5 rounded-full text-[12.5px] font-semibold text-white transition-colors"
-        style={{ backgroundColor: "#1a5c2a" }}
+        className="mx-5 mb-5 mt-3 py-2.5 rounded-full text-[12.5px] font-semibold transition-colors"
+        style={{ backgroundColor: "var(--brand)", color: "var(--text-inverse)" }}
       >
         Back to map
       </button>
@@ -613,10 +620,10 @@ function CountryPanel({
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-500">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--text-muted)" }}>
         {label}
       </p>
-      <p className="text-lg font-bold tracking-tight mt-1" style={{ color: "#0d3d1a" }}>
+      <p className="text-lg font-bold tracking-tight mt-1" style={{ color: "var(--text-heading)" }}>
         {value}
       </p>
     </div>

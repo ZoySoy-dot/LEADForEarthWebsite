@@ -18,7 +18,7 @@ const footerLinks = {
 
 export default function Footer() {
   return (
-    <footer className="bg-white border-t border-gray-100">
+    <footer style={{ backgroundColor: "var(--surface)", borderTop: "1px solid var(--border-subtle)" }}>
       <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 sm:py-20">
         <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr] gap-10 md:gap-16 mb-12">
           {/* Brand */}
@@ -33,19 +33,19 @@ export default function Footer() {
               />
               <span
                 className="text-lg font-semibold tracking-tight"
-                style={{ color: "#1a5c2a" }}
+                style={{ color: "var(--brand)" }}
               >
                 LEAD
-                <span style={{ color: "#2d2d2d" }}>ForEarth</span>
+                <span style={{ color: "var(--text-primary)" }}>ForEarth</span>
               </span>
             </Link>
-            <p className="text-[15px] text-gray-500 leading-relaxed max-w-xs mb-6 font-light">
+            <p className="text-[15px] leading-relaxed max-w-xs mb-6 font-light" style={{ color: "var(--text-muted)" }}>
               A district-wide environmental campaign uniting Lasallian schools across East Asia under one shared hashtag.
             </p>
             <a
               href="mailto:LeadForEarth@gmail.com"
               className="inline-flex items-center gap-2 text-sm font-medium transition-opacity hover:opacity-70"
-              style={{ color: "#1a5c2a" }}
+              style={{ color: "var(--brand)" }}
             >
               <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
                 <rect x="2" y="4" width="20" height="16" rx="2" />
@@ -58,7 +58,7 @@ export default function Footer() {
           {/* Link columns */}
           {Object.entries(footerLinks).map(([heading, links]) => (
             <div key={heading}>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-gray-400 mb-5">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-5" style={{ color: "var(--text-subtle)" }}>
                 {heading}
               </p>
               <ul className="space-y-3">
@@ -66,7 +66,7 @@ export default function Footer() {
                   <li key={link.label}>
                     <a
                       href={link.href}
-                      className="text-sm text-gray-600 transition-colors hover:text-green-800"
+                      className="text-sm transition-colors text-[color:var(--text-body)] hover:text-[color:var(--brand-strong)]"
                     >
                       {link.label}
                     </a>
@@ -78,8 +78,8 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-gray-400">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4" style={{ borderTop: "1px solid var(--border-subtle)" }}>
+          <p className="text-xs" style={{ color: "var(--text-subtle)" }}>
             © {new Date().getFullYear()} LEADForEarth. All rights reserved.
           </p>
           <div className="flex items-center gap-5">

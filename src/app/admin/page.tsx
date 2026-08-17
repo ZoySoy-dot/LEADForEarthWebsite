@@ -55,17 +55,17 @@ export default async function AdminHome() {
       <div className="mb-10">
         <p
           className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-3"
-          style={{ color: "#2d8c3e" }}
+          style={{ color: "var(--brand-mid)" }}
         >
           Reports Dashboard
         </p>
         <h1
           className="text-3xl sm:text-4xl font-bold tracking-tight"
-          style={{ color: "#0d3d1a" }}
+          style={{ color: "var(--text-heading)" }}
         >
           Submitted Reports
         </h1>
-        <p className="mt-3 text-[15px] text-gray-500 leading-relaxed max-w-xl">
+        <p className="mt-3 text-[15px] leading-relaxed max-w-xl" style={{ color: "var(--text-muted)" }}>
           Every #LEADforEarth report filed by participating schools. Newest first.
         </p>
       </div>
@@ -81,12 +81,15 @@ export default async function AdminHome() {
         <EmptyState />
       ) : (
         <div
-          className="bg-white rounded-3xl overflow-hidden"
-          style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 10px 32px -10px rgba(26,92,42,0.1)" }}
+          className="rounded-3xl overflow-hidden"
+          style={{ backgroundColor: "var(--surface)", boxShadow: "var(--shadow-card)" }}
         >
           <div className="overflow-x-auto">
             <table className="w-full text-left">
-              <thead className="text-[11px] font-semibold uppercase tracking-[0.15em] text-gray-500 border-b border-gray-100">
+              <thead
+                className="text-[11px] font-semibold uppercase tracking-[0.15em] border-b"
+                style={{ color: "var(--text-muted)", borderColor: "var(--border-subtle)" }}
+              >
                 <tr>
                   <th className="py-4 px-5">School / Project</th>
                   <th className="py-4 px-5">Status</th>
@@ -103,29 +106,29 @@ export default async function AdminHome() {
                   <ClickableRow
                     key={r.id}
                     href={`/admin/${r.id}`}
-                    className="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition-colors"
+                    className="border-b border-[var(--border-subtle)] last:border-0 transition-colors hover:bg-[var(--overlay-hover)]"
                   >
                     <td className="py-4 px-5">
                       <Link href={`/admin/${r.id}`} className="block">
-                        <div className="font-semibold text-[14px]" style={{ color: "#0d3d1a" }}>
+                        <div className="font-semibold text-[14px]" style={{ color: "var(--text-heading)" }}>
                           {r.schoolName}
                         </div>
-                        <div className="text-[13px] text-gray-500 mt-0.5 line-clamp-1">
+                        <div className="text-[13px] mt-0.5 line-clamp-1" style={{ color: "var(--text-muted)" }}>
                           {r.projectTitle}
                         </div>
-                        <div className="text-[11px] text-gray-400 mt-0.5">by {r.submitterName}</div>
+                        <div className="text-[11px] mt-0.5" style={{ color: "var(--text-subtle)" }}>by {r.submitterName}</div>
                       </Link>
                     </td>
                     <td className="py-4 px-5">
                       <StatusBadge status={r.status} />
                     </td>
-                    <td className="py-4 px-5 text-[13px] text-gray-600 whitespace-nowrap">
+                    <td className="py-4 px-5 text-[13px] whitespace-nowrap" style={{ color: "var(--text-body)" }}>
                       {formatDate(r.createdAt)}
                     </td>
-                    <td className="py-4 px-5 text-[13px] text-gray-600 whitespace-nowrap">
+                    <td className="py-4 px-5 text-[13px] whitespace-nowrap" style={{ color: "var(--text-body)" }}>
                       {formatDate(r.dateImplemented)}
                     </td>
-                    <td className="py-4 px-5 text-[13px] text-gray-800 font-medium">
+                    <td className="py-4 px-5 text-[13px] font-medium" style={{ color: "var(--text-primary)" }}>
                       {r.totalParticipants?.toLocaleString() ?? "-"}
                     </td>
                     <td className="py-4 px-5">
@@ -134,13 +137,13 @@ export default async function AdminHome() {
                           <span
                             key={t}
                             className="inline-block text-[10.5px] font-semibold px-2 py-0.5 rounded-full"
-                            style={{ backgroundColor: "#f0faf1", color: "#1a5c2a" }}
+                            style={{ backgroundColor: "var(--surface-accent)", color: "var(--brand)" }}
                           >
                             {INITIATIVE_LABELS[t] ?? t}
                           </span>
                         ))}
                         {r.initiativeTypes.length > 3 && (
-                          <span className="text-[10.5px] text-gray-500 self-center">
+                          <span className="text-[10.5px] self-center" style={{ color: "var(--text-muted)" }}>
                             +{r.initiativeTypes.length - 3}
                           </span>
                         )}
@@ -151,15 +154,15 @@ export default async function AdminHome() {
                         {r.sdgGoals.slice(0, 6).map((s) => (
                           <span
                             key={s}
-                            className="inline-flex items-center justify-center w-5 h-5 rounded text-white text-[9.5px] font-bold"
-                            style={{ backgroundColor: SDG_COLOR[s] ?? "#666" }}
+                            className="inline-flex items-center justify-center w-5 h-5 rounded text-[9.5px] font-bold"
+                            style={{ backgroundColor: SDG_COLOR[s] ?? "#666", color: "var(--text-inverse)" }}
                             title={s.toUpperCase()}
                           >
                             {s.replace("sdg", "")}
                           </span>
                         ))}
                         {r.sdgGoals.length > 6 && (
-                          <span className="text-[10.5px] text-gray-500 self-center">
+                          <span className="text-[10.5px] self-center" style={{ color: "var(--text-muted)" }}>
                             +{r.sdgGoals.length - 6}
                           </span>
                         )}
@@ -169,7 +172,7 @@ export default async function AdminHome() {
                       {r.hasReflections ? (
                         <span
                           className="inline-flex items-center gap-1 text-[10.5px] font-semibold px-2 py-0.5 rounded-full"
-                          style={{ backgroundColor: "#f0faf1", color: "#1a5c2a" }}
+                          style={{ backgroundColor: "var(--surface-accent)", color: "var(--success-fg)" }}
                         >
                           <svg viewBox="0 0 12 12" className="w-2.5 h-2.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M2.5 6.5L5 9l4.5-5" />
@@ -177,7 +180,10 @@ export default async function AdminHome() {
                           Complete
                         </span>
                       ) : (
-                        <span className="inline-block text-[10.5px] font-medium px-2 py-0.5 rounded-full text-gray-500 bg-gray-100">
+                        <span
+                          className="inline-block text-[10.5px] font-medium px-2 py-0.5 rounded-full"
+                          style={{ color: "var(--text-muted)", backgroundColor: "var(--overlay-hover)" }}
+                        >
                           Pending
                         </span>
                       )}
@@ -193,10 +199,11 @@ export default async function AdminHome() {
   );
 }
 
+// Status badge palette; "approved" uses inverse text on a solid brand fill.
 const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
-  new: { bg: "#f0faf1", color: "#1a5c2a", label: "New" },
-  pending: { bg: "#fff8e1", color: "#8a6d00", label: "Pending" },
-  approved: { bg: "#1a5c2a", color: "#ffffff", label: "Approved" },
+  new: { bg: "var(--surface-accent)", color: "var(--success-fg)", label: "New" },
+  pending: { bg: "var(--surface-sunken)", color: "var(--brand-mid)", label: "Pending" },
+  approved: { bg: "var(--brand)", color: "var(--text-inverse)", label: "Approved" },
 };
 
 function StatusBadge({ status }: { status: string }) {
@@ -206,7 +213,7 @@ function StatusBadge({ status }: { status: string }) {
       className="inline-flex items-center gap-1.5 text-[10.5px] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap"
       style={{ backgroundColor: s.bg, color: s.color }}
     >
-      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: s.color === "#ffffff" ? "#ffffff" : s.color, opacity: 0.9 }} />
+      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: s.color, opacity: 0.9 }} />
       {s.label}
     </span>
   );
@@ -215,13 +222,13 @@ function StatusBadge({ status }: { status: string }) {
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <div
-      className="bg-white rounded-2xl p-5"
-      style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(26,92,42,0.12)" }}
+      className="rounded-2xl p-5"
+      style={{ backgroundColor: "var(--surface)", boxShadow: "var(--shadow-card)" }}
     >
-      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 mb-2">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] mb-2" style={{ color: "var(--text-muted)" }}>
         {label}
       </p>
-      <p className="text-2xl font-bold tracking-tight" style={{ color: "#0d3d1a" }}>
+      <p className="text-2xl font-bold tracking-tight" style={{ color: "var(--text-heading)" }}>
         {value}
       </p>
     </div>
@@ -231,12 +238,12 @@ function StatCard({ label, value }: { label: string; value: string }) {
 function EmptyState() {
   return (
     <div
-      className="bg-white rounded-3xl p-12 sm:p-16 text-center"
-      style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 10px 32px -10px rgba(26,92,42,0.1)" }}
+      className="rounded-3xl p-12 sm:p-16 text-center"
+      style={{ backgroundColor: "var(--surface)", boxShadow: "var(--shadow-card)" }}
     >
       <div
         className="w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center"
-        style={{ backgroundColor: "#f0faf1", color: "#1a5c2a" }}
+        style={{ backgroundColor: "var(--surface-accent)", color: "var(--brand)" }}
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -245,10 +252,10 @@ function EmptyState() {
           <line x1="16" y1="17" x2="8" y2="17" />
         </svg>
       </div>
-      <h3 className="text-xl font-bold tracking-tight mb-2" style={{ color: "#0d3d1a" }}>
+      <h3 className="text-xl font-bold tracking-tight mb-2" style={{ color: "var(--text-heading)" }}>
         No reports yet
       </h3>
-      <p className="text-[14px] text-gray-500 max-w-sm mx-auto leading-relaxed">
+      <p className="text-[14px] max-w-sm mx-auto leading-relaxed" style={{ color: "var(--text-muted)" }}>
         Submitted reports from participating schools will appear here.
       </p>
     </div>

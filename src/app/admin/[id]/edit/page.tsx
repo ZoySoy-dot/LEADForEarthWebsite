@@ -39,7 +39,7 @@ export default async function EditReportPage({
       <Link
         href={`/admin/${id}`}
         className="inline-flex items-center gap-1.5 text-[13px] font-medium mb-6 transition-colors"
-        style={{ color: "#2d8c3e" }}
+        style={{ color: "var(--brand-mid)" }}
       >
         <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
           <polyline points="15 18 9 12 15 6" />
@@ -50,14 +50,14 @@ export default async function EditReportPage({
       <div className="mb-8">
         <p
           className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-3"
-          style={{ color: "#2d8c3e" }}
+          style={{ color: "var(--brand-mid)" }}
         >
           Edit Report
         </p>
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight" style={{ color: "#0d3d1a" }}>
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight" style={{ color: "var(--text-heading)" }}>
           {report.projectTitle}
         </h1>
-        <p className="mt-3 text-[14px] text-gray-500 leading-relaxed max-w-xl">
+        <p className="mt-3 text-[14px] leading-relaxed max-w-xl" style={{ color: "var(--text-muted)" }}>
           Edit typos and correct basic info. Complex fields (SDGs, initiative impact data, effectiveness ratings) are read-only here; those come straight from the submitter&apos;s form.
         </p>
       </div>

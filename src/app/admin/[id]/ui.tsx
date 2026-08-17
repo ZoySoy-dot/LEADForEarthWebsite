@@ -12,9 +12,9 @@ const STATUS_OPTIONS: { key: string; label: string }[] = [
 ];
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; ring: string }> = {
-  new: { bg: "#f0faf1", color: "#1a5c2a", ring: "rgba(26,92,42,0.2)" },
-  pending: { bg: "#fff8e1", color: "#8a6d00", ring: "rgba(138,109,0,0.2)" },
-  approved: { bg: "#1a5c2a", color: "#ffffff", ring: "rgba(26,92,42,0.3)" },
+  new: { bg: "var(--surface-accent)", color: "var(--brand)", ring: "var(--border-brand)" },
+  pending: { bg: "var(--surface-sunken)", color: "var(--brand-mid)", ring: "var(--border-brand-soft)" },
+  approved: { bg: "var(--brand)", color: "var(--text-inverse)", ring: "var(--border-brand)" },
 };
 
 export function StatusControl({
@@ -74,8 +74,8 @@ export function StatusControl({
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full mt-2 min-w-[160px] rounded-2xl bg-white p-1.5 z-50"
-          style={{ boxShadow: "0 10px 30px -8px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.05)" }}
+          className="absolute right-0 top-full mt-2 min-w-[160px] rounded-2xl p-1.5 z-50"
+          style={{ backgroundColor: "var(--surface-elevated)", boxShadow: "var(--shadow-strong)" }}
         >
           {STATUS_OPTIONS.map((o) => {
             const active = o.key === status;
@@ -86,17 +86,20 @@ export function StatusControl({
                 type="button"
                 role="menuitem"
                 onClick={() => pick(o.key)}
-                className="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-xl text-[13px] font-medium text-gray-700 hover:bg-gray-50 transition-colors text-left"
+                className="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-xl text-[13px] font-medium transition-colors text-left"
+                style={{ color: "var(--text-body)" }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--overlay-hover)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
               >
                 <span className="flex items-center gap-2">
                   <span
                     className="w-1.5 h-1.5 rounded-full"
-                    style={{ backgroundColor: s.color === "#ffffff" ? s.bg : s.color }}
+                    style={{ backgroundColor: s.color }}
                   />
                   {o.label}
                 </span>
                 {active && (
-                  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: "#1a5c2a" }}>
+                  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--brand)" }}>
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                 )}
@@ -150,7 +153,10 @@ export function ActionsMenu({
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label="Report actions"
-        className="w-9 h-9 rounded-full flex items-center justify-center text-gray-500 transition-colors hover:bg-gray-100 disabled:opacity-40"
+        className="w-9 h-9 rounded-full flex items-center justify-center transition-colors disabled:opacity-40"
+        style={{ color: "var(--text-muted)" }}
+        onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = "var(--overlay-hover)"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
       >
         <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor" aria-hidden="true">
           <circle cx="12" cy="5" r="1.6" />
@@ -162,14 +168,17 @@ export function ActionsMenu({
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full mt-2 min-w-[180px] rounded-2xl bg-white p-1.5 z-50"
-          style={{ boxShadow: "0 10px 30px -8px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.05)" }}
+          className="absolute right-0 top-full mt-2 min-w-[180px] rounded-2xl p-1.5 z-50"
+          style={{ backgroundColor: "var(--surface-elevated)", boxShadow: "var(--shadow-strong)" }}
         >
           <Link
             href={`/admin/${reportId}/edit`}
             role="menuitem"
             onClick={() => setOpen(false)}
-            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition-colors"
+            style={{ color: "var(--text-body)" }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--overlay-hover)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
           >
             <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 20h9" />
@@ -182,7 +191,10 @@ export function ActionsMenu({
             role="menuitem"
             onClick={handleDelete}
             disabled={pending}
-            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium text-red-600 hover:bg-red-50 transition-colors text-left disabled:opacity-50"
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition-colors text-left disabled:opacity-50"
+            style={{ color: "var(--danger-fg)" }}
+            onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = "var(--danger-bg)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
           >
             <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
               <polyline points="3 6 5 6 21 6" />

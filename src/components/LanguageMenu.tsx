@@ -88,14 +88,14 @@ export default function LanguageMenu({
   const floatingButtonStyle =
     variant === "floating"
       ? {
-          color: "#0d3d1a",
-          backgroundColor: "rgba(255,255,255,0.95)",
+          color: "var(--brand-strong)",
+          backgroundColor: "var(--surface-elevated)",
           backdropFilter: "saturate(150%) blur(12px)",
           WebkitBackdropFilter: "saturate(150%) blur(12px)",
           boxShadow:
-            "0 8px 24px -8px rgba(13,61,26,0.35), 0 2px 6px -2px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(26,92,42,0.12)",
+            "var(--shadow-brand), inset 0 0 0 1px var(--border-brand-soft)",
         }
-      : { color: "#3a3a3a" };
+      : { color: "var(--text-body)" };
 
   const menuPosition =
     variant === "desktop"
@@ -151,17 +151,17 @@ export default function LanguageMenu({
         <div
           role="menu"
           translate="no"
-          className={`notranslate absolute ${menuPosition} w-64 bg-white rounded-2xl overflow-hidden z-[70]`}
+          className={`notranslate absolute ${menuPosition} w-64 rounded-2xl overflow-hidden z-[70]`}
           style={{
-            boxShadow:
-              "0 12px 40px -12px rgba(0,0,0,0.18), 0 2px 8px -2px rgba(0,0,0,0.08)",
+            backgroundColor: "var(--surface-elevated)",
+            boxShadow: "var(--shadow-strong)",
           }}
         >
-          <div className="px-4 py-3 border-b border-gray-100">
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-gray-500">
+          <div className="px-4 py-3" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
+            <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em]" style={{ color: "var(--text-muted)" }}>
               Language
             </p>
-            <p className="text-[11.5px] text-gray-500 mt-1 leading-snug">
+            <p className="text-[11.5px] mt-1 leading-snug" style={{ color: "var(--text-muted)" }}>
               Machine translated. May be inaccurate.
             </p>
           </div>
@@ -175,19 +175,21 @@ export default function LanguageMenu({
                     role="menuitemradio"
                     aria-checked={active}
                     onClick={() => applyLang(lang.code)}
-                    className="w-full flex items-center justify-between px-4 py-2.5 text-left transition-colors hover:bg-[#f4faf3]"
+                    className="w-full flex items-center justify-between px-4 py-2.5 text-left transition-colors"
                     style={{
-                      backgroundColor: active ? "#f0faf1" : undefined,
+                      backgroundColor: active ? "var(--surface-accent)" : undefined,
                     }}
+                    onMouseEnter={(e) => { if (!active) e.currentTarget.style.backgroundColor = "var(--overlay-hover)"; }}
+                    onMouseLeave={(e) => { if (!active) e.currentTarget.style.backgroundColor = ""; }}
                   >
                     <span className="flex flex-col">
                       <span
                         className="text-[14px] font-medium"
-                        style={{ color: "#0d3d1a" }}
+                        style={{ color: "var(--text-heading)" }}
                       >
                         {lang.label}
                       </span>
-                      <span className="text-[11.5px] text-gray-500">
+                      <span className="text-[11.5px]" style={{ color: "var(--text-muted)" }}>
                         {lang.note}
                       </span>
                     </span>
@@ -196,7 +198,7 @@ export default function LanguageMenu({
                         viewBox="0 0 24 24"
                         className="w-4 h-4"
                         fill="none"
-                        stroke="#1a5c2a"
+                        stroke="var(--brand)"
                         strokeWidth={2.5}
                         strokeLinecap="round"
                         strokeLinejoin="round"

@@ -77,13 +77,13 @@ export default async function ReportPage({
         id="main"
         tabIndex={-1}
         className="pt-[68px] focus:outline-none"
-        style={{ backgroundColor: "#fafbfa" }}
+        style={{ backgroundColor: "var(--surface-page)" }}
       >
         <div className="max-w-4xl mx-auto px-6 pt-6">
           <Link
             href="/community"
             className="inline-flex items-center gap-1.5 text-[13px] font-medium transition-colors hover:opacity-70"
-            style={{ color: "#2d8c3e" }}
+            style={{ color: "var(--brand-mid)" }}
           >
             <svg
               viewBox="0 0 24 24"

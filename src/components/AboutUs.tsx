@@ -49,59 +49,59 @@ const values = [
 
 export default function AboutUs() {
   return (
-    <section id="about" className="py-28 sm:py-36" style={{ backgroundColor: "#fafbfa" }}>
+    <section id="about" className="py-28 sm:py-36" style={{ backgroundColor: "var(--surface-page)" }}>
       <div className="max-w-5xl mx-auto px-6 lg:px-8">
 
         {/* Centered header */}
         <div className="text-center mb-16 sm:mb-20">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] mb-4" style={{ color: "#2d8c3e" }}>
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] mb-4" style={{ color: "var(--brand-mid)" }}>
             What is LEADForEarth?
           </p>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]" style={{ color: "#0d3d1a" }}>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]" style={{ color: "var(--text-heading)" }}>
             A movement rooted in faith and action.
           </h2>
         </div>
 
         {/* Body copy + pull quote */}
         <div className="max-w-2xl mx-auto mb-24 sm:mb-32">
-          <p className="text-[17px] text-gray-600 leading-[1.75] mb-8">
-            <strong className="font-semibold" style={{ color: "#0d3d1a" }}>LEADForEarth</strong> is the environmental initiative of the Lasallian East Asia District. Emerging from the first International LEAD EcoCamp, the program moves our institutions from simple awareness to concrete, repeatable action.
+          <p className="text-[17px] leading-[1.75] mb-8" style={{ color: "var(--text-body)" }}>
+            <strong className="font-semibold" style={{ color: "var(--text-heading)" }}>LEADForEarth</strong> is the environmental initiative of the Lasallian East Asia District. Emerging from the first International LEAD EcoCamp, the program moves our institutions from simple awareness to concrete, repeatable action.
           </p>
 
-          <blockquote className="my-10 py-6 pl-8 border-l-2" style={{ borderColor: "#2d8c3e" }}>
-            <p className="text-2xl font-semibold italic leading-[1.35] tracking-tight" style={{ color: "#0d3d1a" }}>
+          <blockquote className="my-10 py-6 pl-8 border-l-2" style={{ borderColor: "var(--brand-mid)" }}>
+            <p className="text-2xl font-semibold italic leading-[1.35] tracking-tight" style={{ color: "var(--text-heading)" }}>
               United not by strict uniformity, but by a shared and enduring mission to protect our planet.
             </p>
           </blockquote>
 
-          <p className="text-[17px] text-gray-600 leading-[1.75]">
+          <p className="text-[17px] leading-[1.75]" style={{ color: "var(--text-body)" }}>
             Grounded in the Lasallian core value of <em>Communion in Mission</em>, LEADForEarth trusts each institution to contribute in the way most meaningful to its local context. Together, our diverse commitments live under a single banner:{" "}
-            <strong style={{ color: "#1a5c2a" }}>#LEADforEarth</strong>.
+            <strong style={{ color: "var(--brand)" }}>#LEADforEarth</strong>.
           </p>
         </div>
 
         {/* Mission & Vision as two elegant cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-24 sm:mb-28">
           <div
-            className="rounded-3xl bg-white p-8 sm:p-10"
-            style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 10px 32px -10px rgba(26,92,42,0.1)" }}
+            className="rounded-3xl p-8 sm:p-10"
+            style={{ backgroundColor: "var(--surface)", boxShadow: "var(--shadow-card)" }}
           >
-            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-4" style={{ color: "#2d8c3e" }}>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-4" style={{ color: "var(--brand-mid)" }}>
               Our Mission
             </p>
-            <p className="text-2xl sm:text-[26px] font-semibold tracking-tight leading-[1.25]" style={{ color: "#0d3d1a" }}>
+            <p className="text-2xl sm:text-[26px] font-semibold tracking-tight leading-[1.25]" style={{ color: "var(--text-heading)" }}>
               To empower Lasallian students across East Asia to take coordinated environmental action, united under one banner:{" "}
-              <span style={{ color: "#2d8c3e" }}>#LEADforEarth</span>.
+              <span style={{ color: "var(--brand-mid)" }}>#LEADforEarth</span>.
             </p>
           </div>
           <div
-            className="rounded-3xl bg-white p-8 sm:p-10"
-            style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 10px 32px -10px rgba(26,92,42,0.1)" }}
+            className="rounded-3xl p-8 sm:p-10"
+            style={{ backgroundColor: "var(--surface)", boxShadow: "var(--shadow-card)" }}
           >
-            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-4" style={{ color: "#2d8c3e" }}>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-4" style={{ color: "var(--brand-mid)" }}>
               Our Vision
             </p>
-            <p className="text-lg text-gray-600 leading-[1.65]">
+            <p className="text-lg leading-[1.65]" style={{ color: "var(--text-body)" }}>
               A district where students are empowered to act, and where the Lasallian community stands united in ecological stewardship. A future where environmental action is <em>seen</em>, celebrated, and never forgotten.
             </p>
           </div>
@@ -109,11 +109,11 @@ export default function AboutUs() {
 
         {/* Values; quieter sub-heading, no giant two-tone repeat */}
         <div>
-          <div className="flex items-baseline justify-between mb-10 pb-4 border-b border-gray-200">
-            <h3 className="text-xl sm:text-2xl font-semibold tracking-tight" style={{ color: "#0d3d1a" }}>
+          <div className="flex items-baseline justify-between mb-10 pb-4 border-b" style={{ borderColor: "var(--border-input)" }}>
+            <h3 className="text-xl sm:text-2xl font-semibold tracking-tight" style={{ color: "var(--text-heading)" }}>
               What guides us
             </h3>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.24em]" style={{ color: "#2d8c3e" }}>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em]" style={{ color: "var(--brand-mid)" }}>
               Core Values
             </p>
           </div>
@@ -121,19 +121,19 @@ export default function AboutUs() {
             {values.map((v) => (
               <div
                 key={v.title}
-                className="rounded-3xl bg-white p-8 transition-transform hover:-translate-y-0.5"
-                style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -8px rgba(26,92,42,0.08)" }}
+                className="rounded-3xl p-8 transition-transform hover:-translate-y-0.5"
+                style={{ backgroundColor: "var(--surface)", boxShadow: "var(--shadow-card)" }}
               >
                 <div
                   className="w-11 h-11 rounded-2xl flex items-center justify-center mb-5"
-                  style={{ backgroundColor: "#f0faf1", color: "#1a5c2a" }}
+                  style={{ backgroundColor: "var(--surface-accent)", color: "var(--brand)" }}
                 >
                   {v.icon}
                 </div>
-                <h4 className="font-semibold text-lg tracking-tight mb-2" style={{ color: "#0d3d1a" }}>
+                <h4 className="font-semibold text-lg tracking-tight mb-2" style={{ color: "var(--text-heading)" }}>
                   {v.title}
                 </h4>
-                <p className="text-[15px] text-gray-600 leading-relaxed">{v.description}</p>
+                <p className="text-[15px] leading-relaxed" style={{ color: "var(--text-body)" }}>{v.description}</p>
               </div>
             ))}
           </div>

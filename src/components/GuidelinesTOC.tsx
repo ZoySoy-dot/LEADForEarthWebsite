@@ -31,11 +31,11 @@ export default function GuidelinesTOC({ sections }: { sections: readonly Section
 
   return (
     <nav aria-label="Guidelines contents" className="relative">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400 mb-5 pl-4">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] mb-5 pl-4" style={{ color: "var(--text-subtle)" }}>
         Contents
       </p>
       {/* Vertical rail */}
-      <div className="absolute left-3 top-9 bottom-0 w-px bg-gray-200" aria-hidden="true" />
+      <div className="absolute left-3 top-9 bottom-0 w-px" style={{ backgroundColor: "var(--border-input)" }} aria-hidden="true" />
 
       <ul className="space-y-1">
         {sections.map((s) => {
@@ -46,8 +46,8 @@ export default function GuidelinesTOC({ sections }: { sections: readonly Section
               <span
                 className="absolute left-3 top-3 -translate-x-1/2 w-2 h-2 rounded-full transition-all duration-300"
                 style={{
-                  backgroundColor: isActive ? "#1a5c2a" : "transparent",
-                  boxShadow: isActive ? "0 0 0 4px rgba(26,92,42,0.12)" : "none",
+                  backgroundColor: isActive ? "var(--brand)" : "transparent",
+                  boxShadow: isActive ? "0 0 0 4px var(--border-brand-soft)" : "none",
                 }}
                 aria-hidden="true"
               />
@@ -55,7 +55,7 @@ export default function GuidelinesTOC({ sections }: { sections: readonly Section
                 href={`#${s.id}`}
                 className="block pl-8 pr-2 py-1.5 text-sm rounded-lg transition-colors"
                 style={{
-                  color: isActive ? "#1a5c2a" : "#6b7280",
+                  color: isActive ? "var(--brand)" : "var(--text-muted)",
                   fontWeight: isActive ? 600 : 500,
                 }}
               >

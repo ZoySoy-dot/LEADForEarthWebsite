@@ -157,7 +157,7 @@ export default async function ReportDetailPage({
         <Link
           href="/admin"
           className="inline-flex items-center gap-1.5 text-[13px] font-medium transition-colors"
-          style={{ color: "#2d8c3e" }}
+          style={{ color: "var(--brand-mid)" }}
         >
           <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
@@ -172,24 +172,24 @@ export default async function ReportDetailPage({
 
       {/* Report header card */}
       <div
-        className="bg-white rounded-3xl p-8 sm:p-10 mb-6"
-        style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 20px 60px -20px rgba(26,92,42,0.15)" }}
+        className="rounded-3xl p-8 sm:p-10 mb-6"
+        style={{ backgroundColor: "var(--surface)", boxShadow: "var(--shadow-strong)" }}
       >
         <p
           className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-3"
-          style={{ color: "#2d8c3e" }}
+          style={{ color: "var(--brand-mid)" }}
         >
           {report.schoolName}
         </p>
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight" style={{ color: "#0d3d1a" }}>
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight" style={{ color: "var(--text-heading)" }}>
           {report.projectTitle}
         </h1>
-        <p className="text-[14px] text-gray-500 mt-3">
-          Submitted {fmtDateTime(report.createdAt)} by <span className="text-gray-700 font-medium">{report.submitterName}</span> ({report.submitterEmail})
+        <p className="text-[14px] mt-3" style={{ color: "var(--text-muted)" }}>
+          Submitted {fmtDateTime(report.createdAt)} by <span className="font-medium" style={{ color: "var(--text-body)" }}>{report.submitterName}</span> ({report.submitterEmail})
         </p>
 
         {report.description && (
-          <p className="text-[15px] text-gray-700 mt-6 leading-relaxed whitespace-pre-wrap">
+          <p className="text-[15px] mt-6 leading-relaxed whitespace-pre-wrap" style={{ color: "var(--text-body)" }}>
             {report.description}
           </p>
         )}
@@ -236,7 +236,7 @@ export default async function ReportDetailPage({
 
       {report.documentationLinks && (
         <Section title="Documentation">
-          <p className="text-[14px] text-gray-700 whitespace-pre-wrap">{report.documentationLinks}</p>
+          <p className="text-[14px] whitespace-pre-wrap" style={{ color: "var(--text-body)" }}>{report.documentationLinks}</p>
         </Section>
       )}
 
@@ -248,7 +248,7 @@ export default async function ReportDetailPage({
           </Section>
 
           <Section title="Participant Feedback">
-            <p className="text-[14px] text-gray-700 whitespace-pre-wrap">
+            <p className="text-[14px] whitespace-pre-wrap" style={{ color: "var(--text-body)" }}>
               {report.reflection.participantFeedback || "-"}
             </p>
           </Section>
@@ -275,12 +275,12 @@ export default async function ReportDetailPage({
         </>
       ) : (
         <div
-          className="bg-white rounded-3xl p-6 flex items-center gap-4"
-          style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(26,92,42,0.1)" }}
+          className="rounded-3xl p-6 flex items-center gap-4"
+          style={{ backgroundColor: "var(--surface)", boxShadow: "var(--shadow-card)" }}
         >
           <div
             className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-            style={{ backgroundColor: "#fff8e1", color: "#8a6d00" }}
+            style={{ backgroundColor: "var(--surface-accent)", color: "var(--brand-mid)" }}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
               <circle cx="12" cy="12" r="10" />
@@ -289,10 +289,10 @@ export default async function ReportDetailPage({
             </svg>
           </div>
           <div>
-            <p className="text-[14px] font-semibold" style={{ color: "#0d3d1a" }}>
+            <p className="text-[14px] font-semibold" style={{ color: "var(--text-heading)" }}>
               Reflection pending
             </p>
-            <p className="text-[13px] text-gray-500">
+            <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>
               The submitter has not yet completed the reflection add-on.
             </p>
           </div>
@@ -305,12 +305,12 @@ export default async function ReportDetailPage({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section
-      className="bg-white rounded-3xl p-6 sm:p-8 mb-6"
-      style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 10px 32px -12px rgba(26,92,42,0.1)" }}
+      className="rounded-3xl p-6 sm:p-8 mb-6"
+      style={{ backgroundColor: "var(--surface)", boxShadow: "var(--shadow-card)" }}
     >
       <h2
         className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-5"
-        style={{ color: "#2d8c3e" }}
+        style={{ color: "var(--brand-mid)" }}
       >
         {title}
       </h2>
@@ -322,9 +322,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   const display = value === null || value === undefined || value === "" ? "-" : value;
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-[220px_1fr] gap-1 sm:gap-4 py-2 border-b border-gray-50 last:border-0">
-      <span className="text-[12px] text-gray-500 font-medium">{label}</span>
-      <span className="text-[14px] text-gray-800 whitespace-pre-wrap">{display}</span>
+    <div className="grid grid-cols-1 sm:grid-cols-[220px_1fr] gap-1 sm:gap-4 py-2 last:border-0" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
+      <span className="text-[12px] font-medium" style={{ color: "var(--text-muted)" }}>{label}</span>
+      <span className="text-[14px] whitespace-pre-wrap" style={{ color: "var(--text-primary)" }}>{display}</span>
     </div>
   );
 }
@@ -336,8 +336,8 @@ function SdgChips({ keys }: { keys: string[] }) {
       {keys.map((k) => (
         <span
           key={k}
-          className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-full text-white"
-          style={{ backgroundColor: SDG_COLOR[k] ?? "#666" }}
+          className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-full"
+          style={{ backgroundColor: SDG_COLOR[k] ?? "#666666", color: "var(--text-inverse)" }}
           title={SDG_LABELS[k]}
         >
           {SDG_LABELS[k] ?? k}
@@ -353,9 +353,9 @@ function ImpactPanel({
   return (
     <div
       className="rounded-2xl p-5 border"
-      style={{ backgroundColor: "#f7faf7", borderColor: "#e2efe4" }}
+      style={{ backgroundColor: "var(--surface-sunken)", borderColor: "var(--border-brand-soft)" }}
     >
-      <h3 className="text-[13px] font-semibold mb-3" style={{ color: "#1a5c2a" }}>
+      <h3 className="text-[13px] font-semibold mb-3" style={{ color: "var(--brand)" }}>
         {title}
       </h3>
       <div className="space-y-2">{children}</div>
@@ -375,13 +375,13 @@ function ImpactSection({ report }: { report: { impact: unknown; initiativeTypes:
 
   return (
     <Section title="Environmental Impact">
-      {!anyContent && <p className="text-[13px] text-gray-500">No impact data was recorded.</p>}
+      {!anyContent && <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>No impact data was recorded.</p>}
 
       <div className="space-y-4">
         {selected.map((key) => renderImpactPanel(key, report.impact))}
         {otherImpact && (
           <ImpactPanel title="Other Environmental Actions">
-            <p className="text-[14px] text-gray-800 whitespace-pre-wrap">{otherImpact}</p>
+            <p className="text-[14px] whitespace-pre-wrap" style={{ color: "var(--text-primary)" }}>{otherImpact}</p>
           </ImpactPanel>
         )}
       </div>
@@ -441,11 +441,11 @@ function renderImpactPanel(key: string, impact: unknown): React.ReactNode {
 
 function renderFieldRows(key: string, data: ImpactBucket): React.ReactNode {
   const labels = IMPACT_FIELD_LABELS[key];
-  if (!labels) return <p className="text-[13px] text-gray-500">No detail fields.</p>;
+  if (!labels) return <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>No detail fields.</p>;
   const rows = Object.entries(labels)
     .filter(([field]) => !isEmpty(data[field]))
     .map(([field, label]) => <Row key={field} label={label} value={String(data[field])} />);
-  return rows.length ? rows : <p className="text-[13px] text-gray-500">No values recorded.</p>;
+  return rows.length ? rows : <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>No values recorded.</p>;
 }
 
 function EffectivenessSection({ effectiveness }: { effectiveness: unknown }) {
@@ -457,19 +457,20 @@ function EffectivenessSection({ effectiveness }: { effectiveness: unknown }) {
   return (
     <Section title="Effectiveness of Implementation">
       {filled.length === 0 ? (
-        <p className="text-[13px] text-gray-500">No effectiveness ratings were provided.</p>
+        <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>No effectiveness ratings were provided.</p>
       ) : (
         <div className="space-y-3">
           {items.map((item, i) => (
             <div
               key={i}
-              className="flex items-start gap-4 py-3 border-b border-gray-50 last:border-0"
+              className="flex items-start gap-4 py-3 last:border-0"
+              style={{ borderBottom: "1px solid var(--border-subtle)" }}
             >
               <RatingChip value={item.rating ?? ""} />
               <div className="flex-1 min-w-0">
-                <p className="text-[14px] font-medium text-gray-800">{item.criteria ?? `Criteria ${i + 1}`}</p>
+                <p className="text-[14px] font-medium" style={{ color: "var(--text-primary)" }}>{item.criteria ?? `Criteria ${i + 1}`}</p>
                 {item.remarks && (
-                  <p className="text-[13px] text-gray-600 mt-1 whitespace-pre-wrap">{item.remarks}</p>
+                  <p className="text-[13px] mt-1 whitespace-pre-wrap" style={{ color: "var(--text-body)" }}>{item.remarks}</p>
                 )}
               </div>
             </div>
@@ -487,8 +488,8 @@ function RatingChip({ value }: { value: string }) {
     <div
       className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
       style={{
-        backgroundColor: valid ? "#1a5c2a" : "#f3f4f6",
-        color: valid ? "#ffffff" : "#9ca3af",
+        backgroundColor: valid ? "var(--brand)" : "var(--surface-sunken)",
+        color: valid ? "var(--text-inverse)" : "var(--text-subtle)",
       }}
     >
       <span className="text-base font-bold leading-none">{valid ? n : "-"}</span>

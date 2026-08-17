@@ -1,29 +1,299 @@
 @import "tailwindcss";
 
+/* Dark variant fires when the user has explicitly chosen dark via the
+   toggle (data-theme="dark") OR when the OS prefers dark AND the user
+   hasn't overridden to light. Mirrors the token overrides below. */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+}
+
+/* --- Design tokens --------------------------------------------------------
+   Semantic names, not raw colors. Every UI hex should route through one of
+   these so the [data-theme="dark"] block below can flip the whole site.
+
+   Brand green stays "green" in both themes (identity), but shifts lighter in
+   dark mode so it holds contrast against dark surfaces. */
 :root {
-  --green-dark: #1a5c2a;
-  --green-mid: #2d8c3e;
-  --green-light: #4aab5a;
-  --green-pale: #e8f5e9;
-  --charcoal: #2d2d2d;
-  --white: #ffffff;
+  color-scheme: light;
+
+  /* Surfaces */
+  --surface-page: #fafbfa;         /* section backgrounds */
+  --surface: #ffffff;              /* raised cards */
+  --surface-elevated: #ffffff;     /* dialogs, popovers */
+  --surface-sunken: #f5f8f4;       /* inputs, chip trays */
+  --surface-accent: #f0faf1;       /* tinted callouts */
+  --brand-cream: #f4faf3;          /* hero light-mode wash */
+  --brand-cream-warm: #f7f3e7;     /* PublicReport reflection wash */
   --off-white: #f7faf7;
-  --gray-light: #e0e0e0;
-  --gray-mid: #757575;
+
+  /* Hero (deliberately dark in both themes) */
+  --hero-night: #0a1e18;
+  --hero-botanical: #14332a;
+  --hero-hairline: rgba(200, 230, 210, 0.18);
+  --hero-fog: rgba(200, 230, 210, 0.85);
+
+  /* Text */
+  --text-primary: #111111;         /* headings on white */
+  --text-heading: #0d3d1a;         /* branded headings */
+  --text-body: #3a3a3a;            /* nav + body text */
+  --text-muted: #6b7280;           /* gray-500 equivalent */
+  --text-subtle: #9ca3af;          /* gray-400 equivalent */
+  --text-faint: #d1d5db;           /* gray-300 equivalent */
+  --text-inverse: #ffffff;
+
+  /* Brand */
+  --brand: #1a5c2a;                /* primary green */
+  --brand-strong: #0d3d1a;         /* darkest, use for hover/active */
+  --brand-mid: #2d8c3e;
+  --brand-light: #4aab5a;
+  --brand-pale: #e8f5e9;
+  --brand-glow: #a8d5b0;
+
+  /* Borders */
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --border-default: rgba(0, 0, 0, 0.10);
+  --border-strong: rgba(0, 0, 0, 0.15);
+  --border-brand: rgba(26, 92, 42, 0.25);
+  --border-brand-soft: rgba(26, 92, 42, 0.12);
+  --border-input: #e5e7eb;         /* gray-200 */
+  --border-input-focus: var(--brand-mid);
+
+  /* Shadows */
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 10px 32px -10px rgba(26, 92, 42, 0.10);
+  --shadow-strong: 0 1px 2px rgba(0, 0, 0, 0.04), 0 20px 60px -20px rgba(26, 92, 42, 0.18);
+  --shadow-brand: 0 6px 16px -4px rgba(26, 92, 42, 0.40);
+  --shadow-brand-strong: 0 8px 24px -8px rgba(26, 92, 42, 0.45);
+  --shadow-lift: 0 8px 40px rgba(0, 0, 0, 0.5);
+  --shadow-header: 0 1px 0 rgba(0, 0, 0, 0.04);
+  --shadow-header-scrolled: 0 1px 0 rgba(0, 0, 0, 0.04), 0 4px 16px -4px rgba(0, 0, 0, 0.06);
+
+  /* Overlays / hovers */
+  --overlay-hover: rgba(0, 0, 0, 0.04);
+  --overlay-hover-strong: rgba(0, 0, 0, 0.06);
+  --overlay-brand-hover: rgba(26, 92, 42, 0.08);
+  --overlay-scrim: rgba(15, 25, 15, 0.40);
+  --overlay-toast: rgba(15, 25, 15, 0.94);
+  --toast-bg: rgba(15, 25, 15, 0.94);
+  --toast-fg: #ffffff;
+  --toast-fg-muted: rgba(255, 255, 255, 0.78);
+
+  /* Header + fixed shells (translucent, blur applied on the element) */
+  --header-bg-idle: rgba(255, 255, 255, 0.65);
+  --header-bg-scrolled: rgba(255, 255, 255, 0.85);
+  --nav-bg-blur: rgba(255, 255, 255, 0.90);
+
+  /* Semantic accents */
+  --danger-bg: #fef2f2;
+  --danger-fg: #b91c1c;
+  --danger-border: #fecaca;
+  --success-bg: #f0faf1;
+  --success-fg: #1a5c2a;
+
+  /* Map / globe context landmass (non-LEAD countries + graticule ocean). */
+  --map-land: #ede8d9;
+  --map-land-border: #d8d1bc;
+  --map-sea: #dce7ea;
+  --map-context-land: #c6cec2;
+  --map-context-land-border: #b6bfb0;
+  --map-graticule: #b3d4b9;
+  --map-label-halo: #123b1c;
+
+  /* Focus ring */
+  --focus-ring: var(--brand-mid);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --surface-page: #0a1210;
+  --surface: #101b16;
+  --surface-elevated: #14231d;
+  --surface-sunken: #0f1a15;
+  --surface-accent: #0f2419;
+  --brand-cream: #0f2419;
+  --brand-cream-warm: #17201a;
+  --off-white: #0e1712;
+
+  --hero-night: #05100c;
+  --hero-botanical: #0a1e18;
+  --hero-hairline: rgba(200, 230, 210, 0.12);
+  --hero-fog: rgba(200, 230, 210, 0.75);
+
+  --text-primary: #edf5ef;
+  --text-heading: #a8d5b0;
+  --text-body: #c8d5cc;
+  --text-muted: #8a9a90;
+  --text-subtle: #6a7a70;
+  --text-faint: #4a5a50;
+  --text-inverse: #0a1210;
+
+  --brand: #6dc17b;
+  --brand-strong: #a8d5b0;
+  --brand-mid: #7fc48c;
+  --brand-light: #a8d5b0;
+  --brand-pale: #16311f;
+  --brand-glow: #a8d5b0;
+
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.10);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --border-brand: rgba(168, 213, 176, 0.30);
+  --border-brand-soft: rgba(168, 213, 176, 0.15);
+  --border-input: rgba(255, 255, 255, 0.10);
+  --border-input-focus: var(--brand-mid);
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 10px 32px -10px rgba(0, 0, 0, 0.55);
+  --shadow-strong: 0 1px 2px rgba(0, 0, 0, 0.5), 0 20px 60px -20px rgba(0, 0, 0, 0.7);
+  --shadow-brand: 0 6px 16px -4px rgba(0, 0, 0, 0.5);
+  --shadow-brand-strong: 0 8px 24px -8px rgba(0, 0, 0, 0.6);
+  --shadow-lift: 0 8px 40px rgba(0, 0, 0, 0.6);
+  --shadow-header: 0 1px 0 rgba(255, 255, 255, 0.04);
+  --shadow-header-scrolled: 0 1px 0 rgba(255, 255, 255, 0.04), 0 4px 16px -4px rgba(0, 0, 0, 0.5);
+
+  --overlay-hover: rgba(255, 255, 255, 0.04);
+  --overlay-hover-strong: rgba(255, 255, 255, 0.06);
+  --overlay-brand-hover: rgba(168, 213, 176, 0.10);
+  --overlay-scrim: rgba(0, 0, 0, 0.60);
+  --overlay-toast: rgba(240, 250, 244, 0.94);
+  --toast-bg: rgba(240, 250, 244, 0.94);
+  --toast-fg: #0a1210;
+  --toast-fg-muted: rgba(10, 18, 16, 0.72);
+
+  --header-bg-idle: rgba(10, 18, 16, 0.65);
+  --header-bg-scrolled: rgba(10, 18, 16, 0.85);
+  --nav-bg-blur: rgba(10, 18, 16, 0.90);
+
+  --danger-bg: #2a1414;
+  --danger-fg: #fca5a5;
+  --danger-border: rgba(252, 165, 165, 0.30);
+  --success-bg: #14311d;
+  --success-fg: #a8d5b0;
+
+  --map-land: #1a2b21;
+  --map-land-border: #2a3a30;
+  --map-sea: #0a1a15;
+  --map-context-land: #17251d;
+  --map-context-land-border: #26362c;
+  --map-graticule: #2d5a3d;
+  --map-label-halo: #05100c;
+}
+
+/* OS-preference dark mode. Applies whenever the user has NOT explicitly
+   overridden via the toggle (data-theme="light"). Mirrors the token
+   overrides in [data-theme="dark"]; kept in sync manually. This is the
+   default path — no JS runs before first paint, so there's no FOUC. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --surface-page: #0a1210;
+    --surface: #101b16;
+    --surface-elevated: #14231d;
+    --surface-sunken: #0f1a15;
+    --surface-accent: #0f2419;
+    --brand-cream: #0f2419;
+    --brand-cream-warm: #17201a;
+    --off-white: #0e1712;
+
+    --hero-night: #05100c;
+    --hero-botanical: #0a1e18;
+    --hero-hairline: rgba(200, 230, 210, 0.12);
+    --hero-fog: rgba(200, 230, 210, 0.75);
+
+    --text-primary: #edf5ef;
+    --text-heading: #a8d5b0;
+    --text-body: #c8d5cc;
+    --text-muted: #8a9a90;
+    --text-subtle: #6a7a70;
+    --text-faint: #4a5a50;
+    --text-inverse: #0a1210;
+
+    --brand: #6dc17b;
+    --brand-strong: #a8d5b0;
+    --brand-mid: #7fc48c;
+    --brand-light: #a8d5b0;
+    --brand-pale: #16311f;
+    --brand-glow: #a8d5b0;
+
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-default: rgba(255, 255, 255, 0.10);
+    --border-strong: rgba(255, 255, 255, 0.18);
+    --border-brand: rgba(168, 213, 176, 0.30);
+    --border-brand-soft: rgba(168, 213, 176, 0.15);
+    --border-input: rgba(255, 255, 255, 0.10);
+    --border-input-focus: var(--brand-mid);
+
+    --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 10px 32px -10px rgba(0, 0, 0, 0.55);
+    --shadow-strong: 0 1px 2px rgba(0, 0, 0, 0.5), 0 20px 60px -20px rgba(0, 0, 0, 0.7);
+    --shadow-brand: 0 6px 16px -4px rgba(0, 0, 0, 0.5);
+    --shadow-brand-strong: 0 8px 24px -8px rgba(0, 0, 0, 0.6);
+    --shadow-lift: 0 8px 40px rgba(0, 0, 0, 0.6);
+    --shadow-header: 0 1px 0 rgba(255, 255, 255, 0.04);
+    --shadow-header-scrolled: 0 1px 0 rgba(255, 255, 255, 0.04), 0 4px 16px -4px rgba(0, 0, 0, 0.5);
+
+    --overlay-hover: rgba(255, 255, 255, 0.04);
+    --overlay-hover-strong: rgba(255, 255, 255, 0.06);
+    --overlay-brand-hover: rgba(168, 213, 176, 0.10);
+    --overlay-scrim: rgba(0, 0, 0, 0.60);
+    --overlay-toast: rgba(240, 250, 244, 0.94);
+    --toast-bg: rgba(240, 250, 244, 0.94);
+    --toast-fg: #0a1210;
+    --toast-fg-muted: rgba(10, 18, 16, 0.72);
+
+    --header-bg-idle: rgba(10, 18, 16, 0.65);
+    --header-bg-scrolled: rgba(10, 18, 16, 0.85);
+    --nav-bg-blur: rgba(10, 18, 16, 0.90);
+
+    --danger-bg: #2a1414;
+    --danger-fg: #fca5a5;
+    --danger-border: rgba(252, 165, 165, 0.30);
+    --success-bg: #14311d;
+    --success-fg: #a8d5b0;
+
+    --map-land: #1a2b21;
+    --map-land-border: #2a3a30;
+    --map-sea: #0a1a15;
+    --map-context-land: #17251d;
+    --map-context-land-border: #26362c;
+    --map-graticule: #2d5a3d;
+    --map-label-halo: #05100c;
+  }
+}
+
+/* Legacy aliases (kept so any residual @token consumers keep working). */
+:root {
+  --green-dark: var(--brand);
+  --green-mid: var(--brand-mid);
+  --green-light: var(--brand-light);
+  --green-pale: var(--brand-pale);
+  --charcoal: var(--text-primary);
+  --white: var(--surface);
+  --gray-light: var(--border-input);
+  --gray-mid: var(--text-muted);
 }
 
 @theme inline {
-  --color-background: var(--white);
-  --color-foreground: var(--charcoal);
-  --font-sans: var(--font-geist-sans);
+  --color-background: var(--surface-page);
+  --color-foreground: var(--text-primary);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
 }
 
 html {
   scroll-behavior: smooth;
+  background: var(--surface-page);
 }
 
-/* Anchor targets clear the fixed header + section sub-nav pill. */
 section[id],
 main[id] {
   scroll-margin-top: 96px;
@@ -35,9 +305,10 @@ img {
 }
 
 body {
-  background: var(--white);
-  color: var(--charcoal);
+  background: var(--surface-page);
+  color: var(--text-primary);
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  transition: background-color 200ms ease, color 200ms ease;
 }
 
 /* Wizard step slide-in: used by ReportForm. */
@@ -52,18 +323,14 @@ body {
 .lfe-slide-right { animation: lfe-slide-in-right 260ms ease-out; }
 .lfe-slide-left { animation: lfe-slide-in-left 260ms ease-out; }
 
-/* Hide horizontal scrollbar visually while keeping scroll functional.
-   Used by the mobile SectionNav pill row. */
 .lfe-hide-scrollbar {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE 10+ */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 .lfe-hide-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, newer Edge */
+  display: none;
 }
 
-/* Skip-to-content link: hidden until keyboard-focused, then floats top-left.
-   Uses fixed positioning + high z-index so it sits above the frosted header. */
 .skip-link {
   position: fixed;
   top: 0.75rem;
@@ -71,35 +338,31 @@ body {
   z-index: 100;
   padding: 0.625rem 1.125rem;
   border-radius: 9999px;
-  background: var(--green-dark);
-  color: #fff;
+  background: var(--brand);
+  color: var(--text-inverse);
   font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none;
-  box-shadow: 0 8px 24px -6px rgba(26, 92, 42, 0.45);
+  box-shadow: var(--shadow-brand-strong);
   transform: translateY(-200%);
   transition: transform 200ms ease-out;
 }
 .skip-link:focus,
 .skip-link:focus-visible {
   transform: translateY(0);
-  outline: 2px solid #fff;
+  outline: 2px solid var(--text-inverse);
   outline-offset: 2px;
 }
 
-/* Consistent focus ring for keyboard users on any interactive element. */
 a:focus-visible,
 button:focus-visible,
 [role="button"]:focus-visible {
-  outline: 2px solid var(--green-mid);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* --- Google Translate widget overrides -----------------------------------
-   We ship our own LanguageMenu + disclaimer; hide Google's default banner
-   iframe and undo the body offset it introduces so the page layout stays
-   pixel-identical while the translation is active. */
+/* Google Translate widget overrides. */
 .goog-te-banner-frame,
 .goog-te-banner-frame.skiptranslate,
 iframe.goog-te-banner-frame,
@@ -125,8 +388,6 @@ body {
   background: transparent !important;
   box-shadow: none !important;
 }
-/* Google wraps translated substrings in <font> tags; force inherit so our
-   typography (color, size, weight) is preserved. */
 font {
   color: inherit !important;
   background: transparent !important;
