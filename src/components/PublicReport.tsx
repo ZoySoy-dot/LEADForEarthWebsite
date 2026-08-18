@@ -198,6 +198,7 @@ type ReportWithReflection = Report & { reflection: Reflection | null };
 type CountryOutline = {
   d: string;
   bbox: [[number, number], [number, number]];
+  schoolPoint?: { x: number; y: number } | null;
 };
 
 export default function PublicReport({
@@ -217,8 +218,10 @@ export default function PublicReport({
     (report.reachViews ?? 0);
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-8 sm:py-12 space-y-8">
-      <HeroCard report={report} country={country} countryOutline={countryOutline ?? null} />
+    <div className="relative">
+      <CountryBackdrop countryOutline={countryOutline ?? null} />
+      <div className="relative z-10 max-w-4xl mx-auto px-6 py-8 sm:py-12 space-y-8">
+        <HeroCard report={report} country={country} countryOutline={countryOutline ?? null} />
 
       <ImpactStatRow
         totalParticipants={report.totalParticipants ?? 0}
@@ -280,6 +283,103 @@ export default function PublicReport({
           <LessonsLearnedSection reflection={report.reflection} />
         </>
       )}
+      </div>
+    </div>
+  );
+}
+
+// ---- COUNTRY BACKDROP -----------------------------------------------------
+
+// Country outline tiled down the length of the report so it's always visible
+// in the background as the reader scrolls, while still moving with the page
+// (not fixed/sticky). Bounded to the report wrapper so it can't reach the
+// footer. The first tile carries the star at the reporting school's actual
+// coordinates; subsequent tiles show the outline only.
+const TILE_COUNT = 8;   // enough copies to back a very long report
+const TILE_STRIDE = 60; // vh between tiles; matches max-h so they abut
+function CountryBackdrop({ countryOutline }: { countryOutline: CountryOutline | null }) {
+  if (!countryOutline) return null;
+
+  const [minX, minY] = countryOutline.bbox[0];
+  const [maxX, maxY] = countryOutline.bbox[1];
+  const bboxW = maxX - minX;
+  const bboxH = maxY - minY;
+
+  // For sprawling / multi-part countries (Malaysia's peninsula + Borneo,
+  // Philippines' 7000-island archipelago), showing the full bbox produces
+  // an unreadable smear. Frame a fixed window around the school instead so
+  // the outline reads as "the school's region" plus surrounding coastline.
+  // Small countries (HK, SG) fall through and get their full outline.
+  const TARGET_WINDOW = 160; // ~8 degrees in the base projection
+  const useFocusedWindow =
+    countryOutline.schoolPoint && Math.max(bboxW, bboxH) > TARGET_WINDOW;
+
+  let viewBox: string;
+  let refDim: number;
+  if (useFocusedWindow) {
+    const sp = countryOutline.schoolPoint!;
+    const half = TARGET_WINDOW / 2;
+    viewBox = `${sp.x - half} ${sp.y - half} ${TARGET_WINDOW} ${TARGET_WINDOW}`;
+    refDim = TARGET_WINDOW;
+  } else {
+    viewBox = `${minX} ${minY} ${bboxW} ${bboxH}`;
+    refDim = Math.max(bboxW, bboxH);
+  }
+
+  const starRadius = refDim * 0.014;
+  const STAR =
+    "M 0,-1 L 0.225,-0.309 L 0.951,-0.309 L 0.363,0.118 L 0.588,0.809 L 0,0.382 L -0.588,0.809 L -0.363,0.118 L -0.951,-0.309 L -0.225,-0.309 Z";
+
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none select-none absolute inset-0 overflow-hidden"
+      style={{ zIndex: 0 }}
+    >
+      {Array.from({ length: TILE_COUNT }).map((_, i) => (
+        <div
+          key={i}
+          className="absolute right-[4vw]"
+          style={{ top: `calc(4vh + ${i * TILE_STRIDE}vh)` }}
+        >
+          <svg
+            viewBox={viewBox}
+            preserveAspectRatio="xMidYMid meet"
+            className="w-[80vw] max-w-[520px] sm:max-w-[620px] lg:max-w-[720px] h-auto"
+            style={{ maxHeight: `${TILE_STRIDE}vh` }}
+          >
+            <path d={countryOutline.d} fill={GREEN_DARK} opacity="0.04" />
+            <path
+              d={countryOutline.d}
+              fill="none"
+              stroke={GREEN_DARK}
+              strokeWidth={2}
+              strokeLinejoin="round"
+              vectorEffect="non-scaling-stroke"
+              opacity="0.14"
+            />
+            {/* Star only on the first tile so the school pin sits near the
+                top of the report. Repeating it on every tile would look wrong. */}
+            {i === 0 && countryOutline.schoolPoint && (
+              <g
+                transform={`translate(${countryOutline.schoolPoint.x} ${countryOutline.schoolPoint.y})`}
+              >
+                <circle r={starRadius * 2.2} fill={GREEN_MID} opacity="0.12" />
+                <circle r={starRadius * 1.4} fill={GREEN_MID} opacity="0.22" />
+                <path
+                  d={STAR}
+                  transform={`scale(${starRadius})`}
+                  fill={GREEN_DARK}
+                  stroke={GREEN_CREAM}
+                  strokeWidth={0.14}
+                  strokeLinejoin="round"
+                  opacity="0.85"
+                />
+              </g>
+            )}
+          </svg>
+        </div>
+      ))}
     </div>
   );
 }
@@ -297,39 +397,14 @@ function HeroCard({
 }) {
   const flagCode = country ? COUNTRY_FLAG_CODE[country] : undefined;
 
-  // Country silhouette as background: viewBox derived from the projected
-  // bbox so the shape reads correctly at any card size. Falls back to a leaf
-  // flourish for reports that aren't matched to a LEAD country.
-  const outlineViewBox = countryOutline
-    ? `${countryOutline.bbox[0][0]} ${countryOutline.bbox[0][1]} ${
-        countryOutline.bbox[1][0] - countryOutline.bbox[0][0]
-      } ${countryOutline.bbox[1][1] - countryOutline.bbox[0][1]}`
-    : null;
-
   return (
     <section
       className="relative rounded-3xl overflow-hidden px-8 sm:px-12 py-10 sm:py-14"
       style={{ backgroundColor: GREEN_CREAM }}
     >
-      {countryOutline && outlineViewBox ? (
-        <svg
-          aria-hidden="true"
-          viewBox={outlineViewBox}
-          preserveAspectRatio="xMidYMid meet"
-          className="absolute -top-6 -right-8 sm:top-0 sm:right-0 w-[380px] h-[380px] sm:w-[520px] sm:h-[520px] lg:w-[620px] lg:h-[620px] pointer-events-none select-none"
-        >
-          <path d={countryOutline.d} fill={GREEN_DARK} opacity="0.05" />
-          <path
-            d={countryOutline.d}
-            fill="none"
-            stroke={GREEN_DARK}
-            strokeWidth={2.5}
-            strokeLinejoin="round"
-            vectorEffect="non-scaling-stroke"
-            opacity="0.16"
-          />
-        </svg>
-      ) : (
+      {/* When no country match, keep the leaf flourish inside the hero card.
+          Matched countries use the full-page CountryBackdrop instead. */}
+      {!countryOutline && (
         <>
           <svg
             viewBox="0 0 24 24"

@@ -27,7 +27,7 @@ const LABEL_TEXT = "var(--surface)";
 const LABEL_HALO = "var(--map-label-halo)";
 
 export default function DistrictMap({ mapData, schoolsByCountry }: Props) {
-  const { width, height, countries, labels, pins, places } = mapData;
+  const { width, height, countries, labels, pins, places, schools } = mapData;
   const [hovered, setHovered] = useState<string | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const [focused, setFocused] = useState<string | null>(null);
@@ -257,6 +257,29 @@ export default function DistrictMap({ mapData, schoolsByCountry }: Props) {
       });
   }, [focused, transform, places, containerSize, width, height]);
 
+  // Same projection as focusedPlaces but for LEAD schools; stars stay pixel-
+  // sized regardless of zoom, matching the place-dot approach.
+  const focusedSchools = useMemo(() => {
+    if (!focused) return [];
+    const { w: W, h: H } = containerSize;
+    if (W === 0 || H === 0) return [];
+    const sf = Math.min(W / width, H / height);
+    const offX = (W - width * sf) / 2;
+    const offY = (H - height * sf) / 2;
+    return schools
+      .filter((s) => s.country === focused)
+      .map((s) => {
+        const vbX = transform.scale * s.x + transform.x;
+        const vbY = transform.scale * s.y + transform.y;
+        return {
+          name: s.name,
+          location: s.location,
+          cssX: offX + vbX * sf,
+          cssY: offY + vbY * sf,
+        };
+      });
+  }, [focused, transform, schools, containerSize, width, height]);
+
   return (
     <div
       ref={containerRef}
@@ -472,6 +495,48 @@ export default function DistrictMap({ mapData, schoolsByCountry }: Props) {
             </div>
           );
         })}
+
+      {/* LEAD school stars (only when focused). Star markers pinned at each
+          member school's coordinates in the focused country. */}
+      {focused &&
+        focusedSchools.map((s) => (
+          <div
+            key={`school-${s.name}`}
+            className="absolute"
+            style={{
+              left: s.cssX,
+              top: s.cssY,
+              width: 0,
+              height: 0,
+              opacity: placesReady ? 1 : 0,
+              transition: "opacity 260ms ease-out",
+            }}
+          >
+            <span
+              className="absolute block"
+              style={{
+                left: -8,
+                top: -8,
+                width: 16,
+                height: 16,
+                pointerEvents: "auto",
+                cursor: "help",
+                filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.35))",
+              }}
+              title={`${s.name} — ${s.location}`}
+              aria-label={s.name}
+            >
+              <svg viewBox="-1 -1 2 2" className="w-full h-full">
+                <path
+                  d="M 0,-1 L 0.225,-0.309 L 0.951,-0.309 L 0.363,0.118 L 0.588,0.809 L 0,0.382 L -0.588,0.809 L -0.363,0.118 L -0.951,-0.309 L -0.225,-0.309 Z"
+                  style={{ fill: "var(--brand-strong)", stroke: "var(--surface)" }}
+                  strokeWidth={0.16}
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+          </div>
+        ))}
 
       {/* Hover tooltip -----------------------------------------------------*/}
       {showTooltip && (

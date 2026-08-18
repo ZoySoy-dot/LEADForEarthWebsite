@@ -1025,7 +1025,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
               onChange={set}
               required
               placeholder="Start typing your school…"
-              hint="Autocomplete from Lasallian East Asia District schools. Type freely if yours isn't listed."
+              hint="Start typing your school and pick from the list. Only Lasallian East Asia District schools can submit reports."
             />
             <Field label="Project Title" path="overview.projectTitle" value={form.overview.projectTitle} onChange={set} required placeholder="[Title of Project]" />
             <Textarea

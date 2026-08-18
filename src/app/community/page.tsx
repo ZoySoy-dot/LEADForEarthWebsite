@@ -3,7 +3,7 @@ import CommunityView from "@/components/CommunityView";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SkipLink from "@/components/SkipLink";
-import { LEAD_SCHOOLS_BY_COUNTRY } from "@/data/schools";
+import { LEAD_SCHOOLS_BY_COUNTRY, LEGACY_SCHOOL_ALIASES } from "@/data/schools";
 import { LEAD_COUNTRY_IDS } from "@/lib/districtMapData";
 import { buildDistrictGlobeData } from "@/lib/districtGlobeData";
 import { prisma } from "@/lib/prisma";
@@ -99,12 +99,19 @@ async function loadInstitutions(): Promise<Institution[]> {
 
 // Maps each known Lasallian school name (lowercased) to its country. Used to
 // bucket free-text schoolName entries into countries so the globe can filter
-// the institutions list by country.
-const SCHOOL_TO_COUNTRY = new Map<string, string>(
-  Object.entries(LEAD_SCHOOLS_BY_COUNTRY).flatMap(([country, names]) =>
-    names.map((n) => [n.toLowerCase(), country] as const)
-  )
-);
+// the institutions list by country. Legacy aliases are folded in so reports
+// filed under older school-name spellings still bucket correctly.
+const SCHOOL_TO_COUNTRY = (() => {
+  const map = new Map<string, string>();
+  for (const [country, names] of Object.entries(LEAD_SCHOOLS_BY_COUNTRY)) {
+    for (const n of names) map.set(n.toLowerCase(), country);
+  }
+  for (const [legacy, canonical] of Object.entries(LEGACY_SCHOOL_ALIASES)) {
+    const country = map.get(canonical.toLowerCase());
+    if (country) map.set(legacy, country);
+  }
+  return map;
+})();
 
 function groupByCountry(institutions: Institution[]): Record<string, Institution[]> {
   const out: Record<string, Institution[]> = {};

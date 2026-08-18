@@ -31,6 +31,7 @@ export default function SchoolAutocomplete({
   const [open, setOpen] = useState(false);
   const [activeIdx, setActiveIdx] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const matches = useMemo(() => {
     const q = value.trim().toLowerCase();
@@ -67,6 +68,19 @@ export default function SchoolAutocomplete({
   const isExactMatch = LEAD_SCHOOLS.some((s) => s.name === value);
   const showDropdown = open && matches.length > 0 && !isExactMatch;
 
+  // Enforce selection from the canonical list. Empty is allowed (native
+  // required will catch that); anything typed that isn't a listed school is
+  // rejected via setCustomValidity so the form can't submit with junk.
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    if (value && !isExactMatch) {
+      el.setCustomValidity("Pick a school from the list.");
+    } else {
+      el.setCustomValidity("");
+    }
+  }, [value, isExactMatch]);
+
   function pick(name: string) {
     onChange(path, name);
     setOpen(false);
@@ -96,6 +110,7 @@ export default function SchoolAutocomplete({
         {required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
       <input
+        ref={inputRef}
         type="text"
         value={value}
         onChange={(e) => {
@@ -109,8 +124,14 @@ export default function SchoolAutocomplete({
         autoComplete="off"
         className={INPUT_CLS}
         style={{ backgroundColor: "var(--surface)", color: "var(--text-primary)" }}
+        aria-invalid={value !== "" && !isExactMatch}
       />
       {hint && <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>{hint}</p>}
+      {value !== "" && !isExactMatch && !showDropdown && (
+        <p className="text-xs mt-1" style={{ color: "var(--danger-fg)" }}>
+          Pick a school from the list.
+        </p>
+      )}
 
       {showDropdown && (
         <ul

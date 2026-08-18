@@ -6,6 +6,7 @@ import type { Feature, FeatureCollection, Geometry } from "geojson";
 import type { GeometryCollection, Topology } from "topojson-specification";
 import topology from "world-atlas/countries-50m.json";
 import { PLACES_BY_COUNTRY, type LabelPos, type PlaceKind } from "@/data/places";
+import { LEAD_SCHOOLS } from "@/data/schools";
 
 type CountryProps = { name: string };
 
@@ -86,6 +87,14 @@ export type MapPlace = {
   labelPos?: LabelPos;
 };
 
+export type MapSchool = {
+  country: string;
+  name: string;
+  location: string;
+  x: number;
+  y: number;
+};
+
 export type MapData = {
   width: number;
   height: number;
@@ -93,6 +102,7 @@ export type MapData = {
   labels: MapLabel[];
   pins: MapPin[];
   places: MapPlace[];
+  schools: MapSchool[];
 };
 
 export function buildDistrictMapData(): MapData {
@@ -151,5 +161,10 @@ export function buildDistrictMapData(): MapData {
     })
   );
 
-  return { width, height, countries: mapCountries, labels, pins, places };
+  const schools: MapSchool[] = LEAD_SCHOOLS.map((s) => {
+    const [x, y] = project(s.lng, s.lat);
+    return { country: s.country, name: s.name, location: s.location, x, y };
+  });
+
+  return { width, height, countries: mapCountries, labels, pins, places, schools };
 }

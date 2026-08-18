@@ -5,16 +5,23 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import PublicReport from "@/components/PublicReport";
 import SkipLink from "@/components/SkipLink";
-import { LEAD_SCHOOLS_BY_COUNTRY } from "@/data/schools";
+import { LEAD_SCHOOLS_BY_COUNTRY, LEGACY_SCHOOL_ALIASES } from "@/data/schools";
 import { buildDistrictMapData } from "@/lib/districtMapData";
 import { prisma } from "@/lib/prisma";
 
 // Lowercased-schoolName → country lookup (mirrors the community page's).
-const SCHOOL_TO_COUNTRY = new Map<string, string>(
-  Object.entries(LEAD_SCHOOLS_BY_COUNTRY).flatMap(([country, names]) =>
-    names.map((n) => [n.toLowerCase(), country] as const)
-  )
-);
+// Includes legacy aliases so older seeded reports still map correctly.
+const SCHOOL_TO_COUNTRY = (() => {
+  const map = new Map<string, string>();
+  for (const [country, names] of Object.entries(LEAD_SCHOOLS_BY_COUNTRY)) {
+    for (const n of names) map.set(n.toLowerCase(), country);
+  }
+  for (const [legacy, canonical] of Object.entries(LEGACY_SCHOOL_ALIASES)) {
+    const country = map.get(canonical.toLowerCase());
+    if (country) map.set(legacy, country);
+  }
+  return map;
+})();
 
 export const revalidate = 300;
 
@@ -56,17 +63,31 @@ export default async function ReportPage({
   });
   if (!report) notFound();
 
-  const country =
-    SCHOOL_TO_COUNTRY.get(report.schoolName.trim().toLowerCase()) ?? null;
+  const rawSchoolName = report.schoolName.trim();
+  const rawSchoolKey = rawSchoolName.toLowerCase();
+  const country = SCHOOL_TO_COUNTRY.get(rawSchoolKey) ?? null;
+  // Resolve any legacy spelling to the canonical school name so we can find
+  // the school's coordinates in the projected map data.
+  const canonicalSchoolName = LEGACY_SCHOOL_ALIASES[rawSchoolKey] ?? rawSchoolName;
 
-  // Country outline path for the hero card background. Built from the same
-  // projected topojson the district map uses so the shape reads as a real map.
+  // Country outline + reporting-school pin for the page background. Built from
+  // the same projected topojson the district map uses so shapes and stars sit
+  // in the same coordinate space.
   const countryOutline = (() => {
     if (!country) return null;
     const mapData = buildDistrictMapData();
     const match = mapData.countries.find((c) => c.leadCountry === country);
     if (!match || !match.bbox) return null;
-    return { d: match.d, bbox: match.bbox };
+    const schoolMatch = mapData.schools.find(
+      (s) =>
+        s.country === country &&
+        s.name.toLowerCase() === canonicalSchoolName.toLowerCase(),
+    );
+    return {
+      d: match.d,
+      bbox: match.bbox,
+      schoolPoint: schoolMatch ? { x: schoolMatch.x, y: schoolMatch.y } : null,
+    };
   })();
 
   return (
