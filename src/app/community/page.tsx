@@ -38,9 +38,16 @@ type Institution = {
 // (case-insensitive; schoolName is free-text so "DLSU" and "dlsu" shouldn't
 // count as separate schools). Preserves the individual report list on each
 // institution so the community page can expand rows into per-report links.
+// Marker email used by the sample report at /reports/example. Excluded from
+// the public listing so it doesn't mix in with real submissions.
+const EXAMPLE_EMAIL = "example@leadforearth.org";
+
 async function loadInstitutions(): Promise<Institution[]> {
   const rows = await prisma.report.findMany({
-    where: { status: "approved" },
+    where: {
+      status: "approved",
+      submitterEmail: { not: EXAMPLE_EMAIL },
+    },
     select: {
       id: true,
       schoolName: true,

@@ -869,6 +869,21 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
           <p className="leading-relaxed max-w-lg mx-auto text-[15px] font-light" style={{ color: "var(--text-muted)" }}>
             Skip anything that doesn&apos;t apply. Take a break whenever. Your progress saves as you go.
           </p>
+          {/* Preview link so first-time submitters can see the finished shape
+              of a report before diving into the form. */}
+          <div className="mt-4 flex justify-center">
+            <a
+              href="/reports/example"
+              className="inline-flex items-center gap-1.5 text-[12.5px] font-medium transition-opacity hover:opacity-70"
+              style={{ color: "var(--brand-mid)" }}
+            >
+              See what a submitted report looks like
+              <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </a>
+          </div>
         </div>
 
         {/* Anonymous-mode banner: shown until the user signs in on submit. */}

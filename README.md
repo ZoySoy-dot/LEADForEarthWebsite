@@ -99,6 +99,6 @@ npm run dev                                    # start the dev server
 npx tsc --noEmit                               # type check
 npx prisma migrate dev --name <change>         # apply schema changes to Neon
 npx prisma studio                              # inspect the database
-node scripts/seed-fake-reports.mjs             # seed demo reports for /community
-node scripts/seed-fake-reports.mjs --clean     # remove demo reports
+node scripts/seed-example-report.mjs           # seed the sample example report
+node scripts/seed-example-report.mjs --clean   # remove the example report
 ```
