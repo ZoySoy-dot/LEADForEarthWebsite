@@ -218,6 +218,53 @@ export default function CommunityView({
             </div>
           </div>
 
+          {/* Sample-report callout so first-time visitors can preview the
+              full submission shape before browsing real reports. */}
+          <Link
+            href="/reports/example"
+            className="mb-10 sm:mb-14 rounded-2xl px-5 sm:px-6 py-4 flex items-center gap-4 transition-all hover:-translate-y-px group"
+            style={{
+              backgroundColor: "var(--surface-accent)",
+              boxShadow: "var(--shadow-card)",
+            }}
+          >
+            <span
+              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+              style={{ backgroundColor: "var(--brand)", color: "var(--text-inverse)" }}
+              aria-hidden="true"
+            >
+              <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="9" y1="15" x2="15" y2="15" />
+              </svg>
+            </span>
+            <div className="flex-1 min-w-0">
+              <p
+                className="text-[13.5px] font-semibold"
+                style={{ color: "var(--text-heading)" }}
+              >
+                See a sample report
+              </p>
+              <p
+                className="text-[12.5px] leading-snug mt-0.5"
+                style={{ color: "var(--text-body)" }}
+              >
+                A fully filled-out example so you can preview what your own submission will look like.
+              </p>
+            </div>
+            <span
+              className="hidden sm:inline-flex items-center gap-1 text-[12.5px] font-semibold shrink-0 transition-transform group-hover:translate-x-0.5"
+              style={{ color: "var(--brand-mid)" }}
+            >
+              View
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </span>
+          </Link>
+
           <div
             className="flex items-baseline justify-between gap-3 mb-4 pb-3 border-b"
             style={{ borderColor: "var(--border-input)" }}
