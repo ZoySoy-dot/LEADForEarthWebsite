@@ -24,10 +24,10 @@ function readCurrentLang(): string {
   return match ? match[1] : "en";
 }
 
-// Google respects the `googtrans` cookie on load. We clear it (all
-// domain scopes) then set the new value so the widget picks it up after
-// reload. Setting on both bare and dotted domains covers apex/www.
-function applyLang(code: string) {
+// Google respects the `googtrans` cookie on load. We clear it (all domain
+// scopes) then set the new value so the widget picks it up after reload.
+// Setting on both bare and dotted domains covers apex/www.
+function setLangCookies(code: string) {
   const host = window.location.hostname;
   const expires = "expires=Thu, 01 Jan 1970 00:00:00 GMT";
   document.cookie = `googtrans=; path=/; ${expires}`;
@@ -40,7 +40,6 @@ function applyLang(code: string) {
     document.cookie = `googtrans=${value}; path=/; domain=${host}`;
     document.cookie = `googtrans=${value}; path=/; domain=.${host}`;
   }
-  window.location.reload();
 }
 
 export default function LanguageMenu({
@@ -50,11 +49,69 @@ export default function LanguageMenu({
 }) {
   const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState("en");
+  const [switching, setSwitching] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setCurrent(readCurrentLang());
   }, []);
+
+  // Drive Google Translate's own hidden <select> directly so the page
+  // re-translates in place. No reload, no page hide, no white flash. The
+  // trade-off is that GT briefly shows original text mid-translation; a
+  // spinner in the pill button signals that a switch is in progress.
+  //
+  // English is the awkward case: the combo's change event to "" only works
+  // when a translation is currently active AND the event bubbles. We also
+  // reset selectedIndex to 0 so the change actually fires, and clear the
+  // `translated-*` classes GT leaves on <html>. If none of that unwraps the
+  // page within a short settle window, we fall back to a full reload since
+  // that's the only 100% reliable way to restore the original DOM.
+  function pickLang(code: string) {
+    if (switching) return;
+    setSwitching(true);
+    setOpen(false);
+    setLangCookies(code);
+
+    const combo = document.querySelector<HTMLSelectElement>(".goog-te-combo");
+    if (!combo) {
+      // Widget not ready. Reload as a last resort so the cookie takes effect.
+      window.location.reload();
+      return;
+    }
+
+    if (code === "en") {
+      // Try to restore via the combo. Change events only fire when the value
+      // actually changes, so we nudge it off the current value first.
+      combo.selectedIndex = 0;
+      combo.value = "";
+      combo.dispatchEvent(new Event("change", { bubbles: true }));
+      document.documentElement.lang = "en";
+      setCurrent("en");
+
+      // Verify restore worked. GT flips the `translated-*` class off when
+      // it fully unwraps. If it's still there after 700ms, reload — that's
+      // the only reliable path back to English.
+      window.setTimeout(() => {
+        const html = document.documentElement;
+        const stillTranslated =
+          html.classList.contains("translated-ltr") ||
+          html.classList.contains("translated-rtl");
+        if (stillTranslated) {
+          window.location.reload();
+        } else {
+          setSwitching(false);
+        }
+      }, 700);
+      return;
+    }
+
+    combo.value = code;
+    combo.dispatchEvent(new Event("change", { bubbles: true }));
+    document.documentElement.lang = code;
+    setCurrent(code);
+    window.setTimeout(() => setSwitching(false), 500);
+  }
 
   useEffect(() => {
     if (!open) return;
@@ -82,7 +139,7 @@ export default function LanguageMenu({
 
   const rootClasses =
     variant === "floating"
-      ? "fixed bottom-4 left-4 z-40"
+      ? "fixed bottom-4 left-4 z-50"
       : "relative";
 
   const floatingButtonStyle =
@@ -111,40 +168,55 @@ export default function LanguageMenu({
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-haspopup="menu"
-        aria-label="Change language"
+        aria-label={switching ? "Changing language" : "Change language"}
         translate="no"
-        className={`${buttonClasses} notranslate`}
+        disabled={switching}
+        className={`${buttonClasses} notranslate disabled:cursor-wait`}
         style={floatingButtonStyle}
       >
         <span className="inline-flex items-center gap-1.5">
+          {switching ? (
+            <svg
+              viewBox="0 0 24 24"
+              className="w-4 h-4 animate-spin"
+              fill="none"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity="0.25" strokeWidth={2.5} />
+              <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" />
+            </svg>
+          ) : (
+            <svg
+              viewBox="0 0 24 24"
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.8}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M2 12h20" />
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            </svg>
+          )}
+          <span>{switching ? "Translating…" : currentLabel}</span>
+        </span>
+        {!switching && (
           <svg
             viewBox="0 0 24 24"
-            className="w-4 h-4"
+            className="w-3 h-3 ml-1"
             fill="none"
             stroke="currentColor"
-            strokeWidth={1.8}
+            strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden="true"
           >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M2 12h20" />
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            <path d="M6 9l6 6 6-6" />
           </svg>
-          <span>{currentLabel}</span>
-        </span>
-        <svg
-          viewBox="0 0 24 24"
-          className="w-3 h-3 ml-1"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M6 9l6 6 6-6" />
-        </svg>
+        )}
       </button>
 
       {open && (
@@ -174,12 +246,13 @@ export default function LanguageMenu({
                     type="button"
                     role="menuitemradio"
                     aria-checked={active}
-                    onClick={() => applyLang(lang.code)}
-                    className="w-full flex items-center justify-between px-4 py-2.5 text-left transition-colors"
+                    onClick={() => pickLang(lang.code)}
+                    disabled={switching}
+                    className="w-full flex items-center justify-between px-4 py-2.5 text-left transition-colors disabled:opacity-50"
                     style={{
                       backgroundColor: active ? "var(--surface-accent)" : undefined,
                     }}
-                    onMouseEnter={(e) => { if (!active) e.currentTarget.style.backgroundColor = "var(--overlay-hover)"; }}
+                    onMouseEnter={(e) => { if (!active && !switching) e.currentTarget.style.backgroundColor = "var(--overlay-hover)"; }}
                     onMouseLeave={(e) => { if (!active) e.currentTarget.style.backgroundColor = ""; }}
                   >
                     <span className="flex flex-col">

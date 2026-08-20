@@ -311,6 +311,17 @@ body {
   transition: background-color 200ms ease, color 200ms ease;
 }
 
+/* If the visitor has a translation cookie, keep the page hidden until Google
+   Translate has actually applied the translation. TranslateWidget adds the
+   `lfe-translated` class once the DOM is stable, which flips opacity to 1
+   instantly. Avoids the flash of untranslated English on reload. */
+html.lfe-needs-translate {
+  opacity: 0;
+}
+html.lfe-needs-translate.lfe-translated {
+  opacity: 1;
+}
+
 /* Wizard step slide-in: used by ReportForm. */
 @keyframes lfe-slide-in-right {
   from { opacity: 0; transform: translateX(24px); }

@@ -23,21 +23,15 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr] gap-10 md:gap-16 mb-12">
           {/* Brand */}
           <div>
-            <Link href="/" className="inline-flex items-center gap-2 mb-5">
+            <Link href="/" className="inline-flex items-center mb-5" aria-label="LEADForEarth home">
               <Image
-                src="/logos/logo-icon.png"
-                alt="LEADForEarth Logo"
-                width={36}
-                height={36}
-                className="object-contain"
+                src="/logos/leadforearth-logo.png"
+                alt="LEADForEarth"
+                width={160}
+                height={40}
+                className="object-contain h-10 w-auto"
+                priority
               />
-              <span
-                className="text-lg font-semibold tracking-tight"
-                style={{ color: "var(--brand)" }}
-              >
-                LEAD
-                <span style={{ color: "var(--text-primary)" }}>ForEarth</span>
-              </span>
             </Link>
             <p className="text-[15px] leading-relaxed max-w-xs mb-6 font-light" style={{ color: "var(--text-muted)" }}>
               A district-wide environmental campaign uniting Lasallian schools across East Asia under one shared hashtag.
