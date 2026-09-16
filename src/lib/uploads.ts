@@ -9,9 +9,74 @@ export const MAX_FILES = 10;
 export const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB per file
 export const MAX_TOTAL_BYTES = 40 * 1024 * 1024; // 40 MB per report
 
-// Where uploads land in the Cloudinary media library.
+// Root of the Cloudinary media library tree. Everything the site uploads lives
+// under this prefix, which is also what the delete route checks against.
 export const UPLOAD_FOLDER = "leadforearth/reports";
 export const UPLOAD_TAG = "report-documentation";
+
+// Turn arbitrary text into a path- and tag-safe slug.
+// Falls back rather than returning "", which matters for scripts in Japanese,
+// Thai or Burmese where every character can be stripped.
+export function slugify(value: string, fallback = "file", max = 60): string {
+  const slug = value
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, max)
+    .replace(/-+$/, "");
+  return slug || fallback;
+}
+
+/**
+ * Folder for one upload: leadforearth/reports/YYYY-MM/sector/school
+ *
+ * The hierarchy mirrors how the district actually looks things up: by campaign
+ * month first, then sector, then institution. A flat folder of opaque ids is
+ * unusable once a few hundred files exist, and Cloudinary's media library
+ * browses by folder.
+ */
+export function uploadFolder(opts: {
+  yearMonth: string;
+  sector: string | null;
+  schoolName: string;
+}): string {
+  const sector = slugify(opts.sector ?? "unlisted-sector", "unlisted-sector");
+  const school = slugify(opts.schoolName, "unnamed-school");
+  return `${UPLOAD_FOLDER}/${opts.yearMonth}/${sector}/${school}`;
+}
+
+/**
+ * Public id for one upload, keeping the submitter's own filename readable.
+ *
+ * A short random suffix keeps two "photo 1.jpg" uploads from colliding without
+ * making the name unreadable. Raw assets carry their extension in the public id
+ * because Cloudinary serves them verbatim; images do not, since the format is
+ * appended on delivery.
+ */
+export function uploadPublicId(filename: string, resourceType: ResourceType): string {
+  const ext = extOf(filename);
+  const base = filename.slice(0, filename.length - (ext ? ext.length + 1 : 0));
+  const suffix = Math.random().toString(36).slice(2, 8);
+  const stem = `${slugify(base)}-${suffix}`;
+  return resourceType === "raw" && ext ? `${stem}.${ext}` : stem;
+}
+
+// Tags make the same files findable in Cloudinary's search when folder
+// browsing is the wrong tool ("every clean-up photo from Japan", say).
+export function uploadTags(opts: {
+  yearMonth: string;
+  sector: string | null;
+  schoolName: string;
+}): string {
+  return [
+    UPLOAD_TAG,
+    opts.yearMonth,
+    `sector-${slugify(opts.sector ?? "unlisted", "unlisted")}`,
+    `school-${slugify(opts.schoolName, "unnamed")}`,
+  ].join(",");
+}
 
 // Images go through Cloudinary's `image` pipeline, which gives us automatic
 // compression and on-the-fly thumbnails. Everything else is delivered as `raw`,

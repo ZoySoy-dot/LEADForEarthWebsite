@@ -1495,6 +1495,8 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
               value={form.documentationFiles}
               onChange={(files) => set("documentationFiles", files)}
               disabled={!isSignedIn}
+              // Files are sorted into month/sector/school folders server-side.
+              schoolName={form.overview.schoolName}
               hint={
                 isSignedIn
                   ? "Optional. Attach photos, certificates, attendance sheets, or slides."

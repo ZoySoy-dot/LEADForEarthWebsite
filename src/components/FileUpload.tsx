@@ -59,12 +59,15 @@ export default function FileUpload({
   label,
   hint,
   disabled,
+  schoolName,
 }: {
   value: UploadedFile[];
   onChange: (files: UploadedFile[]) => void;
   label: string;
   hint?: string;
   disabled?: boolean;
+  // Used server-side to file the upload under the right sector and school.
+  schoolName?: string;
 }) {
   const [pending, setPending] = useState<Pending[]>([]);
   const [error, setError] = useState("");
@@ -80,7 +83,7 @@ export default function FileUpload({
     const signRes = await fetch("/api/upload/sign", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ filename: file.name, bytes: file.size }),
+      body: JSON.stringify({ filename: file.name, bytes: file.size, schoolName }),
     });
     const sign = await signRes.json();
     if (!signRes.ok) throw new Error(sign?.error ?? "Could not start the upload.");
@@ -91,6 +94,7 @@ export default function FileUpload({
     body.append("timestamp", String(sign.timestamp));
     body.append("signature", sign.signature);
     body.append("folder", sign.folder);
+    body.append("public_id", sign.publicId);
     body.append("tags", sign.tags);
 
     const result = await xhrUpload(

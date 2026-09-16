@@ -3,12 +3,14 @@ import { auth } from "@/lib/auth";
 import { cloudinaryConfig, signParams } from "@/lib/cloudinary";
 import {
   MAX_FILE_BYTES,
-  UPLOAD_FOLDER,
-  UPLOAD_TAG,
   formatBytes,
   isAllowedExt,
   resourceTypeFor,
+  uploadFolder,
+  uploadPublicId,
+  uploadTags,
 } from "@/lib/uploads";
+import { countryForSchool } from "@/lib/schoolCountry";
 
 // Hands the browser a short-lived, single-use signature so it can POST the file
 // straight to Cloudinary. The bytes never pass through this route: Vercel caps
@@ -25,7 +27,11 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { filename, bytes } = (await req.json()) as { filename?: unknown; bytes?: unknown };
+  const { filename, bytes, schoolName } = (await req.json()) as {
+    filename?: unknown;
+    bytes?: unknown;
+    schoolName?: unknown;
+  };
 
   if (typeof filename !== "string" || !filename.trim()) {
     return NextResponse.json({ error: "Missing filename." }, { status: 400 });
@@ -57,19 +63,31 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // The path is built here, not by the client, and then signed. Cloudinary
+  // rejects any upload whose params do not match the signature, so a caller
+  // cannot redirect files into a folder of its choosing.
+  const school = typeof schoolName === "string" ? schoolName.trim() : "";
+  const yearMonth = new Date().toISOString().slice(0, 7);
+  const sector = countryForSchool(school);
+  const resourceType = resourceTypeFor(filename);
+
   const timestamp = Math.round(Date.now() / 1000);
-  // Only these params are signed, so these are the only ones Cloudinary will
-  // honour. A client that tries to smuggle in a different folder fails the
-  // signature check on Cloudinary's side.
-  const params = { folder: UPLOAD_FOLDER, tags: UPLOAD_TAG, timestamp };
+  const folder = uploadFolder({ yearMonth, sector, schoolName: school });
+  const publicId = uploadPublicId(filename, resourceType);
+  const tags = uploadTags({ yearMonth, sector, schoolName: school });
+
+  // Cloudinary signs public_id without the folder prefix when folder is sent
+  // as its own param, so both travel separately and both are signed.
+  const params = { folder, public_id: publicId, tags, timestamp };
 
   return NextResponse.json({
     cloudName: config.cloudName,
     apiKey: config.apiKey,
     signature: signParams(params, config.apiSecret),
     timestamp,
-    folder: UPLOAD_FOLDER,
-    tags: UPLOAD_TAG,
-    resourceType: resourceTypeFor(filename),
+    folder,
+    publicId,
+    tags,
+    resourceType,
   });
 }
