@@ -892,22 +892,39 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
           </div>
         </div>
 
-        {/* Anonymous-mode banner: shown until the user signs in on submit. */}
+        {/* Anonymous-mode banner: shown until the user signs in. Signing in is
+            only mandatory at submit, but it's offered here because two things
+            depend on it earlier: file attachments and cross-device drafts. */}
         {!isSignedIn && signInAction && (
           <div
-            className="mb-6 rounded-2xl px-5 py-4 flex items-start gap-3"
+            className="mb-6 rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
             style={{ backgroundColor: "var(--surface-accent)", color: "var(--text-heading)" }}
           >
-            <svg viewBox="0 0 24 24" className="w-5 h-5 flex-none mt-0.5" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg viewBox="0 0 24 24" className="w-5 h-5 flex-none hidden sm:block" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <circle cx="12" cy="12" r="10" />
               <path d="M12 16v-4M12 8h.01" />
             </svg>
             <div className="flex-1 text-[13.5px] leading-snug">
               <p className="font-semibold mb-0.5">Browsing without an account</p>
               <p style={{ color: "var(--text-body)" }}>
-                Fill in as much as you like. We&apos;ll ask you to sign in with Google when you&apos;re ready to submit. Progress is saved on this device.
+                Fill in as much as you like, progress is saved on this device. Sign in now to attach photos and continue on another device, or carry on and sign in when you submit.
               </p>
             </div>
+            <button
+              type="submit"
+              form="lfe-signin-form"
+              className="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-semibold text-[13.5px] transition-all duration-200 hover:-translate-y-px"
+              style={{
+                color: "var(--text-inverse)",
+                backgroundColor: "var(--brand)",
+                boxShadow: "var(--shadow-brand)",
+              }}
+            >
+              <svg viewBox="0 0 24 24" className="w-4 h-4" aria-hidden="true">
+                <path fill="currentColor" d="M21.35 11.1H12v3.2h5.35c-.23 1.4-1.63 4.1-5.35 4.1-3.22 0-5.85-2.67-5.85-5.95S8.78 6.5 12 6.5c1.83 0 3.06.78 3.76 1.45l2.57-2.47C16.7 3.9 14.55 3 12 3 6.98 3 3 6.98 3 12s3.98 9 9 9c5.2 0 8.63-3.65 8.63-8.78 0-.6-.07-1.05-.15-1.52z" />
+              </svg>
+              Sign in with Google
+            </button>
           </div>
         )}
 
