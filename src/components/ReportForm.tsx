@@ -7,6 +7,9 @@ import PhoneField from "@/components/PhoneField";
 import FileUpload from "@/components/FileUpload";
 import { SDG_GOALS } from "@/data/sdgs";
 import type { UploadedFile } from "@/lib/uploads";
+import { CURRENCIES, currencyForCountry, symbolFor } from "@/data/currencies";
+import { countryForSchool } from "@/lib/schoolCountry";
+import { TERMS_VERSION } from "@/lib/terms";
 
 // ============================================================================
 // EDITABLE CONTENT: edit question wording, add/remove options here
@@ -66,23 +69,34 @@ const SOCIAL_PLATFORMS = [
 // Sidebar TOC + section metadata. Reorder here to reorder the sidebar; the form
 // itself still follows JSX order below, so move the matching <SectionCard> too.
 const SECTIONS = [
-  { id: "submitter", num: "1", title: "About you", subtitle: "Just so we know who to thank, and follow up with if needed." },
-  { id: "overview", num: "2", title: "What did you do?", subtitle: "The elevator pitch of your project." },
-  { id: "participation", num: "3", title: "Who showed up?", subtitle: "Rough numbers are fine. We're not auditing." },
-  { id: "impact", num: "4", title: "What changed?", subtitle: "Only what you actually measured. Skip anything that doesn't apply." },
-  { id: "effectiveness", num: "5", title: "How'd it go?", subtitle: "1 = rough, 5 = crushed it. Your gut read is fine." },
-  { id: "climate", num: "6", title: "Climate literacy", subtitle: "Did participants walk away knowing something new?" },
-  { id: "feedback", num: "7", title: "What people said", subtitle: "Quotes, reactions, anything that stuck with you." },
-  { id: "digital", num: "8", title: "Where you shared it", subtitle: "Posts, hashtags, photos, links. Whatever you've got." },
-  { id: "reflect-gate", num: "9", title: "Want to add a reflection?", subtitle: "The data part is done. Two optional sections left if you'd like to share how it actually went." },
-  { id: "lasallian", num: "10", title: "Lasallian reflection", subtitle: "How the mission showed up in the work." },
-  { id: "lessons", num: "11", title: "Lessons learned", subtitle: "Honest beats polished. Future campaigns learn from this." },
+  { id: "submitter", num: "1", short: "About you", title: "About you", subtitle: "Just so we know who to thank, and follow up with if needed." },
+  { id: "overview", num: "2", short: "Activity", title: "What did you do?", subtitle: "The elevator pitch of your project." },
+  { id: "participation", num: "3", short: "Participants", title: "Who showed up?", subtitle: "Rough numbers are fine. We're not auditing." },
+  { id: "impact", num: "4", short: "Impact", title: "What changed?", subtitle: "Only what you actually measured. Skip anything that doesn't apply." },
+  { id: "effectiveness", num: "5", short: "How it went", title: "How'd it go?", subtitle: "1 = rough, 5 = crushed it. Your gut read is fine." },
+  { id: "digital", num: "6", short: "Sharing", title: "Where you shared it", subtitle: "Posts, hashtags, photos, links. Whatever you've got." },
 ] as const;
+
+// Per-step nudges, indexed by step. These name what is actually left rather
+// than cheerleading: the thing that makes people abandon a long form is not
+// knowing how much more there is, so each line shrinks the remaining work.
+const ENCOURAGEMENT = [
+  "Six short sections. Most schools finish in about ten minutes.",
+  "Good start. Everything saves as you type, on this device.",
+  "Two done. Rough numbers are fine here, nobody is auditing them.",
+  "Halfway. This is the longest section, and every field in it is optional.",
+  "Nearly there. Two quick sections left.",
+  "Last section, then you're done.",
+];
+
+// Climate literacy, participant feedback, the Lasallian reflection and lessons
+// learned deliberately live outside this wizard. They are filed afterwards from
+// the link in the confirmation email (/report/[id]/reflect), so the submission
+// itself stays short and a coordinator can write the reflective parts when they
+// have time rather than abandoning the form at step 9.
 
 type SectionId = (typeof SECTIONS)[number]["id"];
 const SECTIONS_MAP = Object.fromEntries(SECTIONS.map((s) => [s.id, s]));
-const REFLECT_GATE_INDEX = SECTIONS.findIndex((s) => s.id === "reflect-gate");
-
 const DRAFT_STORAGE_KEY = "lfe-report-draft-v1";
 
 // ============================================================================
@@ -90,7 +104,6 @@ const DRAFT_STORAGE_KEY = "lfe-report-draft-v1";
 // ============================================================================
 
 type YesNo = "" | "Yes" | "No";
-type Continuing = "" | "Yes" | "NotYet" | "No";
 
 type Report = {
   submitter: { name: string; role: string; email: string; phone: string };
@@ -138,8 +151,6 @@ type Report = {
     otherImpact: string;
   };
   effectiveness: { criteria: string; rating: string; remarks: string }[];
-  climateLiteracy: { included: YesNo; description: string };
-  participantFeedback: string;
   digitalAdvocacy: {
     platforms: Record<string, boolean>;
     platformOther: string;
@@ -148,16 +159,9 @@ type Report = {
     reach: { reactions: string; comments: string; shares: string; views: string };
     postLinks: string;
   };
-  lasallianReflection: { spiritOfFaith: string; zealForService: string; communionInMission: string };
-  lessons: {
-    whatWentWell: string;
-    challenges: string;
-    recommendations: string;
-    districtSuggestions: string;
-    continuing: Continuing;
-    plannedActivity: string;
-    notContinuingReason: string;
-  };
+  // ISO 4217 code every money figure on this report is denominated in.
+  // Preselected from the school's sector; the submitter can override it.
+  currency: string;
   documentationLinks: string;
   // Files uploaded to Cloudinary from the form. Already stored by the time they
   // land here, so the draft autosave carries them across devices for free.
@@ -194,8 +198,6 @@ const INITIAL: Report = {
     otherImpact: "",
   },
   effectiveness: EFFECTIVENESS_CRITERIA.map((criteria) => ({ criteria, rating: "", remarks: "" })),
-  climateLiteracy: { included: "", description: "" },
-  participantFeedback: "",
   digitalAdvocacy: {
     platforms: boolMap(SOCIAL_PLATFORMS),
     platformOther: "",
@@ -204,8 +206,7 @@ const INITIAL: Report = {
     reach: { reactions: "", comments: "", shares: "", views: "" },
     postLinks: "",
   },
-  lasallianReflection: { spiritOfFaith: "", zealForService: "", communionInMission: "" },
-  lessons: { whatWentWell: "", challenges: "", recommendations: "", districtSuggestions: "", continuing: "", plannedActivity: "", notContinuingReason: "" },
+  currency: "",
   documentationLinks: "",
   documentationFiles: [],
 };
@@ -593,12 +594,6 @@ const YESNO_OPTIONS = [
   { key: "No", label: "No" },
 ];
 
-const CONTINUING_OPTIONS = [
-  { key: "Yes", label: "Yes" },
-  { key: "NotYet", label: "Not yet determined" },
-  { key: "No", label: "No" },
-];
-
 // ============================================================================
 // MAIN FORM
 // ============================================================================
@@ -630,19 +625,30 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [consented, setConsented] = useState(false);
-  const [skipReflection, setSkipReflection] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  // Populated from the submit response; carries the reflection link.
+  const [submitResult, setSubmitResult] = useState<{
+    reportId: string;
+    reflectUrl: string;
+    emailed: boolean;
+  } | null>(null);
   const [draftState, setDraftState] = useState<"idle" | "saving" | "saved">("idle");
   const draftLoadedRef = useRef(false);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stepperRef = useRef<HTMLOListElement>(null);
 
   const set: SetFn = (path, value) => dispatch({ type: "SET", path, value });
+  const currencySymbol = symbolFor(form.currency);
+
+  // Preselect the sector's currency once a school is chosen. Never overrides a
+  // submitter who already picked one, so this can't fight their choice.
+  useEffect(() => {
+    if (form.currency) return;
+    const guess = currencyForCountry(countryForSchool(form.overview.schoolName));
+    if (guess) dispatch({ type: "SET", path: "currency", value: guess });
+  }, [form.overview.schoolName, form.currency]);
   const totalSteps = SECTIONS.length;
-  // When the user opts out of reflection, the gate step becomes the final step.
-  const isLastStep =
-    (skipReflection && currentStep === REFLECT_GATE_INDEX) ||
-    currentStep === totalSteps - 1;
-  // Only steps up to (and including) the gate count when the user is skipping.
-  const effectiveTotalSteps = skipReflection ? REFLECT_GATE_INDEX + 1 : totalSteps;
+  const isLastStep = currentStep === totalSteps - 1;
 
   // Restore draft on first mount. When signed in, the server draft is truth
   // (so a coordinator can move between devices); localStorage is truth
@@ -650,7 +656,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
   useEffect(() => {
     let cancelled = false;
 
-    function applyDraft(parsed: { form?: Record<string, unknown>; step?: unknown; skipReflection?: unknown }) {
+    function applyDraft(parsed: { form?: Record<string, unknown>; step?: unknown }) {
       if (parsed?.form && typeof parsed.form === "object") {
         Object.keys(parsed.form).forEach((k) => {
           dispatch({ type: "SET", path: k, value: (parsed.form as Record<string, unknown>)[k] });
@@ -660,12 +666,9 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
         const maxStep = SECTIONS.length - 1;
         setCurrentStep(Math.max(0, Math.min(parsed.step, maxStep)));
       }
-      if (typeof parsed?.skipReflection === "boolean") {
-        setSkipReflection(parsed.skipReflection);
-      }
     }
 
-    function readLocal(): { form?: Record<string, unknown>; step?: unknown; skipReflection?: unknown } | null {
+    function readLocal(): { form?: Record<string, unknown>; step?: unknown } | null {
       try {
         const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
         return raw ? JSON.parse(raw) : null;
@@ -675,7 +678,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
     }
 
     async function load() {
-      let restored: { form?: Record<string, unknown>; step?: unknown; skipReflection?: unknown } | null = null;
+      let restored: { form?: Record<string, unknown>; step?: unknown } | null = null;
 
       if (isSignedIn) {
         try {
@@ -731,7 +734,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
     if (!draftLoadedRef.current) return;
     setDraftState("saving");
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    const payload = { form, step: currentStep, skipReflection };
+    const payload = { form, step: currentStep };
     saveTimerRef.current = setTimeout(async () => {
       try {
         localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(payload));
@@ -750,7 +753,22 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     };
-  }, [form, currentStep, skipReflection, isSignedIn]);
+  }, [form, currentStep, isSignedIn]);
+
+  // Keep the current step visible in the stepper. On a phone the strip is
+  // wider than the screen, so without this the last steps stay off-screen and
+  // the indicator stops indicating anything.
+  useEffect(() => {
+    const ol = stepperRef.current;
+    const item = ol?.children[currentStep] as HTMLElement | undefined;
+    if (!ol || !item) return;
+    // Scroll the strip itself. scrollIntoView would also scroll the page and
+    // fight the scroll-to-top that goTo already does.
+    ol.scrollTo({
+      left: item.offsetLeft - ol.clientWidth / 2 + item.clientWidth / 2,
+      behavior: "smooth",
+    });
+  }, [currentStep]);
 
   function goTo(n: number) {
     if (n < 0 || n >= totalSteps) return;
@@ -775,17 +793,22 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
       const res = await fetch("/api/report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, termsAccepted, termsVersion: TERMS_VERSION }),
       });
+      const body = await res.json();
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error ?? "Something went wrong.");
+        throw new Error(body?.error ?? "Something went wrong.");
       }
+      setSubmitResult({
+        reportId: body.reportId,
+        reflectUrl: body.reflectUrl,
+        emailed: Boolean(body.emailed),
+      });
       setStatus("success");
       dispatch({ type: "RESET" });
       setCurrentStep(0);
       setConsented(false);
-      setSkipReflection(false);
+      setTermsAccepted(false);
       try {
         localStorage.removeItem(DRAFT_STORAGE_KEY);
       } catch { /* ignore */ }
@@ -826,10 +849,47 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
             </p>
 
             <div className="text-left mb-10 grid gap-3 sm:grid-cols-3 max-w-lg mx-auto">
-              <NextStep n="1" label="Confirmation" text="A copy is on its way to your email." />
+              <NextStep
+                n="1"
+                label="Confirmation"
+                text={
+                  submitResult?.emailed
+                    ? "A copy and your reflection link are on their way to your email."
+                    : "Your report is saved. Use the reflection link below before you close this page."
+                }
+              />
               <NextStep n="2" label="Review" text="The committee will review your report." />
               <NextStep n="3" label="Aggregation" text="It joins the district's annual impact summary." />
             </div>
+
+            {/* The reflection is filed separately, so this is the handoff to it.
+                When mail failed this link is the only copy the submitter has. */}
+            {submitResult?.reflectUrl && (
+              <div
+                className="rounded-2xl px-6 py-5 mb-8 text-left"
+                style={{ backgroundColor: "var(--surface-accent)" }}
+              >
+                <p className="font-semibold text-[15px] mb-1" style={{ color: "var(--brand)" }}>
+                  One optional step left
+                </p>
+                <p className="text-[14px] leading-relaxed mb-4" style={{ color: "var(--text-body)" }}>
+                  The reflection covers climate literacy, participant feedback, the Lasallian
+                  reflection, and lessons learned. It&apos;s the part the committee reads most
+                  closely, and you can do it now or whenever you have time.
+                </p>
+                <a
+                  href={submitResult.reflectUrl}
+                  className="inline-block px-5 py-2.5 rounded-full text-[13.5px] font-semibold transition-all duration-200 hover:-translate-y-px"
+                  style={{
+                    backgroundColor: "var(--brand)",
+                    color: "var(--text-inverse)",
+                    boxShadow: "var(--shadow-brand)",
+                  }}
+                >
+                  Add your reflection
+                </a>
+              </div>
+            )}
 
             <div className="flex flex-wrap items-center justify-center gap-3">
               <button
@@ -858,7 +918,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
   }
 
   const currentMeta = SECTIONS[currentStep];
-  const percentComplete = Math.round(((currentStep + 1) / effectiveTotalSteps) * 100);
+  const percentComplete = Math.round(((currentStep + 1) / totalSteps) * 100);
 
   return (
     <StepContext.Provider value={{ currentStep, direction, goTo }}>
@@ -938,7 +998,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3 px-1">
             <p className="text-[13px] font-semibold" style={{ color: "var(--text-heading)" }}>
-              Step {currentStep + 1} of {effectiveTotalSteps}
+              Step {currentStep + 1} of {totalSteps}
               <span className="ml-2 font-normal" style={{ color: "var(--text-muted)" }}>· {currentMeta.title}</span>
             </p>
             <p className="text-[11px] font-medium flex items-center gap-1.5" style={{ color: draftState === "saving" ? "var(--text-subtle)" : "var(--brand-mid)" }} aria-live="polite">
@@ -976,35 +1036,87 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
             />
           </div>
 
-          {/* Step dots (jump nav, compact) */}
-          <div className="mt-4 flex items-center justify-center gap-1.5 flex-wrap">
-            {SECTIONS.map((s, i) => {
-              const state = currentStep === i ? "current" : currentStep > i ? "done" : "todo";
-              const willBeSkipped = skipReflection && i > REFLECT_GATE_INDEX;
+          {/* Goal-gradient nudge. People push harder the closer the finish
+              looks, so the percentage and the line beneath it both shrink the
+              remaining work rather than just measuring it. */}
+          <div className="flex items-center justify-between gap-3 mt-2 px-1">
+            <p className="text-[12px] leading-snug" style={{ color: "var(--text-muted)" }}>
+              {ENCOURAGEMENT[currentStep] ?? ""}
+            </p>
+            <p
+              className="text-[12px] font-semibold tabular-nums shrink-0"
+              style={{ color: "var(--brand-mid)" }}
+            >
+              {percentComplete}%
+            </p>
+          </div>
+
+          {/* Labelled stepper. Replaces a row of anonymous dots, which showed
+              how many steps were left but never what any of them were. Scrolls
+              horizontally rather than wrapping so the sequence stays readable
+              on a phone. */}
+          <ol ref={stepperRef} className="mt-5 flex items-start overflow-x-auto pb-1">
+            {SECTIONS.map((sec, i) => {
+              const done = currentStep > i;
+              const current = currentStep === i;
               return (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => goTo(i)}
-                  disabled={willBeSkipped}
-                  title={
-                    willBeSkipped
-                      ? `${s.title} (skipped)`
-                      : `Step ${i + 1}: ${s.title}`
-                  }
-                  aria-label={`Go to step ${i + 1}: ${s.title}`}
-                  aria-current={state === "current" ? "step" : undefined}
-                  className="rounded-full transition-all duration-200 hover:scale-110 disabled:hover:scale-100 disabled:cursor-not-allowed"
-                  style={{
-                    width: state === "current" ? 24 : 8,
-                    height: 8,
-                    backgroundColor: state === "todo" ? "var(--border-input)" : "var(--brand)",
-                    opacity: willBeSkipped ? 0.25 : state === "done" ? 0.55 : 1,
-                  }}
-                />
+                <li key={sec.id} className="flex-1 min-w-[76px]">
+                  <button
+                    type="button"
+                    onClick={() => goTo(i)}
+                    title={`Step ${i + 1}: ${sec.title}`}
+                    aria-label={`Go to step ${i + 1}: ${sec.title}`}
+                    aria-current={current ? "step" : undefined}
+                    className="w-full flex flex-col items-center gap-1.5 group"
+                  >
+                    <span className="relative w-full h-7 flex items-center justify-center">
+                      {i > 0 && (
+                        <span
+                          className="absolute left-0 right-1/2 top-1/2 h-[2px] -translate-y-1/2 transition-colors duration-300"
+                          style={{ backgroundColor: currentStep >= i ? "var(--brand)" : "var(--border-input)" }}
+                        />
+                      )}
+                      {i < SECTIONS.length - 1 && (
+                        <span
+                          className="absolute left-1/2 right-0 top-1/2 h-[2px] -translate-y-1/2 transition-colors duration-300"
+                          style={{ backgroundColor: currentStep > i ? "var(--brand)" : "var(--border-input)" }}
+                        />
+                      )}
+                      <span
+                        className="relative w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-semibold transition-all duration-200 group-hover:scale-110"
+                        style={{
+                          backgroundColor: done || current ? "var(--brand)" : "var(--surface)",
+                          color: done || current ? "var(--text-inverse)" : "var(--text-muted)",
+                          boxShadow: current
+                            ? "0 0 0 4px var(--overlay-brand-hover)"
+                            : done
+                              ? "none"
+                              : "inset 0 0 0 1.5px var(--border-input)",
+                        }}
+                      >
+                        {done ? (
+                          <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                        ) : (
+                          i + 1
+                        )}
+                      </span>
+                    </span>
+                    <span
+                      className="text-[10.5px] leading-tight text-center px-0.5 transition-colors duration-200"
+                      style={{
+                        color: current ? "var(--brand)" : done ? "var(--text-body)" : "var(--text-subtle)",
+                        fontWeight: current ? 600 : 500,
+                      }}
+                    >
+                      {sec.short}
+                    </span>
+                  </button>
+                </li>
               );
             })}
-          </div>
+          </ol>
         </div>
 
         {status === "error" && (
@@ -1112,6 +1224,29 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
 
           {/* -------- III. Environmental Impact Evaluation -------- */}
           <SectionCard id="impact">
+            <div>
+              <label className={LABEL_CLS} style={{ color: "var(--text-body)" }}>
+                Currency for all amounts below
+              </label>
+              <select
+                className={INPUT_CLS}
+                style={{ backgroundColor: "var(--surface)", color: "var(--text-primary)" }}
+                value={form.currency}
+                onChange={(e) => set("currency", e.target.value)}
+              >
+                <option value="">Select a currency</option>
+                {CURRENCIES.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.label} ({c.symbol})
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
+                Preselected from your school&apos;s sector. Cost savings and funds raised are read
+                in this currency, so the district can total them correctly.
+              </p>
+            </div>
+
             {!Object.values(form.overview.initiativeTypes).some(Boolean) && (
               <div
                 className="text-sm border rounded-xl px-4 py-3"
@@ -1131,7 +1266,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
                   <Field label="Baseline: 1 month before (kWh)" path="impact.energy.baselineKwh" type="number" min={0} value={form.impact.energy.baselineKwh} onChange={set} />
                   <Field label="Post-activity: 1 month after (kWh)" path="impact.energy.postKwh" type="number" min={0} value={form.impact.energy.postKwh} onChange={set} />
                   <Field label="kWh Reduced" path="impact.energy.kwhReduced" type="number" min={0} value={form.impact.energy.kwhReduced} onChange={set} />
-                  <Field label="Estimated Cost Savings" path="impact.energy.costSavings" value={form.impact.energy.costSavings} onChange={set} placeholder="₱" />
+                  <Field label="Estimated Cost Savings" path="impact.energy.costSavings" value={form.impact.energy.costSavings} onChange={set} placeholder={currencySymbol} />
                   <Field label="Classrooms/Offices/Departments Participating" path="impact.energy.unitsParticipating" type="number" min={0} value={form.impact.energy.unitsParticipating} onChange={set} />
                 </div>
               </ImpactPanel>
@@ -1143,7 +1278,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
                   <Field label="Baseline: 1 month before (liter / m³)" path="impact.water.baselineWater" value={form.impact.water.baselineWater} onChange={set} />
                   <Field label="Post-activity: 1 month after (liter / m³)" path="impact.water.postWater" value={form.impact.water.postWater} onChange={set} />
                   <Field label="Estimated Liters Saved" path="impact.water.litersSaved" type="number" min={0} value={form.impact.water.litersSaved} onChange={set} />
-                  <Field label="Estimated Cost Savings" path="impact.water.costSavings" value={form.impact.water.costSavings} onChange={set} placeholder="₱" />
+                  <Field label="Estimated Cost Savings" path="impact.water.costSavings" value={form.impact.water.costSavings} onChange={set} placeholder={currencySymbol} />
                   <Field label="Classrooms/Offices/Departments Participating" path="impact.water.unitsParticipating" type="number" min={0} value={form.impact.water.unitsParticipating} onChange={set} />
                 </div>
               </ImpactPanel>
@@ -1227,7 +1362,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Field label="Donated Items Collected" path="impact.circular.itemsCollected" type="number" min={0} value={form.impact.circular.itemsCollected} onChange={set} />
                   <Field label="Items Sold / Redistributed" path="impact.circular.itemsRedistributed" type="number" min={0} value={form.impact.circular.itemsRedistributed} onChange={set} />
-                  <Field label="Funds Raised" path="impact.circular.fundsRaised" value={form.impact.circular.fundsRaised} onChange={set} placeholder="₱" />
+                  <Field label="Funds Raised" path="impact.circular.fundsRaised" value={form.impact.circular.fundsRaised} onChange={set} placeholder={currencySymbol} />
                   <Field label="Beneficiary Organization(s)" path="impact.circular.beneficiaryOrgs" value={form.impact.circular.beneficiaryOrgs} onChange={set} />
                   <Field label="Partner Organizations" path="impact.circular.partnerOrgs" value={form.impact.circular.partnerOrgs} onChange={set} />
                   <Field label="Volunteers Involved" path="impact.circular.volunteers" type="number" min={0} value={form.impact.circular.volunteers} onChange={set} />
@@ -1271,38 +1406,6 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
                 />
               </div>
             ))}
-          </SectionCard>
-
-          {/* -------- VI. Climate Literacy and Reflection -------- */}
-          <SectionCard id="climate">
-            <RadioGroup
-              label="Did the initiative include pre-event educational sessions and post-event reflection sessions?"
-              options={YESNO_OPTIONS}
-              path="climateLiteracy.included"
-              value={form.climateLiteracy.included}
-              onChange={set}
-            />
-            {form.climateLiteracy.included === "Yes" && (
-              <Textarea
-                label="If yes, briefly describe"
-                path="climateLiteracy.description"
-                value={form.climateLiteracy.description}
-                onChange={set}
-                rows={3}
-              />
-            )}
-          </SectionCard>
-
-          {/* -------- VII. Participant Feedback -------- */}
-          <SectionCard id="feedback">
-            <Textarea
-              label="Key Insights"
-              path="participantFeedback"
-              value={form.participantFeedback}
-              onChange={set}
-              rows={6}
-              hint="Provide 3–5 key insights gathered from participants: experiences, learnings, reflections, or feedback."
-            />
           </SectionCard>
 
           {/* -------- VIII. Digital Advocacy Impact -------- */}
@@ -1410,163 +1513,6 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
             />
           </SectionCard>
 
-          {/* -------- Reflection gate: opt in/out of the last two sections -------- */}
-          <SectionCard id="reflect-gate">
-            <div
-              className="rounded-2xl px-6 py-5 text-[14px] leading-relaxed"
-              style={{ backgroundColor: "var(--surface-accent)", color: "var(--text-body)" }}
-            >
-              <p className="font-semibold mb-1.5" style={{ color: "var(--brand)" }}>
-                Nice work, that&apos;s the data covered.
-              </p>
-              <p>
-                Two optional sections left: <strong>Lasallian Reflection</strong> and{" "}
-                <strong>Lessons Learned</strong>. They&apos;re where you tell the story behind the numbers, and the committee actually reads them.
-              </p>
-            </div>
-
-            <p className="text-[15px] font-medium pt-2" style={{ color: "var(--text-primary)" }}>
-              Do you want to provide your own reflection?
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setSkipReflection(false);
-                  goTo(currentStep + 1);
-                }}
-                className="text-left rounded-2xl p-5 border transition-all hover:-translate-y-px"
-                style={{
-                  backgroundColor: !skipReflection ? "var(--surface-accent)" : "var(--surface)",
-                  borderColor: !skipReflection ? "var(--brand)" : "var(--border-input)",
-                  boxShadow: !skipReflection ? "var(--shadow-brand)" : "none",
-                }}
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <span
-                    className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: "var(--brand)", color: "var(--text-inverse)" }}
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2.5}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  </span>
-                  <p
-                    className="font-semibold text-[15px]"
-                    style={{ color: "var(--text-heading)" }}
-                  >
-                    Yeah, I&apos;ve got more to say
-                  </p>
-                </div>
-                <p className="text-[13px] leading-relaxed" style={{ color: "var(--text-body)" }}>
-                  Two more short sections and you&apos;re done.
-                </p>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setSkipReflection(true)}
-                className="text-left rounded-2xl p-5 border transition-all hover:-translate-y-px"
-                style={{
-                  backgroundColor: skipReflection ? "var(--surface-accent)" : "var(--surface)",
-                  borderColor: skipReflection ? "var(--brand)" : "var(--border-input)",
-                  boxShadow: skipReflection ? "var(--shadow-brand)" : "none",
-                }}
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <span
-                    className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                    style={{
-                      backgroundColor: skipReflection ? "var(--brand)" : "var(--surface-sunken)",
-                      color: skipReflection ? "var(--text-inverse)" : "var(--text-muted)",
-                    }}
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2.5}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <line x1="5" y1="12" x2="19" y2="12" />
-                      <polyline points="12 5 19 12 12 19" />
-                    </svg>
-                  </span>
-                  <p
-                    className="font-semibold text-[15px]"
-                    style={{ color: "var(--text-heading)" }}
-                  >
-                    I&apos;m good, submit as-is
-                  </p>
-                </div>
-                <p className="text-[13px] leading-relaxed" style={{ color: "var(--text-body)" }}>
-                  Just the data. You can always email us if more comes to mind.
-                </p>
-              </button>
-            </div>
-          </SectionCard>
-
-          {/* -------- IX. Lasallian Reflection -------- */}
-          <SectionCard id="lasallian">
-            <Textarea
-              label="Spirit of Faith"
-              path="lasallianReflection.spiritOfFaith"
-              value={form.lasallianReflection.spiritOfFaith}
-              onChange={set}
-              rows={3}
-              hint="How did this activity help participants recognize their responsibility toward creation?"
-            />
-            <Textarea
-              label="Zeal for Service"
-              path="lasallianReflection.zealForService"
-              value={form.lasallianReflection.zealForService}
-              onChange={set}
-              rows={3}
-              hint="How did participants demonstrate active service through this initiative?"
-            />
-            <Textarea
-              label="Communion in Mission"
-              path="lasallianReflection.communionInMission"
-              value={form.lasallianReflection.communionInMission}
-              onChange={set}
-              rows={3}
-              hint="How did this activity contribute to collaboration within the Lasallian community?"
-            />
-          </SectionCard>
-
-          {/* -------- X. Lessons Learned and Recommendations -------- */}
-          <SectionCard id="lessons">
-            <Textarea label="A. What Went Well" path="lessons.whatWentWell" value={form.lessons.whatWentWell} onChange={set} rows={3} />
-            <Textarea label="B. Challenges Encountered" path="lessons.challenges" value={form.lessons.challenges} onChange={set} rows={3} />
-            <Textarea label="C. Recommendations for Future Implementation" path="lessons.recommendations" value={form.lessons.recommendations} onChange={set} rows={3} />
-            <Textarea label="D. Suggestions for the District Committee" path="lessons.districtSuggestions" value={form.lessons.districtSuggestions} onChange={set} rows={3} />
-
-            <RadioGroup
-              label="E. Will your institution be continuing this or a similar activity next campaign month?"
-              options={CONTINUING_OPTIONS}
-              path="lessons.continuing"
-              value={form.lessons.continuing}
-              onChange={set}
-            />
-            {form.lessons.continuing === "Yes" && (
-              <Field label="Planned Activity" path="lessons.plannedActivity" value={form.lessons.plannedActivity} onChange={set} />
-            )}
-            {form.lessons.continuing === "No" && (
-              <Field label="Reason" path="lessons.notContinuingReason" value={form.lessons.notContinuingReason} onChange={set} />
-            )}
-          </SectionCard>
-
           {/* -------- Consent block (only on last step, above sticky nav) -------- */}
           {isLastStep && (
             <div className="mt-6 space-y-4">
@@ -1596,6 +1542,36 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
                   Everything above is accurate to the best of my knowledge, and my institution is OK with the committee reaching out if they have follow-up questions.
                 </span>
               </label>
+
+              <label
+                htmlFor="terms-check"
+                className="flex items-start gap-3 cursor-pointer select-none rounded-2xl p-4 transition-colors"
+                style={{ backgroundColor: termsAccepted ? "var(--overlay-brand-hover)" : "transparent" }}
+              >
+                <input
+                  id="terms-check"
+                  type="checkbox"
+                  checked={termsAccepted}
+                  onChange={(e) => setTermsAccepted(e.target.checked)}
+                  className="mt-0.5 w-4 h-4 rounded accent-green-700 shrink-0"
+                />
+                <span className="text-[14px] leading-relaxed" style={{ color: "var(--text-body)" }}>
+                  I have read and accept the{" "}
+                  <a
+                    href="/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold underline"
+                    style={{ color: "var(--brand-mid)" }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Report Submission Terms
+                  </a>
+                  . In particular, my institution has obtained every consent required under section 4
+                  for each person appearing in the photos or documents we uploaded, including a
+                  parent or guardian&apos;s consent for anyone under 18.
+                </span>
+              </label>
             </div>
           )}
         </form>
@@ -1608,7 +1584,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
             isLastStep={isLastStep}
             isSignedIn={isSignedIn}
             status={status}
-            consented={consented}
+            consented={consented && termsAccepted}
             currentMetaTitle={currentMeta.title}
             onPrev={() => goTo(currentStep - 1)}
             onNext={() => handleNext()}
@@ -1632,7 +1608,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
             isLastStep={isLastStep}
             isSignedIn={isSignedIn}
             status={status}
-            consented={consented}
+            consented={consented && termsAccepted}
             currentMetaTitle={currentMeta.title}
             onPrev={() => goTo(currentStep - 1)}
             onNext={() => handleNext()}

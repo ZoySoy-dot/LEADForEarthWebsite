@@ -15,10 +15,7 @@ type Values = {
   students: string;
   faculty: string;
   staffAdmin: string;
-  community: string;
   totalParticipants: string;
-  schoolPopulation: string;
-  participationRate: string;
   submitterName: string;
   submitterRole: string;
   submitterPhone: string;
@@ -75,11 +72,8 @@ export function EditReportForm({ reportId, initial }: { reportId: string; initia
           <Field label="Students" type="number" value={values.students} onChange={(v) => set("students", v)} />
           <Field label="Faculty" type="number" value={values.faculty} onChange={(v) => set("faculty", v)} />
           <Field label="Staff / Admin" type="number" value={values.staffAdmin} onChange={(v) => set("staffAdmin", v)} />
-          <Field label="Community Members" type="number" value={values.community} onChange={(v) => set("community", v)} />
           <Field label="Total Participants" type="number" value={values.totalParticipants} onChange={(v) => set("totalParticipants", v)} />
-          <Field label="School Population" type="number" value={values.schoolPopulation} onChange={(v) => set("schoolPopulation", v)} />
         </div>
-        <Field label="Participation Rate (%)" type="number" value={values.participationRate} onChange={(v) => set("participationRate", v)} />
       </Card>
 
       {error && (

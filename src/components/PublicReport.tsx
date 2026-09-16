@@ -665,22 +665,14 @@ function ParticipationSection({ report }: { report: ReportWithReflection }) {
   const students = report.students ?? 0;
   const faculty = report.faculty ?? 0;
   const staff = report.staffAdmin ?? 0;
-  const community = report.community ?? 0;
-  const total = report.totalParticipants ?? students + faculty + staff + community;
-  const population = report.schoolPopulation ?? 0;
-  const rate = report.participationRate
-    ? Number(report.participationRate)
-    : population > 0
-      ? (total / population) * 100
-      : null;
+  const total = report.totalParticipants ?? students + faculty + staff;
 
-  if (total === 0 && population === 0) return null;
+  if (total === 0) return null;
 
   const segments = [
     { label: "Students", value: students, color: "var(--brand)" },
     { label: "Faculty", value: faculty, color: "var(--brand-mid)" },
     { label: "Staff / Admin", value: staff, color: "var(--brand-light)" },
-    { label: "Community", value: community, color: "var(--brand-glow)" },
   ].filter((s) => s.value > 0);
 
   return (
@@ -697,19 +689,6 @@ function ParticipationSection({ report }: { report: ReportWithReflection }) {
             total participants
           </p>
         </div>
-        {rate !== null && (
-          <div className="text-right">
-            <p
-              className="text-2xl font-bold tracking-tight leading-none"
-              style={{ color: GREEN_MID }}
-            >
-              {rate.toFixed(1)}%
-            </p>
-            <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>
-              of school population
-            </p>
-          </div>
-        )}
       </div>
 
       {/* Stacked bar */}

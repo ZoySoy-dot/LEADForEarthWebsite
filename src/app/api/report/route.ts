@@ -4,18 +4,16 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { cloudinaryConfig, isOwnDeliveryUrl } from "@/lib/cloudinary";
 import { MAX_FILES, type UploadedFile } from "@/lib/uploads";
+import { countryForSchool } from "@/lib/schoolCountry";
+import { currencyForCountry, isCurrencyCode } from "@/data/currencies";
+import { sendReportConfirmation } from "@/lib/mail";
+import { TERMS_VERSION } from "@/lib/terms";
 
 // Coerce a "" | number-ish string to Int | null for DB columns.
 function toInt(v: unknown): number | null {
   if (v === "" || v === null || v === undefined) return null;
   const n = Number(v);
   return Number.isFinite(n) ? Math.trunc(n) : null;
-}
-
-function toDecimal(v: unknown): number | null {
-  if (v === "" || v === null || v === undefined) return null;
-  const n = Number(v);
-  return Number.isFinite(n) ? n : null;
 }
 
 function toDate(v: unknown): Date | null {
@@ -79,7 +77,26 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Enforced here, not just in the UI. A record that the terms were accepted is
+  // only worth something if it cannot be bypassed by posting straight to the
+  // API. The version check also catches a stale tab left open across an update.
+  if (data.termsAccepted !== true) {
+    return NextResponse.json(
+      { error: "Please accept the Report Submission Terms before submitting." },
+      { status: 400 }
+    );
+  }
+  if (data.termsVersion !== TERMS_VERSION) {
+    return NextResponse.json(
+      { error: "The submission terms have been updated. Please reload the page and review them." },
+      { status: 409 }
+    );
+  }
+
   const editToken = randomBytes(24).toString("base64url");
+
+  const schoolName = String(data.overview?.schoolName ?? "").trim();
+  const country = countryForSchool(schoolName);
 
   try {
     const report = await prisma.report.create({
@@ -92,7 +109,14 @@ export async function POST(req: NextRequest) {
         submitterEmail: sessionEmail,
         submitterPhone: data.submitter?.phone || null,
 
-        schoolName: String(data.overview?.schoolName ?? ""),
+        schoolName,
+        // Resolved server-side: the client can't be trusted to label a sector,
+        // and this is what the district map and rollups group by.
+        country,
+        // Fall back to the sector's default so a submitter who never touched
+        // the picker still gets their amounts labelled correctly.
+        currency: isCurrencyCode(data.currency) ? data.currency : currencyForCountry(country),
+
         projectTitle: String(data.overview?.projectTitle ?? ""),
         description: data.overview?.description || null,
         dateImplemented: toDate(data.overview?.dateImplemented),
@@ -107,10 +131,7 @@ export async function POST(req: NextRequest) {
         students: toInt(data.participation?.students),
         faculty: toInt(data.participation?.faculty),
         staffAdmin: toInt(data.participation?.staffAdmin),
-        community: toInt(data.participation?.community),
         totalParticipants: toInt(data.participation?.total),
-        schoolPopulation: toInt(data.participation?.schoolPopulation),
-        participationRate: toDecimal(data.participation?.rate),
 
         // Store impact as JSON; the shape mirrors the form so admin can render it back.
         impact: data.impact ?? {},
@@ -128,13 +149,38 @@ export async function POST(req: NextRequest) {
         reachViews: toInt(data.digitalAdvocacy?.reach?.views),
         postLinks: data.digitalAdvocacy?.postLinks || null,
 
+        termsAcceptedAt: new Date(),
+        termsVersion: TERMS_VERSION,
+
         documentationLinks: data.documentationLinks || null,
         documentationFiles: sanitizeFiles(data.documentationFiles),
       },
       select: { id: true, editToken: true },
     });
 
-    return NextResponse.json({ success: true, reportId: report.id, editToken: report.editToken });
+    const origin = req.nextUrl.origin;
+    const reflectUrl = `${origin}/report/${report.id}/reflect?token=${report.editToken}`;
+
+    // Awaited, not fire-and-forget: a serverless function can be frozen the
+    // moment it responds, which would drop an un-awaited send. sendMail
+    // swallows its own errors, so this cannot fail the submission.
+    const emailed = await sendReportConfirmation({
+      to: sessionEmail,
+      submitterName: String(data.submitter?.name ?? session?.user?.name ?? ""),
+      schoolName,
+      projectTitle: String(data.overview?.projectTitle ?? ""),
+      reflectUrl,
+      reportUrl: `${origin}/reports/${report.id}`,
+    });
+
+    return NextResponse.json({
+      success: true,
+      reportId: report.id,
+      editToken: report.editToken,
+      reflectUrl,
+      // Lets the success screen tell the truth about whether mail actually went.
+      emailed,
+    });
   } catch (err) {
     console.error("Failed to save report:", err);
     return NextResponse.json({ error: "Failed to save report." }, { status: 500 });

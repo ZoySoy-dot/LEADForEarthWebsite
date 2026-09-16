@@ -30,6 +30,15 @@ model Report {
 
   // Project overview (Section I)
   schoolName           String    @map("school_name")
+
+  // LEAD sector, resolved from schoolName when the report is filed. Stored
+  // rather than re-derived per request: a roster rename or a typo used to drop
+  // a report off the district map with no error anywhere.
+  country              String?
+
+  // ISO 4217 code covering every money figure inside `impact`. The district
+  // spans seven currencies, so a bare amount can be neither summed nor shown.
+  currency             String?
   projectTitle         String    @map("project_title")
   description          String?
   dateImplemented      DateTime? @map("date_implemented") @db.Date
@@ -42,14 +51,16 @@ model Report {
   initiativeOther      String?   @map("initiative_other")
   sdgGoals             String[]  @map("sdg_goals")
 
-  // Participation (Section II); numeric so we can SUM/AVG across the district
+  // Participation (Section II); numeric so we can SUM/AVG across the district.
+  // Deliberately limited to headcounts a coordinator can produce from memory.
+  // School population / participation rate were dropped: enrollment is a
+  // property of the school rather than the activity, and asking for it every
+  // month produced blanks and guesses. Community-member counts went with them
+  // for the same reason.
   students             Int?
   faculty              Int?
   staffAdmin           Int?      @map("staff_admin")
-  community            Int?
   totalParticipants    Int?      @map("total_participants")
-  schoolPopulation     Int?      @map("school_population")
-  participationRate    Decimal?  @map("participation_rate") @db.Decimal(6, 2)
 
   // Impact (Section III); shape varies by initiative type, so JSON.
   // Example: { "energy": { "baselineKwh": "1200", "postKwh": "900" }, "water": {...} }
@@ -77,6 +88,13 @@ model Report {
   // child table: they are always read with the report and never queried alone.
   documentationFiles   Json      @default("[]") @map("documentation_files")
 
+  // Evidence that the submitter accepted the submission terms, and which
+  // version they were shown. Section 10 of /terms promises this record exists,
+  // and it is what turns the checkbox from decoration into something the
+  // committee could actually rely on. Null on reports filed before terms.
+  termsAcceptedAt      DateTime? @map("terms_accepted_at") @db.Timestamptz
+  termsVersion         String?   @map("terms_version")
+
   // Rollup flag so the admin list can badge "reflection pending" without a join
   hasReflections       Boolean   @default(false) @map("has_reflections")
 
@@ -87,6 +105,7 @@ model Report {
 
   @@index([createdAt(sort: Desc)])
   @@index([schoolName])
+  @@index([country])
   @@index([dateImplemented])
   @@index([submitterEmail])
   @@index([status])

@@ -53,10 +53,7 @@ const EXAMPLE = {
   students: 245,
   faculty: 18,
   staffAdmin: 12,
-  community: 8,
   totalParticipants: 283,
-  schoolPopulation: 20500,
-  participationRate: 1.38,
 
   impact: {
     energy: {
@@ -150,10 +147,7 @@ function toReportRow(r) {
     students: r.students,
     faculty: r.faculty,
     staffAdmin: r.staffAdmin,
-    community: r.community,
     totalParticipants: r.totalParticipants,
-    schoolPopulation: r.schoolPopulation,
-    participationRate: r.participationRate,
     impact: r.impact,
     effectiveness: r.effectiveness,
     digitalPlatforms: r.digitalPlatforms,

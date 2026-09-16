@@ -59,10 +59,7 @@ export async function updateReport(
     students: string;
     faculty: string;
     staffAdmin: string;
-    community: string;
     totalParticipants: string;
-    schoolPopulation: string;
-    participationRate: string;
     submitterName: string;
     submitterRole: string;
     submitterPhone: string;
@@ -72,7 +69,6 @@ export async function updateReport(
   if (!gate.ok) return { error: gate.error };
 
   const toInt = (v: string) => (v.trim() === "" ? null : Number.isFinite(Number(v)) ? Math.trunc(Number(v)) : null);
-  const toDec = (v: string) => (v.trim() === "" ? null : Number.isFinite(Number(v)) ? Number(v) : null);
   const toDate = (v: string) => (v.trim() === "" ? null : new Date(v));
 
   if (!data.schoolName.trim() || !data.projectTitle.trim()) {
@@ -93,10 +89,7 @@ export async function updateReport(
         students: toInt(data.students),
         faculty: toInt(data.faculty),
         staffAdmin: toInt(data.staffAdmin),
-        community: toInt(data.community),
         totalParticipants: toInt(data.totalParticipants),
-        schoolPopulation: toInt(data.schoolPopulation),
-        participationRate: toDec(data.participationRate),
         submitterName: data.submitterName.trim(),
         submitterRole: data.submitterRole.trim(),
         submitterPhone: data.submitterPhone.trim() || null,

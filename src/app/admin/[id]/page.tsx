@@ -213,10 +213,7 @@ export default async function ReportDetailPage({
         <Row label="Students" value={report.students?.toString()} />
         <Row label="Faculty" value={report.faculty?.toString()} />
         <Row label="Staff / Admin" value={report.staffAdmin?.toString()} />
-        <Row label="Community Members" value={report.community?.toString()} />
         <Row label="Total Participants" value={report.totalParticipants?.toString()} />
-        <Row label="School Population" value={report.schoolPopulation?.toString()} />
-        <Row label="Participation Rate" value={report.participationRate ? `${report.participationRate}%` : null} />
       </Section>
 
       <ImpactSection report={report} />
