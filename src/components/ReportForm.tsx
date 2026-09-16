@@ -4,7 +4,9 @@ import { createContext, useContext, useEffect, useReducer, useRef, useState } fr
 import Image from "next/image";
 import SchoolAutocomplete from "@/components/SchoolAutocomplete";
 import PhoneField from "@/components/PhoneField";
+import FileUpload from "@/components/FileUpload";
 import { SDG_GOALS } from "@/data/sdgs";
+import type { UploadedFile } from "@/lib/uploads";
 
 // ============================================================================
 // EDITABLE CONTENT: edit question wording, add/remove options here
@@ -157,6 +159,9 @@ type Report = {
     notContinuingReason: string;
   };
   documentationLinks: string;
+  // Files uploaded to Cloudinary from the form. Already stored by the time they
+  // land here, so the draft autosave carries them across devices for free.
+  documentationFiles: UploadedFile[];
 };
 
 function boolMap(items: readonly { key: string }[]): Record<string, boolean> {
@@ -202,6 +207,7 @@ const INITIAL: Report = {
   lasallianReflection: { spiritOfFaith: "", zealForService: "", communionInMission: "" },
   lessons: { whatWentWell: "", challenges: "", recommendations: "", districtSuggestions: "", continuing: "", plannedActivity: "", notContinuingReason: "" },
   documentationLinks: "",
+  documentationFiles: [],
 };
 
 // Path-based state reducer. `set("overview.schoolName", "Foo")` walks the object.
@@ -1364,6 +1370,18 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
               placeholder="One URL per line"
             />
 
+            <FileUpload
+              label="Photos and Documents"
+              value={form.documentationFiles}
+              onChange={(files) => set("documentationFiles", files)}
+              disabled={!isSignedIn}
+              hint={
+                isSignedIn
+                  ? "Optional. Attach photos, certificates, attendance sheets, or slides."
+                  : "Sign in with Google above to attach files."
+              }
+            />
+
             <Textarea
               label="Photo / Documentation Links"
               path="documentationLinks"
@@ -1371,7 +1389,7 @@ export default function ReportForm({ initialSubmitter, signInAction, signOutActi
               onChange={set}
               rows={4}
               placeholder="One URL per line"
-              hint="Optional. Paste links to photos, event pages, or supporting docs."
+              hint="Optional. Prefer keeping files in Google Drive or your own cloud? Paste the links here instead."
             />
           </SectionCard>
 

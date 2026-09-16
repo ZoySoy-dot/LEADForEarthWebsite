@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { SDG_GOALS, SDG_LABELS } from "@/data/sdgs";
+import { extOf, filesFrom, formatBytes } from "@/lib/uploads";
 import { StatusControl, ActionsMenu } from "./ui";
 
 const INITIATIVE_LABELS: Record<string, string> = {
@@ -234,9 +235,31 @@ export default async function ReportDetailPage({
         <Row label="Post Links" value={report.postLinks} />
       </Section>
 
-      {report.documentationLinks && (
+      {(report.documentationLinks || filesFrom(report.documentationFiles).length > 0) && (
         <Section title="Documentation">
-          <p className="text-[14px] whitespace-pre-wrap" style={{ color: "var(--text-body)" }}>{report.documentationLinks}</p>
+          {filesFrom(report.documentationFiles).length > 0 && (
+            <ul className="space-y-1.5 mb-3">
+              {filesFrom(report.documentationFiles).map((f) => (
+                <li key={f.publicId}>
+                  <a
+                    href={f.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[14px] hover:underline"
+                    style={{ color: "var(--text-body)" }}
+                  >
+                    {f.name}
+                    <span style={{ color: "var(--text-muted)" }}>
+                      {" "}({extOf(f.name) || "file"}, {formatBytes(f.bytes)})
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+          {report.documentationLinks && (
+            <p className="text-[14px] whitespace-pre-wrap" style={{ color: "var(--text-body)" }}>{report.documentationLinks}</p>
+          )}
         </Section>
       )}
 

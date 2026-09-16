@@ -72,6 +72,11 @@ model Report {
   // Documentation (Section X)
   documentationLinks   String?   @map("documentation_links")
 
+  // Files uploaded to Cloudinary from the report form. Array of
+  // { url, publicId, resourceType, name, bytes, format }. JSON rather than a
+  // child table: they are always read with the report and never queried alone.
+  documentationFiles   Json      @default("[]") @map("documentation_files")
+
   // Rollup flag so the admin list can badge "reflection pending" without a join
   hasReflections       Boolean   @default(false) @map("has_reflections")
 

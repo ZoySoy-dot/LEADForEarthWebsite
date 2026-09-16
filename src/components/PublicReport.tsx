@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { Reflection, Report } from "@prisma/client";
 import { SDG_GOALS, SDG_LABELS } from "@/data/sdgs";
+import { extOf, filesFrom, formatBytes, isImageFile, thumbUrl, viewUrl, type UploadedFile } from "@/lib/uploads";
 
 // ---- Label maps (mirror the form's option copy) ---------------------------
 
@@ -211,6 +212,7 @@ export default function PublicReport({
   countryOutline?: CountryOutline | null;
 }) {
   const headlineImpact = pickHeadlineImpact(report);
+  const docFiles = filesFrom(report.documentationFiles);
   const totalReach =
     (report.reachReactions ?? 0) +
     (report.reachComments ?? 0) +
@@ -262,14 +264,17 @@ export default function PublicReport({
         postLinks={report.postLinks}
       />
 
-      {report.documentationLinks && (
+      {(report.documentationLinks || docFiles.length > 0) && (
         <Section title="Documentation" icon={<IconFolder />}>
-          <p
-            className="text-[14px] whitespace-pre-wrap leading-relaxed"
-            style={{ color: GREEN_DARK }}
-          >
-            {report.documentationLinks}
-          </p>
+          {docFiles.length > 0 && <AttachmentGallery files={docFiles} />}
+          {report.documentationLinks && (
+            <p
+              className={`text-[14px] whitespace-pre-wrap leading-relaxed${docFiles.length > 0 ? " mt-5" : ""}`}
+              style={{ color: GREEN_DARK }}
+            >
+              {report.documentationLinks}
+            </p>
+          )}
         </Section>
       )}
 
@@ -1357,6 +1362,71 @@ function LessonsLearnedSection({ reflection }: { reflection: Reflection }) {
 }
 
 // ---- Rendering primitives --------------------------------------------------
+
+// Attachments uploaded with the report. Photos read best as a contact sheet;
+// documents are just links, so they get a plain list underneath.
+function AttachmentGallery({ files }: { files: UploadedFile[] }) {
+  const photos = files.filter((f) => isImageFile(f.name));
+  const docs = files.filter((f) => !isImageFile(f.name));
+
+  return (
+    <div className="space-y-4">
+      {photos.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {photos.map((f) => (
+            <a
+              key={f.publicId}
+              href={viewUrl(f)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative block aspect-square rounded-xl overflow-hidden group"
+              style={{ backgroundColor: GREEN_PALE }}
+            >
+              <Image
+                src={thumbUrl(f.url, 400)}
+                alt={f.name}
+                fill
+                sizes="(min-width: 640px) 240px, 45vw"
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+            </a>
+          ))}
+        </div>
+      )}
+
+      {docs.length > 0 && (
+        <ul className="space-y-2">
+          {docs.map((f) => (
+            <li key={f.publicId}>
+              <a
+                href={f.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors"
+                style={{ backgroundColor: GREEN_CREAM }}
+              >
+                <span
+                  className="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-[10px] font-semibold uppercase"
+                  style={{ backgroundColor: GREEN_PALE, color: GREEN_DARK }}
+                >
+                  {extOf(f.name) || "file"}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[14px] truncate" style={{ color: GREEN_DARK }}>
+                    {f.name}
+                  </span>
+                  <span className="block text-[12px]" style={{ color: GREEN_MID }}>
+                    {formatBytes(f.bytes)}
+                  </span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 function Section({
   title,

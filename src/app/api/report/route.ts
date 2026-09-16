@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { randomBytes } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { cloudinaryConfig, isOwnDeliveryUrl } from "@/lib/cloudinary";
+import { MAX_FILES, type UploadedFile } from "@/lib/uploads";
 
 // Coerce a "" | number-ish string to Int | null for DB columns.
 function toInt(v: unknown): number | null {
@@ -27,6 +29,34 @@ function pickedKeys(obj: unknown): string[] {
   return Object.entries(obj as Record<string, boolean>)
     .filter(([, v]) => v === true)
     .map(([k]) => k);
+}
+
+// Keep only well-formed attachments that point at our own Cloudinary cloud.
+// The client owns this payload, so an unvalidated array would let a tampered
+// request park an arbitrary URL on a report and have the site render it as
+// official documentation.
+function sanitizeFiles(input: unknown): UploadedFile[] {
+  if (!Array.isArray(input)) return [];
+
+  let cloudName: string;
+  try {
+    cloudName = cloudinaryConfig().cloudName;
+  } catch {
+    return [];
+  }
+
+  return input
+    .filter((f): f is Record<string, unknown> => !!f && typeof f === "object")
+    .filter((f) => typeof f.url === "string" && isOwnDeliveryUrl(f.url, cloudName))
+    .slice(0, MAX_FILES)
+    .map((f) => ({
+      url: String(f.url),
+      publicId: String(f.publicId ?? ""),
+      resourceType: f.resourceType === "raw" ? ("raw" as const) : ("image" as const),
+      name: String(f.name ?? "attachment"),
+      bytes: Number(f.bytes) || 0,
+      format: String(f.format ?? ""),
+    }));
 }
 
 export async function POST(req: NextRequest) {
@@ -99,6 +129,7 @@ export async function POST(req: NextRequest) {
         postLinks: data.digitalAdvocacy?.postLinks || null,
 
         documentationLinks: data.documentationLinks || null,
+        documentationFiles: sanitizeFiles(data.documentationFiles),
       },
       select: { id: true, editToken: true },
     });
